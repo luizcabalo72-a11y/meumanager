@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Debug - Empresas</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+    h1 { color: #333; }
+    .empresa { background: #f0f0f0; padding: 15px; margin: 10px 0; border-left: 4px solid #007bff; border-radius: 5px; }
+    .empresa h3 { margin: 0 0 10px 0; }
+    .data { font-size: 13px; color: #666; }
+    button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .ativo { background: #d4edda; border-left-color: #28a745; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Debug - Empresas Cadastradas</h1>
+    <div id="empresas-list"></div>
+    <hr>
+    <h3>Empresa Ativa Atualmente:</h3>
+    <div id="empresa-ativa"></div>
+  </div>
+
+  <script>
+    const empresas = [];
+    const empresasEl = document.getElementById('empresas-list');
+    const ativaEl = document.getElementById('empresa-ativa');
+
+    // Busca todas as empresas
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.match(/^acc_(.+?)__empresa_dados$/)) {
+        const id = key.match(/^acc_(.+?)__empresa_dados$/)[1];
+        const dados = JSON.parse(localStorage.getItem(key) || "{}");
+        
+        const vendas = JSON.parse(localStorage.getItem(`acc_${id}__vendas`) || "[]");
+        const compras = JSON.parse(localStorage.getItem(`acc_${id}__compras`) || "[]");
+        const produtos = JSON.parse(localStorage.getItem(`acc_${id}__produtos`) || "[]");
+        
+        empresas.push({
+          id: id,
+          nomeFantasia: dados.nomeFantasia,
+          razaoSocial: dados.razaoSocial,
+          vendas: vendas.length,
+          compras: compras.length,
+          produtos: produtos.length
+        });
+      }
+    }
+
+    // Mostra cada empresa
+    empresas.forEach(emp => {
+      const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "{}");
+      const ativo = emp.id === sessao.empresaId ? ' ativo' : '';
+      
+      const el = document.createElement('div');
+      el.className = 'empresa' + ativo;
+      el.innerHTML = `
+        <h3>${emp.nomeFantasia || emp.razaoSocial || emp.id}</h3>
+        <div class="data">
+          <strong>ID:</strong> ${emp.id}<br>
+          <strong>Razão Social:</strong> ${emp.razaoSocial}<br>
+          <strong>📦 Produtos:</strong> ${emp.produtos} <br>
+          <strong>💰 Vendas:</strong> ${emp.vendas}<br>
+          <strong>🛒 Compras:</strong> ${emp.compras}<br>
+        </div>
+        <button onclick="mudarPara('${emp.id}')">🔄 Ativar</button>
+      `;
+      empresasEl.appendChild(el);
+    });
+
+    // Mostra empresa ativa
+    const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "{}");
+    const emp = empresas.find(e => e.id === sessao.empresaId) || empresas[0];
+    if (emp) {
+      ativaEl.innerHTML = `
+        <strong>${emp.nomeFantasia || emp.razaoSocial}</strong> (ID: ${emp.id})
+      `;
+    }
+
+    window.mudarPara = function(id) {
+      const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "{}");
+      sessao.empresaId = id;
+      const emp = empresas.find(e => e.id === id);
+      sessao.empresa = emp.razaoSocial;
+      localStorage.setItem("ft_sessao", JSON.stringify(sessao));
+      localStorage.setItem("ft_active_account", id);
+      
+      alert(`✅ Trocado para: ${emp.nomeFantasia || emp.razaoSocial}\n\nAtualizando...`);
+      window.location.reload();
+    };
+  </script>
+</body>
+</html>

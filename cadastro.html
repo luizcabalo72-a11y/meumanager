@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta - Meu Manager</title>
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+      padding: 20px;
+    }
+    
+    .register-container {
+      width: 100%;
+      max-width: 480px;
+    }
+    
+    .register-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+    }
+    
+    .register-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .register-header img {
+      height: 50px;
+      margin-bottom: 20px;
+    }
+    
+    .register-header h1 {
+      font-size: 24px;
+      color: #003366;
+      margin-bottom: 8px;
+    }
+    
+    .register-header p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #003366;
+      box-shadow: 0 0 0 3px rgba(0,51,102,0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .password-toggle {
+      position: relative;
+    }
+    
+    .password-toggle i {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      cursor: pointer;
+    }
+    
+    .password-strength {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    
+    .password-strength-bar {
+      height: 100%;
+      width: 0;
+      transition: all 0.3s;
+      border-radius: 2px;
+    }
+    
+    .password-strength-bar.weak { width: 33%; background: #ef4444; }
+    .password-strength-bar.medium { width: 66%; background: #f59e0b; }
+    .password-strength-bar.strong { width: 100%; background: #22c55e; }
+    
+    .terms {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    
+    .terms input[type="checkbox"] {
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .terms label {
+      font-size: 13px;
+      color: #6b7280;
+      cursor: pointer;
+    }
+    
+    .terms a {
+      color: #003366;
+      text-decoration: underline;
+    }
+    
+    .btn-register {
+      width: 100%;
+      padding: 16px;
+      background: #003366;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-register:hover {
+      background: #002244;
+      transform: translateY(-2px);
+    }
+    
+    .btn-register:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-register .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    
+    .btn-register.loading .spinner {
+      display: block;
+    }
+    
+    .btn-register.loading .btn-text {
+      display: none;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 25px 0;
+      color: #9ca3af;
+      font-size: 13px;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+    
+    .login-link {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .login-link a {
+      color: #003366;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .alert.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      display: block;
+    }
+    
+    .alert.success {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+      display: block;
+    }
+    
+    .benefits {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+    }
+    
+    .benefits h4 {
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 12px;
+    }
+    
+    .benefits ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .benefits li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    
+    .benefits li i {
+      color: #22c55e;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-container">
+    <div class="register-card">
+      <div class="register-header">
+        <img src="meumanager-logo-completo.png" alt="Meu Manager">
+        <h1>Crie sua conta grátis</h1>
+        <p>Comece a gerenciar suas vendas em minutos</p>
+      </div>
+      
+      <div class="alert" id="alert"></div>
+      
+      <form id="form-cadastro">
+        <div class="form-group">
+          <label for="nome">Seu nome completo</label>
+          <input type="text" id="nome" name="nome" placeholder="Ex: João Silva" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="empresa">Nome da sua empresa/loja</label>
+          <input type="text" id="empresa" name="empresa" placeholder="Ex: Loja do João" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="senha">Senha</label>
+            <div class="password-toggle">
+              <input type="password" id="senha" name="senha" placeholder="Mín. 6 caracteres" required minlength="6">
+              <i class="fa-solid fa-eye" onclick="togglePassword('senha', this)"></i>
+            </div>
+            <div class="password-strength">
+              <div class="password-strength-bar" id="strength-bar"></div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirmar-senha">Confirmar senha</label>
+            <div class="password-toggle">
+              <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Repita a senha" required>
+              <i class="fa-solid fa-eye" onclick="togglePassword('confirmar-senha', this)"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="terms">
+          <input type="checkbox" id="termos" name="termos" required>
+          <label for="termos">
+            Li e aceito os <a href="termos.html" target="_blank">Termos de Uso</a> e a 
+            <a href="privacidade.html" target="_blank">Política de Privacidade</a>
+          </label>
+        </div>
+        
+        <button type="submit" class="btn-register" id="btn-cadastrar">
+          <span class="btn-text">Criar Conta Grátis</span>
+          <div class="spinner"></div>
+        </button>
+      </form>
+      
+      <div class="divider">ou</div>
+      
+      <p class="login-link">
+        Já tem uma conta? <a href="login.html">Fazer login</a>
+      </p>
+      
+      <div class="benefits">
+        <h4>✨ O que você ganha:</h4>
+        <ul>
+          <li><i class="fa-solid fa-check"></i> 14 dias de teste grátis do plano Pro</li>
+          <li><i class="fa-solid fa-check"></i> Até 50 produtos no plano gratuito</li>
+          <li><i class="fa-solid fa-check"></i> Suporte por email</li>
+          <li><i class="fa-solid fa-check"></i> Sem cartão de crédito</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ SCRIPTS CORRETOS -->
+  <script type="module">
+    // ========== IMPORTA FIREBASE ==========
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword,
+      sendEmailVerification,
+      updateProfile 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc,
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ========== CONFIG FIREBASE ==========
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7c_Y2RTXDW61NTqPmZzpHe0k8Pc0qUtU",
+      authDomain: "meumanager-b02b0.firebaseapp.com",
+      projectId: "meumanager-b02b0",
+      storageBucket: "meumanager-b02b0.firebasestorage.app",
+      messagingSenderId: "603670587476",
+      appId: "1:603670587476:web:1a4ab1a06e6afc48ec8b3c"
+    };
+
+    // ========== INICIALIZA ==========
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    console.log("✅ Firebase inicializado no cadastro");
+
+    // ========== FUNÇÕES GLOBAIS ==========
+    window.togglePassword = function(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    };
+
+    function showAlert(message, type) {
+      const alert = document.getElementById("alert");
+      alert.textContent = message;
+      alert.className = `alert ${type}`;
+    }
+
+    function getErrorMessage(errorCode) {
+      const errors = {
+        "auth/email-already-in-use": "Este email já está cadastrado",
+        "auth/invalid-email": "Email inválido",
+        "auth/weak-password": "Senha muito fraca (mínimo 6 caracteres)",
+        "auth/operation-not-allowed": "Cadastro desabilitado. Contate o suporte",
+        "auth/network-request-failed": "Erro de conexão. Verifique sua internet"
+      };
+      return errors[errorCode] || "Erro ao criar conta. Tente novamente";
+    }
+
+    // ========== FORÇA DA SENHA ==========
+    document.getElementById("senha").addEventListener("input", function() {
+      const senha = this.value;
+      const bar = document.getElementById("strength-bar");
+      
+      let strength = 0;
+      if (senha.length >= 6) strength++;
+      if (senha.length >= 8) strength++;
+      if (/[A-Z]/.test(senha)) strength++;
+      if (/[0-9]/.test(senha)) strength++;
+      if (/[^A-Za-z0-9]/.test(senha)) strength++;
+      
+      bar.className = "password-strength-bar";
+      if (strength <= 2) bar.classList.add("weak");
+      else if (strength <= 3) bar.classList.add("medium");
+      else bar.classList.add("strong");
+    });
+
+    // ========== CADASTRO ==========
+    document.getElementById("form-cadastro").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const btn = document.getElementById("btn-cadastrar");
+      const nome = document.getElementById("nome").value.trim();
+      const empresa = document.getElementById("empresa").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const senha = document.getElementById("senha").value;
+      const confirmarSenha = document.getElementById("confirmar-senha").value;
+      
+      // Validações
+      if (!nome || !empresa || !email || !senha) {
+        showAlert("Preencha todos os campos", "error");
+        return;
+      }
+
+      if (senha !== confirmarSenha) {
+        showAlert("As senhas não coincidem", "error");
+        return;
+      }
+      
+      if (senha.length < 6) {
+        showAlert("A senha deve ter pelo menos 6 caracteres", "error");
+        return;
+      }
+      
+      // Loading
+      btn.classList.add("loading");
+      btn.disabled = true;
+      
+      try {
+        console.log("📝 Criando usuário...", email);
+        
+        // 1. Criar usuário no Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+        
+        console.log("✅ Usuário criado:", user.uid);
+        
+        // 2. Atualizar perfil
+        await updateProfile(user, {
+          displayName: nome
+        });
+        
+        console.log("✅ Perfil atualizado");
+        
+        // 3. Enviar email de verificação
+        try {
+          await sendEmailVerification(user);
+          console.log("✅ Email de verificação enviado");
+        } catch (emailError) {
+          console.warn("⚠️ Erro ao enviar email:", emailError);
+        }
+        
+        // 4. Criar documento no Firestore
+        const empresaData = {
+          nome: empresa,
+          email: email,
+          createdAt: serverTimestamp(),
+          plano: "free",
+          status: "ativo",
+          limites: {
+            produtos: 50,
+            vendas: 100,
+            usuarios: 1
+          }
+        };
+        
+        await setDoc(doc(db, "empresas", user.uid), empresaData);
+        console.log("✅ Documento da empresa criado");
+        
+        // 5. Salvar sessão local
+        const sessao = {
+          uid: user.uid,
+          email: user.email,
+          nome: nome,
+          empresa: empresa,
+          empresaId: user.uid,
+          createdAt: new Date().toISOString()
+        };
+        
+        localStorage.setItem("ft_sessao", JSON.stringify(sessao));
+        console.log("✅ Sessão salva");
+        
+        // 6. Sucesso!
+        showAlert("Conta criada com sucesso! Redirecionando...", "success");
+        
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1500);
+        
+      } catch (error) {
+        console.error("❌ Erro no cadastro:", error);
+        showAlert(getErrorMessage(error.code), "error");
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>

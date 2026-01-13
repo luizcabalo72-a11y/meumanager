@@ -1,0 +1,121 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    /* ================= FUNÇÕES AUXILIARES ================= */
+    
+    function isLogged() {
+      return request.auth != null;
+    }
+    
+    function userPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+    
+    function hasUserDoc() {
+      return isLogged() && exists(userPath());
+    }
+    
+    function userEmpresaId() {
+      return get(userPath()).data.empresaId;
+    }
+    
+    function isSameEmpresa(empresaId) {
+      return hasUserDoc() && userEmpresaId() == empresaId;
+    }
+    
+    function validString(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+             request.resource.data[field].size() >= minLen &&
+             request.resource.data[field].size() <= maxLen;
+    }
+    
+    /* ================= USERS ================= */
+    
+    match /users/{uid} {
+      // Ler o próprio cadastro: OK
+      allow read: if isLogged() && request.auth.uid == uid;
+      
+      // Criar: OK, com validações
+      allow create: if isLogged()
+                    && request.auth.uid == uid
+                    && request.resource.data.empresaId is string
+                    && request.resource.data.empresaId.size() > 0
+                    && validString('nome', 2, 100)
+                    && validString('email', 5, 320);
+      
+      // Atualizar: NÃO pode mudar empresaId, plano, planoStatus, role
+      allow update: if isLogged()
+                    && request.auth.uid == uid
+                    && request.resource.data.empresaId == resource.data.empresaId
+                    && request.resource.data.plano == resource.data.plano
+                    && request.resource.data.planoStatus == resource.data.planoStatus
+                    && request.resource.data.role == resource.data.role;
+      
+      // Deletar: bloqueado
+      allow delete: if false;
+    }
+    
+    /* ================= EMPRESAS ================= */
+    
+    match /empresas/{empresaId} {
+      // Ler: apenas da própria empresa
+      allow read: if isSameEmpresa(empresaId);
+      
+      // Criar: com validações
+      allow create: if isSameEmpresa(empresaId)
+                    && validString('nome', 2, 100)
+                    && request.resource.data.id == empresaId
+                    && request.resource.data.ownerId == request.auth.uid;
+      
+      // Atualizar: NÃO pode mudar id, ownerId, plano, planoStatus
+      allow update: if isSameEmpresa(empresaId)
+                    && request.resource.data.id == resource.data.id
+                    && request.resource.data.ownerId == resource.data.ownerId
+                    && request.resource.data.plano == resource.data.plano
+                    && request.resource.data.planoStatus == resource.data.planoStatus;
+      
+      // Deletar: bloqueado
+      allow delete: if false;
+      
+      // Todas as subcoleções (data, etc)
+      match /{document=**} {
+        allow read, write: if isSameEmpresa(empresaId);
+      }
+    }
+    
+    /* ================= PAYMENTS (Apenas Cloud Functions) ================= */
+    
+    match /payments/{paymentId} {
+      allow read: if isLogged() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    
+    match /subscriptions/{subscriptionId} {
+      allow read: if isLogged() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    
+    match /payment_preferences/{preferenceId} {
+      allow read: if isLogged() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    
+    /* ================= AUDIT LOGS (Apenas Cloud Functions) ================= */
+    
+    match /audit_logs/{logId} {
+      allow read, write: if false;
+    }
+    
+    match /rate_limits/{ip} {
+      allow read, write: if false;
+    }
+    
+    /* ================= BLOQUEIA TUDO QUE NÃO FOI ESPECIFICADO ================= */
+    
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

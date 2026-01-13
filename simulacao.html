@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulação - Meu Manager</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="simulacao">
+
+<!-- ================= HEADER CORRIGIDO ================= -->
+<!-- 
+  ✅ Remova o <select> hardcoded
+  ✅ Remova as imagens hardcoded (logo-ferratec, logo-lcabalo)
+  ✅ Use este template em todos os HTMLs
+-->
+
+<header class="header">
+  <div class="header-left">
+    <div id="clock" class="clock-display">00:00:00</div>
+  </div>
+
+  <div class="social-icons">
+    <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+    <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+    <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+    <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+    <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+    <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+    <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+    <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+    <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+  </div>
+
+  <div class="header-right">
+    <!-- Logo será carregada dinamicamente pelo header-manager.js -->
+    <div class="logo-area">
+      <!-- Logos antigas removidas - serão substituídas dinamicamente -->
+    </div>
+    
+    <!-- Seletor hardcoded REMOVIDO -->
+    <!-- O header-manager.js criará um display dinâmico aqui -->
+    <div id="conta-select"></div>
+    
+    <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ================= SCRIPTS (adicionar antes do </body>) ================= -->
+<!--
+  Adicione esta linha ANTES de todos os outros scripts:
+  <script src="header-manager.js"></script>
+-->
+
+
+
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <ul class="sidebar-menu">
+
+    <li class="menu-item">
+      <a href="dashboard.html" class="menu-link">
+        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="fornecedores.html" class="menu-link">
+        <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="clientes.html" class="menu-link">
+        <i class="fa-solid fa-users"></i><span>Clientes</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="produtos.html" class="menu-link">
+        <i class="fa-solid fa-box"></i><span>Produtos</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="compras.html" class="menu-link">
+        <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="vendas.html" class="menu-link">
+        <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="estoque.html" class="menu-link">
+        <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="simulacao.html" class="menu-link">
+        <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="curva-abc.html" class="menu-link">
+        <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="financeiro.html" class="menu-link">
+        <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="relatorios.html" class="menu-link">
+        <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="configuracoes.html" class="menu-link">
+        <i class="fa-solid fa-gear"></i><span>Configurações</span>
+      </a>
+    </li>
+
+
+
+  </ul>
+</aside>
+<!-- ================= /SIDEBAR ================= -->
+
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-calculator"></i> Simulação de Preços</h1>
+  </div>
+
+  <!-- ================= TOOLBAR ================= -->
+  <div class="toolbar-simulacao">
+    <div class="toolbar-left">
+      <button id="btn-nova-simulacao" class="btn btn-primary" type="button">
+        <i class="fa-solid fa-plus"></i> Nova Simulação
+      </button>
+      <button id="btn-limpar-simulacoes" class="btn btn-outline" type="button">
+        <i class="fa-solid fa-trash"></i> Limpar Tudo
+      </button>
+    </div>
+
+    <!-- Config Tarifas ML -->
+    <div class="config-tarifas-box" id="config-tarifas">
+      <span class="config-label"><i class="fa-solid fa-gear"></i> Tarifas ML:</span>
+      <div class="config-item">
+        <label>Clássico</label>
+        <input type="number" id="cfg-classico" value="12" min="0" max="100" step="0.1" />
+        <span>%</span>
+      </div>
+      <div class="config-item">
+        <label>Premium</label>
+        <input type="number" id="cfg-premium" value="17" min="0" max="100" step="0.1" />
+        <span>%</span>
+      </div>
+    </div>
+
+    <div class="toolbar-right">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="sim-busca" type="text" placeholder="Buscar SKU, produto..." />
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TABELA ================= -->
+  <section class="card forn-section" style="overflow-x:auto;">
+    <table class="forn-table simulacao-table" style="min-width:1500px;">
+      <thead>
+        <tr>
+          <th style="width:120px;">SKU</th>
+          <th style="width:250px;">Produto</th>
+          <th class="right" style="width:100px;">Custo Unit.</th>
+          <th class="right" style="width:90px;">Frete Simul.</th>
+          <th class="center" style="width:100px;">Tipo Anúncio</th>
+          <th class="center" style="width:90px;">% Comissão</th>
+          <th class="center" style="width:70px;">% Imposto</th>
+          <th class="center" style="width:90px;">Margem Desej.</th>
+          <th class="center" style="width:80px;">% Desconto</th>
+          <th class="right" style="width:110px;">Preço Sugerido</th>
+          <th class="right" style="width:100px;">Lucro Estim.</th>
+          <th class="center" style="width:100px;">Margem Real</th>
+          <th class="right" style="width:100px;">Preço Final</th>
+          <th class="right" style="width:100px;">Valor Mínimo</th>
+          <th class="center" style="width:60px;">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-simulacao-body"></tbody>
+    </table>
+  </section>
+
+</main>
+<!-- ========== FIREBASE (ADICIONAR AQUI) ========== -->
+ <script src="header-manager.js"></script>
+<script type="module" src="firebase-config.js"></script>
+<script src="firebase-sync.js"></script>
+<script src="script.js"></script>
+<script src="configuracoes.js"></script>
+<script src="simulacao.js"></script>
+</body>
+</html>

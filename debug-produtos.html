@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Produtos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    
+    header {
+      background: white;
+      border-bottom: 2px solid #ddd;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header-left { font-size: 20px; font-weight: bold; }
+    .header-right { display: flex; gap: 20px; align-items: center; padding: 10px; border: 2px dashed red; min-height: 50px; }
+    
+    #conta-select { min-width: 250px; border: 2px solid blue; }
+    
+    .main { padding: 30px; }
+    
+    .debug-box {
+      background: #f0f0f0;
+      padding: 20px;
+      border-radius: 5px;
+      margin: 20px 0;
+      border-left: 4px solid #ff6b6b;
+    }
+    
+    .status { font-weight: bold; padding: 10px; margin: 10px 0; border-radius: 3px; }
+    .ok { background: #c3fac3; color: #0b6623; }
+    .error { background: #fcc; color: #c00; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">🔴 DEBUG PRODUTOS</div>
+    <div class="header-right" id="header-right-debug">
+      <div id="conta-select" style="border: 2px solid green;">AQUI DEVERIA APARECER</div>
+    </div>
+  </header>
+
+  <div class="main">
+    <h1>Debug - Seletor de Empresa em Produtos</h1>
+    
+    <div class="debug-box">
+      <h3>Status do Sistema:</h3>
+      <div id="status-sessao" class="status error">Carregando...</div>
+      <div id="status-empresas" class="status error">Carregando...</div>
+      <div id="status-dom" class="status error">Carregando...</div>
+      <div id="status-header" class="status error">Carregando...</div>
+    </div>
+    
+    <button onclick="location.reload()">Recarregar Página</button>
+    <button onclick="criarTestData()">Criar Dados Teste</button>
+    <button onclick="limparLocalStorage()">Limpar localStorage</button>
+  </div>
+
+  <script>
+    function updateStatus() {
+      // 1. Verifica sessão
+      try {
+        const sessao = JSON.parse(localStorage.getItem('ft_sessao'));
+        if (sessao) {
+          document.getElementById('status-sessao').className = 'status ok';
+          document.getElementById('status-sessao').textContent = '✅ Sessão encontrada: ' + sessao.empresa;
+        } else {
+          document.getElementById('status-sessao').className = 'status error';
+          document.getElementById('status-sessao').textContent = '❌ Nenhuma sessão encontrada';
+        }
+      } catch (e) {
+        document.getElementById('status-sessao').className = 'status error';
+        document.getElementById('status-sessao').textContent = '❌ Erro ao ler sessão: ' + e.message;
+      }
+      
+      // 2. Conta empresas
+      let count = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes('__empresa_dados')) count++;
+      }
+      if (count > 0) {
+        document.getElementById('status-empresas').className = 'status ok';
+        document.getElementById('status-empresas').textContent = '✅ ' + count + ' empresa(s) cadastrada(s)';
+      } else {
+        document.getElementById('status-empresas').className = 'status error';
+        document.getElementById('status-empresas').textContent = '❌ Nenhuma empresa cadastrada';
+      }
+      
+      // 3. DOM
+      const contaSelect = document.getElementById('conta-select');
+      if (contaSelect) {
+        document.getElementById('status-dom').className = 'status ok';
+        document.getElementById('status-dom').textContent = '✅ Elemento #conta-select encontrado';
+      } else {
+        document.getElementById('status-dom').className = 'status error';
+        document.getElementById('status-dom').textContent = '❌ Elemento #conta-select NÃO encontrado';
+      }
+      
+      // 4. Header Manager
+      if (window.HeaderManager) {
+        document.getElementById('status-header').className = 'status ok';
+        document.getElementById('status-header').textContent = '✅ HeaderManager carregado';
+      } else {
+        document.getElementById('status-header').className = 'status error';
+        document.getElementById('status-header').textContent = '❌ HeaderManager NÃO carregado';
+      }
+    }
+    
+    function criarTestData() {
+      const id = 'test_' + Date.now();
+      const dados = {
+        id: id,
+        razaoSocial: 'Test Company',
+        nomeFantasia: 'Test Company',
+        email: 'test@test.com'
+      };
+      localStorage.setItem('acc_' + id + '__empresa_dados', JSON.stringify(dados));
+      localStorage.setItem('ft_sessao', JSON.stringify({
+        empresaId: id,
+        empresa: 'Test Company',
+        email: 'test@test.com'
+      }));
+      console.log('✅ Dados de teste criados');
+      updateStatus();
+    }
+    
+    function limparLocalStorage() {
+      localStorage.clear();
+      console.log('🧹 localStorage limpo');
+      updateStatus();
+    }
+    
+    // Checa status ao carregar
+    setTimeout(updateStatus, 100);
+    setInterval(updateStatus, 1000);
+  </script>
+
+  <!-- Carrega header-manager -->
+  <script src="header-manager.js"></script>
+</body>
+</html>

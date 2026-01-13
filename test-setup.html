@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Setup Teste</title>
+</head>
+<body>
+  <h1>Criando dados de teste...</h1>
+  <script>
+    // Cria uma empresa de teste
+    const empresaId = 'empresa_test_' + Date.now();
+    const dados = {
+      id: empresaId,
+      razaoSocial: 'Empresa Teste LTDA',
+      nomeFantasia: 'Empresa Teste',
+      cnpj: '12.345.678/0001-90',
+      telefone: '(11) 99999-9999',
+      email: 'teste@teste.com',
+      cidade: 'São Paulo',
+      site: 'www.teste.com',
+      dataCadastro: new Date().toISOString()
+    };
+
+    // Salva dados da empresa
+    localStorage.setItem('acc_' + empresaId + '__empresa_dados', JSON.stringify(dados));
+    localStorage.setItem('acc_' + empresaId + '__saldo_inicial', '1000');
+    localStorage.setItem('acc_' + empresaId + '__produtos', JSON.stringify([]));
+    localStorage.setItem('acc_' + empresaId + '__vendas', JSON.stringify([]));
+    localStorage.setItem('acc_' + empresaId + '__compras', JSON.stringify([]));
+
+    // Cria sessão
+    const sessao = {
+      empresaId: empresaId,
+      empresa: 'Empresa Teste LTDA',
+      email: 'teste@teste.com',
+      uid: 'user_test_123',
+      nome: 'Usuário Teste'
+    };
+
+    localStorage.setItem('ft_sessao', JSON.stringify(sessao));
+    localStorage.setItem('ft_active_account', empresaId);
+
+    console.log('✅ Dados de teste criados:', empresaId);
+    console.log('Redirecionando para test-header.html...');
+
+    setTimeout(() => {
+      window.location.href = '/test-header.html';
+    }, 1000);
+  </script>
+</body>
+</html>

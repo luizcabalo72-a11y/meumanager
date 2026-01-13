@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Backup - Meu Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4fc3f7;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .card h2 {
+            color: #81d4fa;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .status-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-item .label {
+            color: #b0bec5;
+        }
+        .status-item .value {
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+            color: #1a1a2e;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #66bb6a, #43a047);
+            color: #fff;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef5350, #e53935);
+            color: #fff;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+            color: #1a1a2e;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .log-area {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+        .log-entry {
+            padding: 3px 0;
+        }
+        .log-entry.success { color: #4caf50; }
+        .log-entry.error { color: #f44336; }
+        .log-entry.info { color: #2196f3; }
+        .log-entry.warning { color: #ff9800; }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4fc3f7, #66bb6a);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .warning-box {
+            background: rgba(255, 152, 0, 0.2);
+            border: 1px solid #ff9800;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box i {
+            color: #ff9800;
+            margin-right: 10px;
+        }
+        .hidden { display: none; }
+        .center { text-align: center; }
+        .mt-20 { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-upload"></i> Importar Backup</h1>
+
+        <!-- Card: Status do Usuário -->
+        <div class="card">
+            <h2><i class="fas fa-user"></i> Usuário Logado</h2>
+            <div class="status-box">
+                <div class="status-item">
+                    <span class="label">Email:</span>
+                    <span class="value" id="userEmail">Verificando...</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Empresa ID:</span>
+                    <span class="value" id="empresaId">Verificando...</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Status:</span>
+                    <span class="value" id="authStatus">Verificando...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Selecionar Arquivo -->
+        <div class="card">
+            <h2><i class="fas fa-file-import"></i> Selecionar Backup</h2>
+            <div class="center">
+                <label class="file-label" for="backupFile">
+                    <i class="fas fa-folder-open"></i> Escolher Arquivo JSON
+                </label>
+                <input type="file" id="backupFile" accept=".json">
+            </div>
+            <div id="fileInfo" class="status-box hidden mt-20">
+                <div class="status-item">
+                    <span class="label">Arquivo:</span>
+                    <span class="value" id="fileName">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Conta Original:</span>
+                    <span class="value" id="backupConta">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Data do Backup:</span>
+                    <span class="value" id="backupData">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Resumo dos Dados -->
+        <div class="card hidden" id="dataResumo">
+            <h2><i class="fas fa-database"></i> Dados a Importar</h2>
+            <div class="status-box">
+                <div class="status-item">
+                    <span class="label">Fornecedores:</span>
+                    <span class="value" id="qtdFornecedores">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Produtos:</span>
+                    <span class="value" id="qtdProdutos">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Compras:</span>
+                    <span class="value" id="qtdCompras">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Vendas:</span>
+                    <span class="value" id="qtdVendas">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Estoque (Lotes):</span>
+                    <span class="value" id="qtdEstoque">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Contas a Pagar:</span>
+                    <span class="value" id="qtdContasPagar">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Contas a Receber:</span>
+                    <span class="value" id="qtdContasReceber">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Simulações:</span>
+                    <span class="value" id="qtdSimulacoes">0</span>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Atenção:</strong> Esta ação irá SUBSTITUIR todos os dados existentes na conta atual. 
+                Os dados anteriores serão perdidos. Certifique-se de estar na conta correta antes de importar.
+            </div>
+
+            <div class="center mt-20">
+                <button class="btn btn-success" id="btnImportar" onclick="iniciarImportacao()">
+                    <i class="fas fa-play"></i> Iniciar Importação
+                </button>
+            </div>
+        </div>
+
+        <!-- Card: Progresso -->
+        <div class="card hidden" id="progressCard">
+            <h2><i class="fas fa-spinner fa-spin"></i> Importando...</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div class="log-area" id="logArea"></div>
+        </div>
+
+        <!-- Card: Resultado -->
+        <div class="card hidden" id="resultCard">
+            <h2 id="resultTitle"><i class="fas fa-check-circle"></i> Importação Concluída!</h2>
+            <div class="status-box" id="resultStats"></div>
+            <div class="center mt-20">
+                <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">
+                    <i class="fas fa-home"></i> Ir para Dashboard
+                </button>
+                <button class="btn btn-danger" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> Nova Importação
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="firebase-config.js"></script>
+    <script src="firebase-init.js"></script>
+
+    <script>
+        let backupData = null;
+        let empresaIdAtual = null;
+        let db = null;
+
+        // Aguardar Firebase inicializar
+        window.addEventListener('firebase-ready', async () => {
+            console.log('Firebase ready');
+            await verificarAuth();
+        });
+
+        async function verificarAuth() {
+            const auth = firebase.auth();
+            
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    document.getElementById('userEmail').textContent = user.email;
+                    document.getElementById('authStatus').textContent = '✅ Autenticado';
+                    
+                    // Buscar empresaId
+                    db = firebase.firestore();
+                    try {
+                        const userDoc = await db.collection('usuarios').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            empresaIdAtual = userDoc.data().empresaId;
+                            document.getElementById('empresaId').textContent = empresaIdAtual;
+                        } else {
+                            document.getElementById('empresaId').textContent = '❌ Não encontrado';
+                        }
+                    } catch (error) {
+                        console.error('Erro ao buscar empresaId:', error);
+                        document.getElementById('empresaId').textContent = '❌ Erro';
+                    }
+                } else {
+                    document.getElementById('userEmail').textContent = 'Não logado';
+                    document.getElementById('authStatus').textContent = '❌ Faça login primeiro';
+                    document.getElementById('empresaId').textContent = '-';
+                }
+            });
+        }
+
+        // Selecionar arquivo
+        document.getElementById('backupFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                backupData = JSON.parse(text);
+                
+                // Mostrar info do arquivo
+                document.getElementById('fileInfo').classList.remove('hidden');
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('backupConta').textContent = backupData.meta?.conta || 'N/A';
+                document.getElementById('backupData').textContent = backupData.meta?.dataExportacao 
+                    ? new Date(backupData.meta.dataExportacao).toLocaleString('pt-BR')
+                    : 'N/A';
+
+                // Mostrar resumo dos dados
+                document.getElementById('dataResumo').classList.remove('hidden');
+                document.getElementById('qtdFornecedores').textContent = backupData.dados?.fornecedores?.length || 0;
+                document.getElementById('qtdProdutos').textContent = backupData.dados?.produtos?.length || 0;
+                document.getElementById('qtdCompras').textContent = backupData.dados?.compras?.length || 0;
+                document.getElementById('qtdVendas').textContent = backupData.dados?.vendas?.length || 0;
+                document.getElementById('qtdEstoque').textContent = backupData.dados?.estoque?.length || 0;
+                document.getElementById('qtdContasPagar').textContent = backupData.dados?.contasPagar?.length || 0;
+                document.getElementById('qtdContasReceber').textContent = backupData.dados?.contasReceber?.length || 0;
+                document.getElementById('qtdSimulacoes').textContent = backupData.dados?.simulacoes?.length || 0;
+
+                log('Arquivo carregado com sucesso!', 'success');
+            } catch (error) {
+                log('Erro ao ler arquivo: ' + error.message, 'error');
+                backupData = null;
+            }
+        });
+
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logArea.appendChild(entry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function updateProgress(percent) {
+            const fill = document.getElementById('progressFill');
+            fill.style.width = percent + '%';
+            fill.textContent = Math.round(percent) + '%';
+        }
+
+        async function iniciarImportacao() {
+            if (!backupData) {
+                alert('Selecione um arquivo de backup primeiro!');
+                return;
+            }
+
+            if (!empresaIdAtual) {
+                alert('Você precisa estar logado e ter uma empresa associada!');
+                return;
+            }
+
+            if (!confirm(`Tem certeza que deseja importar os dados para a empresa "${empresaIdAtual}"?\n\nTodos os dados existentes serão SUBSTITUÍDOS!`)) {
+                return;
+            }
+
+            document.getElementById('btnImportar').disabled = true;
+            document.getElementById('progressCard').classList.remove('hidden');
+
+            const stats = {
+                config: false,
+                social: false,
+                tema: false,
+                fornecedores: 0,
+                produtos: 0,
+                compras: 0,
+                vendas: 0,
+                estoque: 0,
+                contasPagar: 0,
+                contasReceber: 0,
+                simulacoes: 0,
+                errors: 0
+            };
+
+            try {
+                const basePath = `empresas/${empresaIdAtual}`;
+                let progress = 0;
+                const totalSteps = 11;
+
+                // 1. Config
+                log('Importando configurações...', 'info');
+                if (backupData.config) {
+                    await db.doc(`${basePath}/configuracoes/geral`).set(backupData.config);
+                    stats.config = true;
+                    log('✅ Configurações importadas', 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 2. Social
+                log('Importando redes sociais...', 'info');
+                if (backupData.social) {
+                    await db.doc(`${basePath}/configuracoes/social`).set(backupData.social);
+                    stats.social = true;
+                    log('✅ Redes sociais importadas', 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 3. Tema
+                log('Importando tema...', 'info');
+                if (backupData.tema) {
+                    await db.doc(`${basePath}/configuracoes/tema`).set(backupData.tema);
+                    stats.tema = true;
+                    log('✅ Tema importado', 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 4. Fornecedores
+                log('Importando fornecedores...', 'info');
+                if (backupData.dados?.fornecedores?.length > 0) {
+                    for (const item of backupData.dados.fornecedores) {
+                        try {
+                            const docId = item.id || db.collection('temp').doc().id;
+                            await db.doc(`${basePath}/fornecedores/${docId}`).set(item);
+                            stats.fornecedores++;
+                        } catch (e) {
+                            log(`❌ Erro fornecedor: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.fornecedores} fornecedores importados`, 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 5. Produtos
+                log('Importando produtos...', 'info');
+                if (backupData.dados?.produtos?.length > 0) {
+                    for (const item of backupData.dados.produtos) {
+                        try {
+                            const docId = item.sku || db.collection('temp').doc().id;
+                            await db.doc(`${basePath}/produtos/${docId}`).set(item);
+                            stats.produtos++;
+                        } catch (e) {
+                            log(`❌ Erro produto: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.produtos} produtos importados`, 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 6. Compras
+                log('Importando compras...', 'info');
+                if (backupData.dados?.compras?.length > 0) {
+                    for (const item of backupData.dados.compras) {
+                        try {
+                            const docId = String(item.id || db.collection('temp').doc().id);
+                            await db.doc(`${basePath}/compras/${docId}`).set(item);
+                            stats.compras++;
+                        } catch (e) {
+                            log(`❌ Erro compra: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.compras} compras importadas`, 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 7. Vendas
+                log('Importando vendas...', 'info');
+                if (backupData.dados?.vendas?.length > 0) {
+                    for (const item of backupData.dados.vendas) {
+                        try {
+                            const docId = String(item.id || db.collection('temp').doc().id);
+                            await db.doc(`${basePath}/vendas/${docId}`).set(item);
+                            stats.vendas++;
+                        } catch (e) {
+                            log(`❌ Erro venda: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.vendas} vendas importadas`, 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 8. Estoque
+                log('Importando estoque...', 'info');
+                if (backupData.dados?.estoque?.length > 0) {
+                    for (const item of backupData.dados.estoque) {
+                        try {
+                            const docId = String(item.loteId || db.collection('temp').doc().id);
+                            await db.doc(`${basePath}/estoque/${docId}`).set(item);
+                            stats.estoque++;
+                        } catch (e) {
+                            log(`❌ Erro estoque: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.estoque} lotes de estoque importados`, 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 9. Contas a Pagar
+                log('Importando contas a pagar...', 'info');
+                if (backupData.dados?.contasPagar?.length > 0) {
+                    for (const item of backupData.dados.contasPagar) {
+                        try {
+                            const docId = String(item.id || db.collection('temp').doc().id);
+                            await db.doc(`${basePath}/contasPagar/${docId}`).set(item);
+                            stats.contasPagar++;
+                        } catch (e) {
+                            log(`❌ Erro conta pagar: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.contasPagar} contas a pagar importadas`, 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 10. Contas a Receber
+                log('Importando contas a receber...', 'info');
+                if (backupData.dados?.contasReceber?.length > 0) {
+                    for (const item of backupData.dados.contasReceber) {
+                        try {
+                            const docId = String(item.id || db.collection('temp').doc().id);
+                            await db.doc(`${basePath}/contasReceber/${docId}`).set(item);
+                            stats.contasReceber++;
+                        } catch (e) {
+                            log(`❌ Erro conta receber: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.contasReceber} contas a receber importadas`, 'success');
+                }
+                progress += (100 / totalSteps);
+                updateProgress(progress);
+
+                // 11. Simulações
+                log('Importando simulações...', 'info');
+                if (backupData.dados?.simulacoes?.length > 0) {
+                    for (const item of backupData.dados.simulacoes) {
+                        try {
+                            const docId = String(item.id || db.collection('temp').doc().id);
+                            await db.doc(`${basePath}/simulacoes/${docId}`).set(item);
+                            stats.simulacoes++;
+                        } catch (e) {
+                            log(`❌ Erro simulação: ${e.message}`, 'error');
+                            stats.errors++;
+                        }
+                    }
+                    log(`✅ ${stats.simulacoes} simulações importadas`, 'success');
+                }
+                updateProgress(100);
+
+                // Mostrar resultado
+                log('🎉 Importação concluída!', 'success');
+                mostrarResultado(stats);
+
+            } catch (error) {
+                log('❌ ERRO CRÍTICO: ' + error.message, 'error');
+                console.error(error);
+                stats.errors++;
+                mostrarResultado(stats, true);
+            }
+        }
+
+        function mostrarResultado(stats, hasError = false) {
+            document.getElementById('resultCard').classList.remove('hidden');
+            
+            if (hasError) {
+                document.getElementById('resultTitle').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #ff9800"></i> Importação com Erros';
+            }
+
+            let html = '';
+            html += `<div class="status-item"><span class="label">Configurações:</span><span class="value">${stats.config ? '✅' : '❌'}</span></div>`;
+            html += `<div class="status-item"><span class="label">Redes Sociais:</span><span class="value">${stats.social ? '✅' : '❌'}</span></div>`;
+            html += `<div class="status-item"><span class="label">Tema:</span><span class="value">${stats.tema ? '✅' : '❌'}</span></div>`;
+            html += `<div class="status-item"><span class="label">Fornecedores:</span><span class="value">${stats.fornecedores}</span></div>`;
+            html += `<div class="status-item"><span class="label">Produtos:</span><span class="value">${stats.produtos}</span></div>`;
+            html += `<div class="status-item"><span class="label">Compras:</span><span class="value">${stats.compras}</span></div>`;
+            html += `<div class="status-item"><span class="label">Vendas:</span><span class="value">${stats.vendas}</span></div>`;
+            html += `<div class="status-item"><span class="label">Estoque:</span><span class="value">${stats.estoque}</span></div>`;
+            html += `<div class="status-item"><span class="label">Contas a Pagar:</span><span class="value">${stats.contasPagar}</span></div>`;
+            html += `<div class="status-item"><span class="label">Contas a Receber:</span><span class="value">${stats.contasReceber}</span></div>`;
+            html += `<div class="status-item"><span class="label">Simulações:</span><span class="value">${stats.simulacoes}</span></div>`;
+            html += `<div class="status-item"><span class="label">Erros:</span><span class="value" style="color: ${stats.errors > 0 ? '#f44336' : '#4caf50'}">${stats.errors}</span></div>`;
+
+            document.getElementById('resultStats').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

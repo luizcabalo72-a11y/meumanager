@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compras - Meu Manager</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="compras">
+
+<!-- ================= HEADER CORRIGIDO ================= -->
+<!-- 
+  ✅ Remova o <select> hardcoded
+  ✅ Remova as imagens hardcoded (logo-ferratec, logo-lcabalo)
+  ✅ Use este template em todos os HTMLs
+-->
+
+<header class="header">
+  <div class="header-left">
+    <div id="clock" class="clock-display">00:00:00</div>
+  </div>
+
+  <div class="social-icons">
+    <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+    <a href="#" title="WhatsApp"><img src="whatsapp-icon.ico" alt="WhatsApp"></a>
+    <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+    <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+    <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+    <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+    <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+    <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+    <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+    <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+  </div>
+
+  <div class="header-right">
+    <!-- Logo será carregada dinamicamente pelo header-manager.js -->
+    <div class="logo-area">
+      <!-- Logos antigas removidas - serão substituídas dinamicamente -->
+    </div>
+    
+    <!-- Seletor hardcoded REMOVIDO -->
+    <!-- O header-manager.js criará um display dinâmico aqui -->
+    <div id="conta-select"></div>
+    
+    <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ================= SCRIPTS (adicionar antes do </body>) ================= -->
+<!--
+  Adicione esta linha ANTES de todos os outros scripts:
+  <script src="header-manager.js"></script>
+-->
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <ul class="sidebar-menu">
+
+    <li class="menu-item">
+      <a href="dashboard.html" class="menu-link">
+        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="fornecedores.html" class="menu-link">
+        <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="clientes.html" class="menu-link">
+        <i class="fa-solid fa-users"></i><span>Clientes</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="produtos.html" class="menu-link">
+        <i class="fa-solid fa-box"></i><span>Produtos</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="compras.html" class="menu-link">
+        <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="vendas.html" class="menu-link">
+        <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="estoque.html" class="menu-link">
+        <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="simulacao.html" class="menu-link">
+        <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="curva-abc.html" class="menu-link">
+        <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="financeiro.html" class="menu-link">
+        <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="relatorios.html" class="menu-link">
+        <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="configuracoes.html" class="menu-link">
+        <i class="fa-solid fa-gear"></i><span>Configurações</span>
+      </a>
+    </li>
+
+
+
+  </ul>
+</aside>
+<!-- ================= /SIDEBAR ================= -->
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-cart-shopping"></i> Compras</h1>
+  </div>
+
+  <!-- ================= TOOLBAR COM FILTROS ================= -->
+  <div class="toolbar-produtos">
+    
+    <!-- LADO ESQUERDO: Busca + Nova Compra + Limpar -->
+    <div class="toolbar-left">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="compra-busca" type="text" placeholder="Buscar SKU, produto, fornecedor, pedido..." />
+      </div>
+
+      <button id="abrir-modal-compra" class="btn btn-primary" type="button">
+        <i class="fa-solid fa-plus"></i> Nova Compra
+      </button>
+
+      <button id="btn-limpar-filtros" class="btn btn-outline" type="button" title="Limpar filtros">
+        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+      </button>
+    </div>
+
+    <!-- LADO DIREITO: Filtros -->
+    <div class="toolbar-right">
+      <div class="filter-group">
+        <select id="filtro-fornecedor" class="filter-select">
+          <option value="">Todos Fornecedores</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <select id="filtro-marca" class="filter-select">
+          <option value="">Todas Marcas</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <select id="filtro-status" class="filter-select">
+          <option value="">Todos Status</option>
+          <option value="AGUARD">Aguardando</option>
+          <option value="TRANSP">Em Transporte</option>
+          <option value="CONCL">Concluído</option>
+          <option value="CANCEL">Cancelado</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <select id="filtro-periodo" class="filter-select">
+          <option value="">Todo Período</option>
+          <option value="7d">Últimos 7 dias</option>
+          <option value="30d">Últimos 30 dias</option>
+          <option value="90d">Últimos 90 dias</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+  <!-- ================= /TOOLBAR ================= -->
+
+  <!-- ✅ RESUMO: Contador + Totais -->
+  <div class="resumo-linha">
+    <span id="contador-compras" class="contador-resultados">0 compras</span>
+    
+    <div class="resumo-totais">
+      <span class="resumo-item">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        Itens: <strong id="qtd-itens-compras">0</strong>
+      </span>
+      <span class="resumo-separador">|</span>
+      <span class="resumo-item">
+        <i class="fa-solid fa-dollar-sign"></i>
+        Total: <strong id="total-compras" class="valor-destaque">R$ 0,00</strong>
+      </span>
+    </div>
+  </div>
+  <!-- ================= /RESUMO ================= -->
+
+  <!-- ✅ TABELA COM SCROLL HORIZONTAL SEMPRE VISÍVEL -->
+  <div class="card forn-section">
+    <div class="table-scroll-container">
+      <div class="table-wrapper">
+        <table class="forn-table" style="min-width:1750px;">
+          <thead>
+            <tr>
+              <th class="center">ID</th>
+              <th>Data Compra</th>
+              <th>SKU</th>
+              <th>Produto</th>
+              <th>Marca</th>
+              <th>Fornecedor</th>
+              <th>Nº Pedido</th>
+              <th class="center">Lote (8)</th>
+              <th>Rastreio</th>
+              <th class="center">Qtd</th>
+
+              <th class="right">Unit Base</th>
+              <th class="right">Desconto</th>
+              <th class="right">Frete</th>
+              <th class="right">Imposto</th>
+              <th class="right">Unit Final</th>
+              <th class="right">Total</th>
+
+              <th class="center">Prev. Entrega</th>
+              <th class="center">Entrega Real</th>
+              <th class="center">Status</th>
+              <th class="center">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody id="tabela-compras-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ========== FIREBASE (ADICIONAR AQUI) ========== -->
+<script src="header-manager.js"></script>
+<script src="firebase-sync.js"></script>
+<script src="script.js"></script>
+<script src="configuracoes.js"></script>
+<script src="compras.js"></script>
+</body>
+</html>

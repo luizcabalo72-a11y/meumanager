@@ -1,0 +1,65 @@
+/**
+ * VERIFICADOR DE EMPRESAS E DADOS
+ * Execute no console do navegador para ver todas as empresas
+ */
+
+console.log("========== VERIFICADOR DE EMPRESAS ==========\n");
+
+// Lista todas as empresas
+const empresas = [];
+for (let i = 0; i < localStorage.length; i++) {
+  const key = localStorage.key(i);
+  if (key && key.match(/^acc_(.+?)__empresa_dados$/)) {
+    const id = key.match(/^acc_(.+?)__empresa_dados$/)[1];
+    const dados = JSON.parse(localStorage.getItem(key) || "{}");
+    empresas.push({
+      id: id,
+      nomeFantasia: dados.nomeFantasia,
+      razaoSocial: dados.razaoSocial,
+      dados: dados
+    });
+  }
+}
+
+console.log(`📊 TOTAL DE EMPRESAS: ${empresas.length}\n`);
+empresas.forEach((emp, idx) => {
+  console.log(`${idx + 1}. ${emp.nomeFantasia || emp.razaoSocial || emp.id}`);
+  console.log(`   ID: ${emp.id}`);
+  
+  // Conta dados de cada empresa
+  const vendas = JSON.parse(localStorage.getItem(`acc_${emp.id}__vendas`) || "[]");
+  const compras = JSON.parse(localStorage.getItem(`acc_${emp.id}__compras`) || "[]");
+  const produtos = JSON.parse(localStorage.getItem(`acc_${emp.id}__produtos`) || "[]");
+  
+  console.log(`   📦 Produtos: ${produtos.length}`);
+  console.log(`   💰 Vendas: ${vendas.length}`);
+  console.log(`   🛒 Compras: ${compras.length}\n`);
+});
+
+// Mostra empresa ativa
+const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "{}");
+console.log(`\n🟢 EMPRESA ATIVA:`);
+console.log(`   ID: ${sessao.empresaId}`);
+console.log(`   Nome: ${sessao.empresa}`);
+
+// Para TROCAR de empresa, use:
+console.log(`\n📝 PARA TROCAR DE EMPRESA, execute no console:`);
+console.log(`   mudarEmpresa('ID_DA_EMPRESA')`);
+
+window.mudarEmpresa = function(novoId) {
+  const emp = empresas.find(e => e.id === novoId);
+  if (!emp) {
+    console.error("❌ Empresa não encontrada! IDs válidos:", empresas.map(e => e.id));
+    return;
+  }
+  
+  const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "{}");
+  sessao.empresaId = novoId;
+  sessao.empresa = emp.razaoSocial;
+  localStorage.setItem("ft_sessao", JSON.stringify(sessao));
+  localStorage.setItem("ft_active_account", novoId);
+  
+  console.log(`✅ Mudado para: ${emp.nomeFantasia || emp.razaoSocial}`);
+  console.log("🔄 Recarregando página...");
+  window.location.reload();
+};

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fornecedores - Meu Manager</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+  
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body data-page="fornecedores">
+<!-- ================= HEADER CORRIGIDO ================= -->
+<!-- 
+  ✅ Remova o <select> hardcoded
+  ✅ Remova as imagens hardcoded (logo-ferratec, logo-lcabalo)
+  ✅ Use este template em todos os HTMLs
+-->
+
+<header class="header">
+  <div class="header-left">
+    <div id="clock" class="clock-display">00:00:00</div>
+  </div>
+
+  <div class="social-icons">
+    <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+    <a href="#" title="WhatsApp"><img src="whatsapp-icon.ico" alt="WhatsApp"></a>
+    <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+    <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+    <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+    <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+    <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+    <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+    <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+    <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+  </div>
+
+  <div class="header-right">
+    <!-- Logo será carregada dinamicamente pelo header-manager.js -->
+    <div class="logo-area">
+      <!-- Logos antigas removidas - serão substituídas dinamicamente -->
+    </div>
+    
+    <!-- Seletor hardcoded REMOVIDO -->
+    <!-- O header-manager.js criará um display dinâmico aqui -->
+    <div id="conta-select"></div>
+    
+    <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ================= SCRIPTS (adicionar antes do </body>) ================= -->
+<!--
+  Adicione esta linha ANTES de todos os outros scripts:
+  <script src="header-manager.js"></script>
+-->
+
+
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <ul class="sidebar-menu">
+
+    <li class="menu-item">
+      <a href="dashboard.html" class="menu-link">
+        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="fornecedores.html" class="menu-link">
+        <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="clientes.html" class="menu-link">
+        <i class="fa-solid fa-users"></i><span>Clientes</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="produtos.html" class="menu-link">
+        <i class="fa-solid fa-box"></i><span>Produtos</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="compras.html" class="menu-link">
+        <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="vendas.html" class="menu-link">
+        <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="estoque.html" class="menu-link">
+        <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="simulacao.html" class="menu-link">
+        <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="curva-abc.html" class="menu-link">
+        <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="financeiro.html" class="menu-link">
+        <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="relatorios.html" class="menu-link">
+        <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="configuracoes.html" class="menu-link">
+        <i class="fa-solid fa-gear"></i><span>Configurações</span>
+      </a>
+    </li>
+
+
+
+  </ul>
+</aside>
+<!-- ================= /SIDEBAR ================= -->
+
+
+<main class="dashboard">
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <h1><i class="fa-solid fa-truck"></i> Fornecedores</h1>
+  </div>
+
+  <div class="toolbar-produtos">
+    <div class="toolbar-left">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="forn-busca" type="text" placeholder="Buscar nome, site, cidade..." />
+      </div>
+      <button id="abrir-modal-fornecedor" class="btn btn-primary" type="button">
+        <i class="fa-solid fa-plus"></i> Novo Fornecedor
+      </button>
+      <button id="btn-limpar-filtros" class="btn btn-outline" type="button">
+        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+      </button>
+    </div>
+    <div class="toolbar-right">
+      <select id="filtro-categoria" class="filter-select"><option value="">Todas Categorias</option></select>
+      <select id="filtro-uf" class="filter-select"><option value="">Todos Estados</option></select>
+      <select id="filtro-status" class="filter-select">
+        <option value="">Todos Status</option>
+        <option value="ATIVO">Ativo</option>
+        <option value="INATIVO">Inativo</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="contador-fornecedores" class="contador-resultados"></div>
+
+  <section class="card forn-section">
+    <div class="table-responsive">
+      <table class="forn-table">
+       <thead>
+  <tr>
+    <th>Nome / Razão Social</th>
+    <th>Nome Fantasia</th>
+    <th>Site</th>
+    <th>Categoria</th>
+    <th>Cidade</th>
+    <th>UF</th>
+    <th>Telefone</th>
+    <th>E-mail</th>
+    <th class="center">Status</th>
+    <th class="center">Ações</th>
+  </tr>
+</thead>
+
+        <tbody id="tabela-fornecedores-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<!-- ========== FIREBASE (ADICIONAR AQUI) ========== -->
+<script src="header-manager.js"></script>
+<script src="firebase-sync.js"></script>
+<script src="script.js"></script>
+<script src="configuracoes.js"></script>
+<script src="fornecedores.js"></script>
+</body>
+</html>

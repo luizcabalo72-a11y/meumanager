@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – Meu Manager</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="dashboard">
+<!-- ================= HEADER CORRIGIDO ================= -->
+<!-- 
+  ✅ Remova o <select> hardcoded
+  ✅ Remova as imagens hardcoded (logo-ferratec, logo-lcabalo)
+  ✅ Use este template em todos os HTMLs
+-->
+
+<header class="header">
+  <div class="header-left">
+    <div id="clock" class="clock-display">00:00:00</div>
+  </div>
+
+  <div class="social-icons">
+    <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+    <a href="#" title="WhatsApp"><img src="whatsapp-icon.ico" alt="WhatsApp"></a>
+    <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+    <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+    <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+    <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+    <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+    <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+    <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+    <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+  </div>
+
+  <div class="header-right">
+    <!-- Logo será carregada dinamicamente pelo header-manager.js -->
+    <div class="logo-area">
+      <!-- Logos antigas removidas - serão substituídas dinamicamente -->
+    </div>
+    
+    <!-- Seletor hardcoded REMOVIDO -->
+    <!-- O header-manager.js criará um display dinâmico aqui -->
+    <div id="conta-select"></div>
+    
+    <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ================= SCRIPTS (adicionar antes do </body>) ================= -->
+<!--
+  Adicione esta linha ANTES de todos os outros scripts:
+  <script src="header-manager.js"></script>
+-->
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <ul class="sidebar-menu">
+
+    <li class="menu-item">
+      <a href="dashboard.html" class="menu-link">
+        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="fornecedores.html" class="menu-link">
+        <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="clientes.html" class="menu-link">
+        <i class="fa-solid fa-users"></i><span>Clientes</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="produtos.html" class="menu-link">
+        <i class="fa-solid fa-box"></i><span>Produtos</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="compras.html" class="menu-link">
+        <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="vendas.html" class="menu-link">
+        <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="estoque.html" class="menu-link">
+        <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="simulacao.html" class="menu-link">
+        <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="curva-abc.html" class="menu-link">
+        <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="financeiro.html" class="menu-link">
+        <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="relatorios.html" class="menu-link">
+        <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="planos.html" class="menu-link" style="border-top: 1px solid #e5e7eb; padding-top: 12px;">
+        <i class="fa-solid fa-crown"></i><span>Planos</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="configuracoes.html" class="menu-link">
+        <i class="fa-solid fa-gear"></i><span>Configurações</span>
+      </a>
+    </li>
+
+  </ul>
+</aside>
+<!-- ================= /SIDEBAR ================= -->
+
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-chart-line"></i> Dashboard</h1>
+  </div>
+
+  <!-- ================= FILTROS DE PERÍODO ================= -->
+<!-- ================= FILTROS DE PERÍODO ================= -->
+<div class="dash-period-bar">
+  <div class="period-selects">
+    <select id="filtro-mes" class="pill-select" title="Mês">
+      <option value="">Todos os Meses</option>
+      <option value="0">Janeiro</option>
+      <option value="1">Fevereiro</option>
+      <option value="2">Março</option>
+      <option value="3">Abril</option>
+      <option value="4">Maio</option>
+      <option value="5">Junho</option>
+      <option value="6">Julho</option>
+      <option value="7">Agosto</option>
+      <option value="8">Setembro</option>
+      <option value="9">Outubro</option>
+      <option value="10">Novembro</option>
+      <option value="11">Dezembro</option>
+    </select>
+
+    <select id="filtro-ano" class="pill-select" title="Ano">
+      <option value="2023">2023</option>
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+      <option value="2026">2026</option>
+    </select>
+  </div>
+
+  <div class="period-buttons">
+    <button id="btn-este-mes" class="btn-period" type="button">
+      <i class="fa-solid fa-calendar-day"></i> Este Mês
+    </button>
+    <button id="btn-este-ano" class="btn-period" type="button">
+      <i class="fa-solid fa-calendar"></i> Este Ano
+    </button>
+  </div>
+</div>
+
+  <!-- ================= KPIs RESULTADO ================= -->
+  <div class="kpi-section">
+    <div class="kpi-section-title">
+      <i class="fa-solid fa-chart-line"></i> Resultado
+    </div>
+    <div class="kpi-grid kpi-5">
+      <div class="kpi-card">
+        <div class="kpi-icon vendas"><i class="fa-solid fa-dollar-sign"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">Vendas</span>
+          <span class="kpi-value" id="kpi-vendas">R$ 0,00</span>
+          <span class="kpi-sub" id="kpi-vendas-var"></span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon lucro"><i class="fa-solid fa-piggy-bank"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">Lucro Líquido</span>
+          <span class="kpi-value" id="kpi-lucro">R$ 0,00</span>
+          <span class="kpi-sub" id="kpi-lucro-var"></span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon margem"><i class="fa-solid fa-percent"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">Margem</span>
+          <span class="kpi-value" id="kpi-margem">0%</span>
+          <span class="kpi-sub">sobre vendas</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon roi"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">ROI</span>
+          <span class="kpi-value" id="kpi-roi">0%</span>
+          <span class="kpi-sub">retorno s/ custo</span>
+        </div>
+      </div>
+
+      <div class="kpi-card meta-card">
+        <div class="kpi-icon meta"><i class="fa-solid fa-bullseye"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">Meta Mensal</span>
+          <span class="kpi-value" id="kpi-meta-valor">R$ 0 / R$ 6.000</span>
+          <div class="meta-progress">
+            <div class="meta-bar" id="kpi-meta-bar"></div>
+          </div>
+          <span class="kpi-sub" id="kpi-meta-pct">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= KPIs INVESTIMENTO ================= -->
+  <div class="kpi-section">
+    <div class="kpi-section-title">
+      <i class="fa-solid fa-boxes-stacked"></i> Investimento
+    </div>
+    <div class="kpi-grid kpi-3">
+      <div class="kpi-card">
+        <div class="kpi-icon inventario"><i class="fa-solid fa-warehouse"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">Inventário</span>
+          <span class="kpi-value" id="kpi-inventario">R$ 0,00</span>
+          <span class="kpi-sub" id="kpi-inventario-qtd">0 itens</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon compras-mes"><i class="fa-solid fa-cart-shopping"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">Compras no Mês</span>
+          <span class="kpi-value" id="kpi-compras-mes">R$ 0,00</span>
+          <span class="kpi-sub" id="kpi-compras-mes-qtd">0 pedidos</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon compras-ano"><i class="fa-solid fa-cart-flatbed"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-label">Compras no Ano</span>
+          <span class="kpi-value" id="kpi-compras-ano">R$ 0,00</span>
+          <span class="kpi-sub" id="kpi-compras-ano-qtd">0 pedidos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GRÁFICO + DEMONSTRATIVO ================= -->
+  <div class="dash-grid-2">
+    
+    <!-- Gráfico Faturamento x Lucro -->
+    <section class="card dash-chart-card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-chart-area"></i> Faturamento x Lucro</h3>
+        <span class="card-subtitle">Últimos 6 meses</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="graficoVendas"></canvas>
+      </div>
+    </section>
+
+    <!-- Demonstrativo -->
+    <section class="card dash-demo-card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-list-check"></i> Demonstrativo</h3>
+        <span class="card-subtitle" id="demo-periodo">Janeiro 2026</span>
+      </div>
+      
+      <div class="demo-table">
+        <div class="demo-row">
+          <span class="demo-label">Total Faturado</span>
+          <span class="demo-value" id="demo-faturado">R$ 0,00</span>
+          <span class="demo-pct">100%</span>
+          <div class="demo-bar"><div class="demo-bar-fill receita" style="width:100%"></div></div>
+        </div>
+
+        <div class="demo-row">
+          <span class="demo-label">Custo Produto (CMV)</span>
+          <span class="demo-value neg" id="demo-cmv">R$ 0,00</span>
+          <span class="demo-pct" id="demo-cmv-pct">0%</span>
+          <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-cmv-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="demo-row destaque">
+          <span class="demo-label">Lucro Bruto</span>
+          <span class="demo-value" id="demo-lucro-bruto">R$ 0,00</span>
+          <span class="demo-pct" id="demo-lucro-bruto-pct">0%</span>
+          <div class="demo-bar"><div class="demo-bar-fill lucro" id="demo-lucro-bruto-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="demo-row">
+          <span class="demo-label">Comissões</span>
+          <span class="demo-value neg" id="demo-comissao">R$ 0,00</span>
+          <span class="demo-pct" id="demo-comissao-pct">0%</span>
+          <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-comissao-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="demo-row">
+          <span class="demo-label">Frete</span>
+          <span class="demo-value neg" id="demo-frete">R$ 0,00</span>
+          <span class="demo-pct" id="demo-frete-pct">0%</span>
+          <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-frete-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="demo-row destaque">
+          <span class="demo-label">Lucro Operacional</span>
+          <span class="demo-value" id="demo-lucro-oper">R$ 0,00</span>
+          <span class="demo-pct" id="demo-lucro-oper-pct">0%</span>
+          <div class="demo-bar"><div class="demo-bar-fill lucro" id="demo-lucro-oper-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="demo-row">
+          <span class="demo-label">Outros Gastos</span>
+          <span class="demo-value neg" id="demo-outros">R$ 0,00</span>
+          <span class="demo-pct" id="demo-outros-pct">0%</span>
+          <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-outros-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="demo-row total">
+          <span class="demo-label">LUCRO LÍQUIDO</span>
+          <span class="demo-value" id="demo-lucro-liq">R$ 0,00</span>
+          <span class="demo-pct" id="demo-lucro-liq-pct">0%</span>
+          <div class="demo-bar"><div class="demo-bar-fill lucro-final" id="demo-lucro-liq-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+<!-- ========== FIREBASE ========== -->
+ <script src="header-manager.js"></script>
+<script type="module" src="firebase-init.js"></script>
+<script src="firebase-sync.js"></script>
+<script src="script.js"></script>
+<script src="dashboard.js"></script>
+</body>
