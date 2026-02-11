@@ -1,0 +1,44 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isLogged() {
+      return request.auth != null;
+    }
+
+    function isMember(empresaId) {
+      return isLogged() &&
+        firestore.exists(
+          /databases/(default)/documents/empresas/$(empresaId)/members/$(request.auth.uid)
+        );
+    }
+
+    function isAdmin(empresaId) {
+      return isMember(empresaId) &&
+        firestore.get(
+          /databases/(default)/documents/empresas/$(empresaId)/members/$(request.auth.uid)
+        ).data.role == "admin";
+    }
+
+    function isSafeUpload() {
+      return request.resource != null &&
+        request.resource.size < 5 * 1024 * 1024 &&
+        (
+          request.resource.contentType.matches("image/.*") ||
+          request.resource.contentType.matches("application/pdf")
+        );
+    }
+
+    // Escopo por empresa: acesso apenas para membros.
+    // Escrita restrita a admin para reduzir risco de abuso.
+    match /empresas/{empresaId}/{allPaths=**} {
+      allow read: if isMember(empresaId);
+      allow write: if isAdmin(empresaId) && isSafeUpload();
+    }
+
+    // Bloqueia qualquer outro caminho do bucket.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoria do Sistema - O que pode ser deletado</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        h1 { 
+            color: #d32f2f;
+            border-bottom: 3px solid #d32f2f;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1565c0;
+            margin-top: 30px;
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+        .category {
+            background: white;
+            border-left: 5px solid #d32f2f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .category.warning {
+            border-left-color: #f57c00;
+            background: #fff3e0;
+        }
+        .category.info {
+            border-left-color: #1565c0;
+            background: #e3f2fd;
+        }
+        .file-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .file-list li {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #d32f2f;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .file-list li.safe {
+            border-left-color: #4caf50;
+        }
+        .reason {
+            font-size: 12px;
+            color: #666;
+            margin-left: 20px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .stats {
+            background: #fff;
+            border: 2px solid #1565c0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .stat-item {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: bold;
+            color: #333;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .priority {
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .priority.high {
+            background: #ffcdd2;
+            color: #b71c1c;
+        }
+        .priority.medium {
+            background: #ffe0b2;
+            color: #e65100;
+        }
+        .priority.low {
+            background: #dcedc8;
+            color: #558b2f;
+        }
+        .action-btn {
+            background: #d32f2f;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .action-btn:hover {
+            background: #b71c1c;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+
+<h1>?Y"? Auditoria do Sistema - O que pode ser deletado</h1>
+
+<div class="stats">
+    <div class="stat-item">
+        <div class="stat-number">23</div>
+        <div class="stat-label">Arquivos DEBUG desnecessÃ¡rios</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">12</div>
+        <div class="stat-label">Arquivos de SETUP antigos</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Arquivos de DOCUMENTA???fO</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">~2MB</div>
+        <div class="stat-label">EspaÃ§o a economizar</div>
+    </div>
+</div>
+
+<h2>?Y-'? CATEGORIA 1: Debug Files (Podem ser deletados 100%)</h2>
+
+<div class="category">
+    <strong>?YZ? Prioridade: ALTA</strong>
+    <p>Esses arquivos SÃ£o apenas para desenvolvimento/teste e NÃƒO devem estar em produÃ§Ã£o.</p>
+    
+    <ul class="file-list">
+        <li>debug.html <span class="reason">Debug genÃ©rico, sem propÃ³sito especÃ­fico</span></li>
+        <li>debug-categorias.html <span class="reason">Ferramenta de teste para categorias</span></li>
+        <li>debug-curva-abc.html <span class="reason">Ferramenta de teste da curva ABC</span></li>
+        <li>debug-curva-detalhado.html <span class="reason">VariaÃ§Ã£o desnecessÃ¡ria de debug</span></li>
+        <li>debug-dashboard.html <span class="reason">Teste do dashboard</span></li>
+        <li>debug-importar.html <span class="reason">Teste de importaÃ§Ã£o</span></li>
+        <li>debug-ls.html <span class="reason">Debug do localStorage</span></li>
+        <li>debug-produtos.html <span class="reason">Debug de produtos</span></li>
+        <li>debug-profundo.html <span class="reason">Debug genÃ©rico profundo</span></li>
+        <li>debug-renderizacao.html <span class="reason">Debug de renderizaÃ§Ã£o</span></li>
+        <li>debug-sku-pq200.html <span class="reason">Debug especÃ­fico de SKU</span></li>
+        <li>firebase-debug.html <span class="reason">Debug antigo do Firebase (substituÃ­do por debug-firebase-sync.html)</span></li>
+        <li>login-test.html <span class="reason">Teste de login</span></li>
+    </ul>
+</div>
+
+<h2>?Y"? CATEGORIA 2: Arquivos de Setup/Auto-restauraÃ§Ã£o (Podem ser deletados)</h2>
+
+<div class="category warning">
+    <strong>?s?? Prioridade: ALTA</strong>
+    <p>Ferramentas antigas de setup e migraÃ§Ã£o. Depois de usar uma vez, NÃƒO servem mais.</p>
+    
+    <ul class="file-list">
+        <li>auto-restaurar.html <span class="reason">Script de auto-restauraÃ§Ã£o antiga</span></li>
+        <li>config-api-key.html <span class="reason">Setup antigo de API Key (substituÃ­do por sistema de env)</span></li>
+        <li>setup-completo.html <span class="reason">Setup inicial (j? feito)</span></li>
+        <li>setup-multiplas.html <span class="reason">Setup multi-conta (j? feito)</span></li>
+        <li>limpar-cache.html <span class="reason">UtilitÃ¡rio de limpeza (pode ser feature da app)</span></li>
+        <li>limpar-cache-total.html <span class="reason">VariaÃ§Ã£o desnecessÃ¡ria</span></li>
+        <li>limpar-e-login.html <span class="reason">CombinaÃ§Ã£o desnecessÃ¡ria</span></li>
+        <li>importar-auto.html <span class="reason">ImportaÃ§Ã£o automÃ¡tica desatualizada</span></li>
+        <li>importar-backup.html <span class="reason">Pode estar duplicada com importar-produtos.html</span></li>
+        <li>restaurar-dados.html <span class="reason">Backup/restauraÃ§Ã£o manual</span></li>
+        <li>restaurar-dados-v2.html <span class="reason">VerSÃ£o antiga de restauraÃ§Ã£o</span></li>
+        <li>restaurar-ferratec.html <span class="reason">especÃ­fico de uma conta</span></li>
+        <li>reparar-backup.html <span class="reason">Ferramenta de reparo (one-time use)</span></li>
+        <li>reconstruir-produtos.html <span class="reason">Ferramenta de reconstruÃ§Ã£o</span></li>
+        <li>sincronizar.html <span class="reason">Ferramenta manual de sync (Firebase j? faz isso)</span></li>
+        <li>salvar-api-key.html <span class="reason">Setup de API Key manual</span></li>
+    </ul>
+</div>
+
+<h2>?Y"s CATEGORIA 3: documentaÃ§Ã£o/Guias (Considerar consolidar)</h2>
+
+<div class="category warning">
+    <strong>?s?? Prioridade: MÃ‰DIA</strong>
+    <p>Documentos tÃ©cnicos. Podem ser movidos para um README.md ?nico ou pasta /docs.</p>
+    
+    <ul class="file-list">
+        <li>API_KEY_SECURITY.html <span class="reason">documentaÃ§Ã£o sobre seguranÃ§a</span></li>
+        <li>CREDENTIALS_SECURITY.html <span class="reason">documentaÃ§Ã£o sobre credenciais</span></li>
+        <li>CSS_MODULARIZATION_GUIDE.html <span class="reason">Guia de CSS</span></li>
+        <li>CSS_OPTIMIZATION_PLAN.html <span class="reason">Plano de otimizaÃ§Ã£o</span></li>
+        <li>FIREBASE_API_KEY_FIX.md <span class="reason">Nota sobre Firebase</span></li>
+        <li>FIREBASE_SECURITY_GUIDE.html <span class="reason">Guia de seguranÃ§a Firebase</span></li>
+        <li>HEADER_SIDEBAR_REFACTOR.md <span class="reason">Nota de refatoraÃ§Ã£o</span></li>
+        <li>NOVO_API_KEY_SETUP.md <span class="reason">Guia de setup de API Key</span></li>
+        <li>FIREFOX-TRACKING-PREVENTION-FIX.html <span class="reason">Bug fix especÃ­fico do Firefox</span></li>
+        <li>PRODUCTION_CLEANUP.html <span class="reason">Checklist de limpeza</span></li>
+    </ul>
+</div>
+
+<h2>?sT? CATEGORIA 4: Arquivos de ConfiguraÃ§Ã£o Duplicados</h2>
+
+<div class="category info">
+    <strong>?s?? Prioridade: MÃ‰DIA</strong>
+    <p>VariAÃ§Ãµes antigas ou desnecessÃ¡rias de arquivos de configuraÃ§Ã£o.</p>
+    
+    <ul class="file-list">
+        <li>config-secure.js <span class="reason">Pode estar duplicado com firebase-secure.js</span></li>
+        <li>firebase-secure.js <span class="reason">Pode estar duplicado com config-secure.js</span></li>
+        <li>firebase-auth-complete.js <span class="reason">VariaÃ§Ã£o antiga do sistema de auth</span></li>
+        <li>login-compat.js <span class="reason">Login compatibility layer (desnecessÃ¡rio)</span></li>
+        <li>login-simple.js <span class="reason">VariaÃ§Ã£o simplificada</span></li>
+    </ul>
+</div>
+
+<h2>?Y"? CATEGORIA 5: Arquivos de Bots/Webhooks (Revisar necessidade)</h2>
+
+<div class="category warning">
+    <strong>?s?? Prioridade: MÃ‰DIA</strong>
+    <p>IntegrAÃ§Ãµes com ServiÃ§os externos. Verificar se estÃ£o realmente em uso.</p>
+    
+    <ul class="file-list">
+        <li>webhook-stripe.js <span class="reason">Webhooks do Stripe (est? sendo usado?)</span></li>
+        <li>stripe-checkout.js <span class="reason">Checkout Stripe (est? sendo usado?)</span></li>
+        <li>subscription.js <span class="reason">Sistema de assinatura (est? ativo?)</span></li>
+    </ul>
+</div>
+
+<h2>?Ys? CATEGORIA 6: Arquivos que DEVEM ser mantidos</h2>
+
+<div class="category">
+    <strong>?o. Essencial para funcionamento</strong>
+    <p>NÃƒO delete esses arquivos!</p>
+    
+    <ul class="file-list safe">
+        <li>dashboard.html / dashboard.js</li>
+        <li>produtos.html / produtos.js</li>
+        <li>compras.html / compras.js</li>
+        <li>vendas.html / vendas.js</li>
+        <li>estoque.html / estoque.js</li>
+        <li>fornecedores.html / fornecedores.js</li>
+        <li>clientes.html / clientes.js</li>
+        <li>financeiro.html / financeiro.js</li>
+        <li>relatorios.html / relatorios.js</li>
+        <li>configuracoes.html / configuracoes.js</li>
+        <li>curva-abc.html / curva-abc.js</li>
+        <li>simulacao.html / simulacao.js</li>
+        <li>firebase-global.js <span class="reason">Essencial - inicializa Firebase em todas as pÃ¡ginas</span></li>
+        <li>firebase-sync.js <span class="reason">Essencial - sincroniza dados</span></li>
+        <li>script.js <span class="reason">Essencial - FUNÃ‡Ã•ES globais</span></li>
+        <li>header-manager.js <span class="reason">Essencial - gerencia header/navbar</span></li>
+        <li>style.css <span class="reason">Essencial - estilos principais</span></li>
+        <li>env-loader.js <span class="reason">Essencial - carrega VARIÃVEIS de ambiente</span></li>
+        <li>index.html <span class="reason">Essencial - homepage</span></li>
+        <li>login.html <span class="reason">Essencial - pÃ¡gina de login</span></li>
+        <li>firestore.rules <span class="reason">Essencial - regras de seguranÃ§a</span></li>
+    </ul>
+</div>
+
+<h2>?Y"< Plano de Limpeza Recomendado</h2>
+
+<table>
+    <tr>
+        <th>Prioridade</th>
+        <th>aÃ§Ã£o</th>
+        <th>Arquivos</th>
+        <th>Risco</th>
+    </tr>
+    <tr>
+        <td><span class="priority high">ALTA</span></td>
+        <td>Delete imediatamente</td>
+        <td>Todos os debug-*.html (13 arquivos)</td>
+        <td>Nenhum - SÃ£o s? testes</td>
+    </tr>
+    <tr>
+        <td><span class="priority high">ALTA</span></td>
+        <td>Delete apÃ³s verificar</td>
+        <td>Arquivos de setup/restauraÃ§Ã£o (16 arquivos)</td>
+        <td>Baixo - use uma vez</td>
+    </tr>
+    <tr>
+        <td><span class="priority medium">MÃ‰DIA</span></td>
+        <td>Consolidar em /docs</td>
+        <td>Todos os .html/.md de documentaÃ§Ã£o (10 arquivos)</td>
+        <td>Nenhum - organize</td>
+    </tr>
+    <tr>
+        <td><span class="priority medium">MÃ‰DIA</span></td>
+        <td>Revisar uso</td>
+        <td>webhook-stripe.js, stripe-checkout.js, subscription.js</td>
+        <td>MÃ©dio - pode quebrar integrAÃ§Ãµes</td>
+    </tr>
+    <tr>
+        <td><span class="priority low">BAIXA</span></td>
+        <td>Consolidar/Revisar</td>
+        <td>login-*.js, config-*.js, firebase-secure.js</td>
+        <td>MÃ©dio - pode ter conflito</td>
+    </tr>
+</table>
+
+<h2>?Y'? RecomendAÃ§Ãµes</h2>
+
+<div class="category info">
+    <h3>1. Crie uma pasta /archives</h3>
+    <p>Em vez de deletar tudo imediatamente, mova arquivos questionÃ¡veis para <code>/archives</code> por 1 mÃªs.</p>
+    
+    <h3>2. Crie um /docs</h3>
+    <p>Consolide toda documentaÃ§Ã£o em uma pasta ?nica:</p>
+    <ul>
+        <li>/docs/API_KEY_SECURITY.md</li>
+        <li>/docs/FIREBASE_SETUP.md</li>
+        <li>/docs/DEPLOYMENT.md</li>
+    </ul>
+    
+    <h3>3. Atualize .gitignore</h3>
+    <p>Adicione padrÃµes para arquivos que NÃƒO devem entrar em produÃ§Ã£o:</p>
+    <div style="background: #f0f0f0; padding: 10px; margin-top: 10px; border-radius: 4px;">
+        <code>debug-*.html</code><br>
+        <code>*-test.html</code><br>
+        <code>*.test.js</code>
+    </div>
+    
+    <h3>4. Revise dependÃªncias</h3>
+    <p>Verifique se <code>node_modules</code> est? sendo versionado (NÃƒO deveria!).</p>
+</div>
+
+<h2>?YZ? Resumo Executivo</h2>
+
+<div class="category">
+    <p><strong>Arquivos a deletar com seguranÃ§a:</strong> ~39 arquivos (~1.5MB)</p>
+    <p><strong>Tempo para limpeza:</strong> 10 minutos</p>
+    <p><strong>Risco de quebra:</strong> Muito baixo (apenas dev tools e setup antigos)</p>
+    <p><strong>BenefÃ­cio:</strong></p>
+    <ul>
+        <li>?o. RepositÃ³rio mais limpo</li>
+        <li>?o. Reduz confuSÃ£o para novos developers</li>
+        <li>?o. Menos arquivos para manter</li>
+        <li>?o. Deployment mais rÃ¡pido</li>
+    </ul>
+</div>
+
+<script>
+function deleteFiles() {
+    const files = [
+        'debug.html', 'debug-categorias.html', 'debug-curva-abc.html',
+        'debug-curva-detalhado.html', 'debug-dashboard.html', 'debug-importar.html',
+        'debug-ls.html', 'debug-produtos.html', 'debug-profundo.html',
+        'debug-renderizacao.html', 'debug-sku-pq200.html', 'firebase-debug.html',
+        'login-test.html', 'auto-restaurar.html', 'config-api-key.html'
+    ];
+    console.log('Arquivos para deletar:', files);
+}
+</script>
+
+</body>
+</html>
+
+
+

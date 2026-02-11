@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes - Meu Manager</title>
+  
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+  
+  <link rel="stylesheet" href="/style.css?v=4.1.11" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body data-page="clientes">
+<!-- ================= LAYOUT: Header e Sidebar Componentizados ================= -->
+<div id="header-container"></div>
+<div id="sidebar-container"></div>
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-users"></i> Clientes</h1>
+  </div>
+
+  <!-- ================= TOOLBAR ================= -->
+  <div class="toolbar-produtos">
+    <div class="toolbar-left">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="cliente-busca" type="text" placeholder="Buscar nome, CPF/CNPJ, cidade, telefone..." />
+      </div>
+      <button id="abrir-modal-cliente" class="btn btn-primary" type="button">
+        <i class="fa-solid fa-plus"></i> Novo Cliente
+      </button>
+      <button id="btn-limpar-filtros" class="btn btn-outline" type="button">
+        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+      </button>
+    </div>
+    <div class="toolbar-right">
+      <select id="filtro-tipo" class="filter-select">
+        <option value="">Todos os Tipos</option>
+        <option value="PF">Pessoa FÃ­sica</option>
+        <option value="PJ">Pessoa JurÃ­dica</option>
+      </select>
+      <select id="filtro-uf" class="filter-select">
+        <option value="">Todos Estados</option>
+      </select>
+      <select id="filtro-status" class="filter-select">
+        <option value="">Todos Status</option>
+        <option value="ATIVO">Ativo</option>
+        <option value="INATIVO">Inativo</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="contador-clientes" class="contador-resultados"></div>
+
+  <!-- ================= TABELA ================= -->
+  <section class="card forn-section">
+    <div class="table-responsive">
+      <table class="forn-table">
+        <thead>
+          <tr>
+            <th>Nome / RazÃ£o Social</th>
+            <th>CPF / CNPJ</th>
+            <th class="center">Tipo</th>
+            <th>Cidade</th>
+            <th class="center">UF</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
+            <th class="center">Status</th>
+            <th class="center">AÃ§Ãµes</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-clientes-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- ========== HEADER (obrigatÃ³rio para o botÃ£o SAIR) ========== -->
+<script src="/performance-fix.js?v=4.1.3"></script>
+<script src="/lazy-table-helper.js?v=4.1.3"></script>
+<script src="/header-manager.js?v=4.1.15"></script>
+
+<!-- ========== FIREBASE COMPAT GLOBAL ========== -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="/firebase-global.js?v=4.1.4"></script>
+<script src="/firebase-sync.js?v=4.1.3"></script>
+
+<!-- ========== BASE DO SISTEMA ========== -->
+<script src="/script.js?v=4.1.15"></script>
+
+<!-- ========== JS DA PÃGINA ========== -->
+<script src="/clientes.js?v=4.1.3"></script>
+
+<!-- ========== LAYOUT MODULAR ========== -->
+<script type="module">
+  import { initializeLayout } from "/components/layout.js?v=4.1.3";
+  initializeLayout();
+</script>
+</body>
+
+
+
+
+
+
+
+

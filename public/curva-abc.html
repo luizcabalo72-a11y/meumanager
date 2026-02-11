@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curva ABC - Meu Manager</title>
+
+  <!-- Anti-cache -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <!-- Cache-bust no CSS -->
+  <link rel="stylesheet" href="/style.css?v=4.1.11" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body data-page="curva-abc">
+
+  <!-- LAYOUT -->
+  <div id="header-container"></div>
+  <div id="sidebar-container"></div>
+
+  <main class="dashboard">
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-chart-pie"></i> Curva ABC</h1>
+    </div>
+
+    <div class="toolbar-produtos">
+      <div class="toolbar-left">
+        <span id="contador-abc" class="contador-resultados">0 SKUs analisados</span>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="filter-group">
+          <label for="filtro-periodo-abc">PerÃ­odo:</label>
+          <select id="filtro-periodo-abc" class="filter-select">
+            <option value="">Todo PerÃ­odo</option>
+            <option value="7d">?sltimos 7 dias</option>
+            <option value="30d">?sltimos 30 dias</option>
+            <option value="90d">?sltimos 90 dias</option>
+
+            <!-- Valores compatÃ­veis com interpretPeriodo() -->
+            <option value="este-ano" data-year-offset="0">Este ano</option>
+            <option value="ano-passado" data-year-offset="-1">Ano passado</option>
+            <option value="dois-anos-atras" data-year-offset="-2">2 anos atrÃ¡s</option>
+
+            <option value="" disabled>?"??"??"??"??"??"??"??"??"??"?</option>
+
+            <!-- Anos numÃ©ricos (serÃ£o preenchidos e removidos se duplicarem os de cima) -->
+            <option value="" id="opt-year-0"></option>
+            <option value="" id="opt-year-1"></option>
+            <option value="" id="opt-year-2"></option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filtro-criterio">CritÃ©rio:</label>
+          <select id="filtro-criterio" class="filter-select">
+            <option value="faturamento" selected>Faturamento</option>
+            <option value="lucro">Lucro</option>
+            <option value="quantidade">Quantidade</option>
+          </select>
+        </div>
+
+        <button id="btn-exportar-abc" class="btn btn-outline" type="button">
+          <i class="fa-solid fa-file-csv"></i> Exportar
+        </button>
+      </div>
+    </div>
+
+    <div class="abc-cards-grid">
+      <div class="abc-card abc-card-a">
+        <div class="abc-card-icon"><span class="abc-letra">A</span></div>
+        <div class="abc-card-content">
+          <h4>Classe A</h4>
+          <p class="abc-desc">Mais importantes (80%)</p>
+          <div class="abc-stats-row">
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-classe-a-itens">0</span>
+              <span class="abc-stat-label">itens</span>
+            </div>
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-classe-a-valor">R$ 0,00</span>
+              <span class="abc-stat-label">valor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="abc-card abc-card-b">
+        <div class="abc-card-icon"><span class="abc-letra">B</span></div>
+        <div class="abc-card-content">
+          <h4>Classe B</h4>
+          <p class="abc-desc">IntermediÃ¡ria (15%)</p>
+          <div class="abc-stats-row">
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-classe-b-itens">0</span>
+              <span class="abc-stat-label">itens</span>
+            </div>
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-classe-b-valor">R$ 0,00</span>
+              <span class="abc-stat-label">valor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="abc-card abc-card-c">
+        <div class="abc-card-icon"><span class="abc-letra">C</span></div>
+        <div class="abc-card-content">
+          <h4>Classe C</h4>
+          <p class="abc-desc">Menor impacto (5%)</p>
+          <div class="abc-stats-row">
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-classe-c-itens">0</span>
+              <span class="abc-stat-label">itens</span>
+            </div>
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-classe-c-valor">R$ 0,00</span>
+              <span class="abc-stat-label">valor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="abc-card abc-card-total">
+        <div class="abc-card-icon"><i class="fa-solid fa-sigma"></i></div>
+        <div class="abc-card-content">
+          <h4>Total Geral</h4>
+          <p class="abc-desc">Soma de todos</p>
+          <div class="abc-stats-row">
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-total-itens">0</span>
+              <span class="abc-stat-label">SKUs</span>
+            </div>
+            <div class="abc-stat-item">
+              <span class="abc-stat-number" id="card-total-valor">R$ 0,00</span>
+              <span class="abc-stat-label">total</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-pie"></i> DistribuiÃ§Ã£o por Classe</h3>
+        <div class="chart-wrapper" style="height: 320px;">
+          <canvas id="chart-pizza"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-line"></i> AnÃ¡lise de Pareto (Top 15)</h3>
+        <div class="chart-wrapper" style="height: 320px;">
+          <canvas id="chart-pareto"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <section class="card forn-section tabela-abc-wrapper" style="overflow-x:auto;">
+      <h3 style="padding: 15px 20px; margin:0; border-bottom: 1px solid var(--border);">
+        <i class="fa-solid fa-table"></i> Ranking de Produtos
+      </h3>
+      <table class="forn-table" style="min-width:900px;">
+        <thead>
+          <tr>
+            <th class="center" style="width:50px;">#</th>
+            <th class="center" style="width:60px;">Classe</th>
+            <th style="width:110px;">SKU</th>
+            <th style="width:220px;">Produto</th>
+            <th class="right" style="width:110px;">Valor</th>
+            <th class="center" style="width:80px;">% Total</th>
+            <th class="center" style="width:80px;">% Acum.</th>
+            <th class="center" style="width:70px;">Vendas</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-abc-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- ?o. Ajusta textos/anos do select (SEM repetir anos) -->
+  <script>
+    (function () {
+      try {
+        const sel = document.getElementById("filtro-periodo-abc");
+        if (!sel) return;
+
+        const anoAtual = new Date().getFullYear();
+
+        // Atualiza rÃ³tulos de este-ano / ano-passado / dois-anos-atras
+        const usedYears = new Set();
+        sel.querySelectorAll("option[data-year-offset]").forEach(opt => {
+          const off = Number(opt.getAttribute("data-year-offset") || 0);
+          const y = anoAtual + off;
+          usedYears.add(String(y));
+
+          if (opt.value === "este-ano") opt.textContent = `Este ano (${y})`;
+          else if (opt.value === "ano-passado") opt.textContent = `Ano passado (${y})`;
+          else opt.textContent = `2 anos atrÃ¡s (${y})`;
+        });
+
+        // Preenche anos numÃ©ricos, mas REMOVE se duplicar os "humanos"
+        const opts = [
+          document.getElementById("opt-year-0"),
+          document.getElementById("opt-year-1"),
+          document.getElementById("opt-year-2"),
+        ];
+
+        const years = [anoAtual, anoAtual - 1, anoAtual - 2];
+
+        opts.forEach((opt, idx) => {
+          if (!opt) return;
+
+          const y = String(years[idx]);
+
+          // Se j? existe nos "humanos", remove o option numÃ©rico para NÃƒO repetir
+          if (usedYears.has(y)) {
+            opt.remove();
+            return;
+          }
+
+          opt.value = y;
+          opt.textContent = y;
+        });
+
+        // Default: este-ano (se nada selecionado)
+        if (!sel.value) sel.value = "este-ano";
+      } catch (e) {
+        console.warn("Falha ao ajustar filtro de PerÃ­odo:", e);
+      }
+    })();
+  </script>
+
+  <!-- helpers -->
+  <script src="/performance-fix.js?v=4.1.3"></script>
+  <script src="/lazy-table-helper.js?v=4.1.3"></script>
+
+  <!-- header -->
+  <script src="/header-manager.js?v=4.1.15"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="/firebase-global.js?v=4.1.3"></script>
+  <script src="/firebase-sync.js?v=4.1.3"></script>
+
+  <!-- Layout -->
+  <script type="module">
+    import { initializeLayout } from "/components/layout.js?v=4.1.3";
+    initializeLayout();
+  </script>
+
+  <!-- Core -->
+  <script src="/script.js?v=4.1.15"></script>
+
+  <!-- pÃ¡gina -->
+  <script src="/configuracoes.js?v=4.1.3"></script>
+  <script src="/curva-abc.js?v=4.1.3"></script>
+</body>
+</html>
+
+
+
+
+
+

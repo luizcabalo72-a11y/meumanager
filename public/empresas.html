@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerenciar Empresas - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="stylesheet" href="/style.css?v=4.1.11" />
+  <link rel="stylesheet" href="configuracoes.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="empresas">
+
+  <!-- ================= LAYOUT: Header e Sidebar Componentizados ================= -->
+  <div id="header-container"></div>
+  <div id="sidebar-container"></div>
+
+  <!-- ================= MAIN ================= -->
+  <main class="dashboard">
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-buildings"></i> Gerenciar Empresas</h1>
+    </div>
+
+    <div class="config-page">
+
+      <!-- Info da empresa ativa -->
+      <div class="card" style="padding: 16px 20px; background: #f0f9ff; border-left: 4px solid var(--blue); margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <i class="fa-solid fa-info-circle" style="font-size: 24px; color: var(--blue);"></i>
+            <div>
+              <strong style="color: #1e293b;">Empresa Ativa:</strong>
+              <span id="hint-empresa-ativa" style="color: #64748b; margin-left: 8px;">Carregando...</span>
+            </div>
+          </div>
+          <button id="btn-nova-empresa" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nova Empresa
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de Empresas -->
+      <div class="card">
+        <div class="card-header" style="padding: 20px; border-bottom: 1px solid #e5e7eb;">
+          <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-building"></i> Minhas Empresas
+          </h2>
+        </div>
+        <div style="padding: 20px;">
+          <div id="lista-empresas" class="empresas-grid">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= MODAL NOVA EMPRESA ================= -->
+  <div id="modal-empresa" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="modal-title">Nova Empresa</h3>
+        <button class="modal-close" onclick="fecharModalEmpresa()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="form-empresa">
+          <input type="hidden" id="empresa-id" />
+
+          <div class="form-group">
+            <label for="empresa-razao">RazÃ£o Social *</label>
+            <input type="text" id="empresa-razao" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="empresa-fantasia">Nome Fantasia</label>
+            <input type="text" id="empresa-fantasia" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="empresa-cnpj">CNPJ</label>
+            <input type="text" id="empresa-cnpj" class="form-control" maxlength="18" placeholder="00.000.000/0000-00" />
+          </div>
+
+          <div class="form-group">
+            <label for="empresa-ie">InscriÃ§Ã£o Estadual</label>
+            <input type="text" id="empresa-ie" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="empresa-email">E-mail</label>
+            <input type="email" id="empresa-email" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="empresa-telefone">Telefone</label>
+            <input type="text" id="empresa-telefone" class="form-control" maxlength="15" placeholder="(00) 00000-0000" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="fecharModalEmpresa()">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="salvarEmpresa()">
+          <i class="fa-solid fa-save"></i> Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL MEMBROS ================= -->
+  <div id="modal-membros" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 760px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-users"></i> Usuários da Empresa</h3>
+        <button class="modal-close" onclick="fecharModalMembros()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="membros-empresa-id" />
+
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+          <div style="font-weight:700;color:#0f172a;" id="membros-empresa-nome">Empresa</div>
+          <div style="font-size:13px;color:#475569;" id="membros-resumo">Plano: - | Usuários: -</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 160px 120px;gap:10px;margin-bottom:14px;">
+          <input type="email" id="membro-email" class="form-control" placeholder="email do usuário" />
+          <select id="membro-role" class="form-control">
+            <option value="user">Usuário</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button type="button" id="btn-add-membro" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus"></i> Adicionar
+          </button>
+        </div>
+
+        <div style="max-height:360px;overflow:auto;border:1px solid #e5e7eb;border-radius:10px;">
+          <table class="forn-table" style="margin:0;">
+            <thead>
+              <tr>
+                <th style="width:48%;">E-mail</th>
+                <th style="width:18%;">Perfil</th>
+                <th style="width:24%;">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="lista-membros">
+              <tr><td colspan="3" style="text-align:center;color:#64748b;">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="fecharModalMembros()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script src="/performance-fix.js?v=4.1.3"></script>
+
+  <!-- Firebase Compat Global -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+
+  <script src="/firebase-global.js?v=4.1.4"></script>
+  <script src="/firebase-sync.js?v=4.1.4"></script>
+  <script src="/header-manager.js?v=4.1.15"></script>
+
+  <!-- ?o. script.js deve ser o ?sNICO responsÃ¡vel por iniciar o layout -->
+  <script src="/script.js?v=4.1.15"></script>
+
+  <script src="/empresas.js?v=4.1.8"></script>
+
+</body>
+</html>
+
+
+
+
+
+

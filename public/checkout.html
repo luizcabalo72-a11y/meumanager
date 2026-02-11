@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="icon" type="image/x-icon" href="icones-sociais/Mercado-Pago.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-1: #eef4ff;
+      --bg-2: #f8fbff;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --brand: #003366;
+      --brand-2: #0b4a8f;
+      --good: #16a34a;
+      --warn: #f59e0b;
+      --danger: #dc2626;
+      --shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, #dbeafe 0%, transparent 34%),
+        radial-gradient(circle at 95% 0%, #bfdbfe 0%, transparent 25%),
+        linear-gradient(165deg, var(--bg-1) 0%, var(--bg-2) 100%);
+      min-height: 100vh;
+      padding: 28px 16px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 22px;
+      background: linear-gradient(115deg, #ffffff 0%, #f8fbff 55%, #edf4ff 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .brand-row img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #fff;
+      border: 1px solid #dbe4f0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #071a34;
+    }
+
+    .muted {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 10px;
+      background: #fff;
+      font-size: 12px;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    .pill select {
+      border: none;
+      background: transparent;
+      font: inherit;
+      color: #0f172a;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .warnbox {
+      margin: 16px 22px 0;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #fcd34d;
+      background: #fffbeb;
+      color: #92400e;
+      font-size: 13px;
+      display: none;
+    }
+
+    .content {
+      padding: 18px 22px 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .row {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #d9e2ee;
+      background: #fff;
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      font-size: 14px;
+      color: #0f172a;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .small {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .full { grid-column: 1 / -1; }
+    .hidden { display: none !important; }
+
+    .btn-main {
+      margin-top: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 13px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0, 51, 102, 0.22);
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    .btn-main:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .btn-main:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+
+    .alt-payments {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-alt,
+    .btn-login {
+      flex: 1;
+      min-width: 150px;
+      border-radius: 12px;
+      padding: 11px 12px;
+      border: 1px solid #d9e2ee;
+      background: #fff;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn-alt:hover,
+    .btn-login:hover { background: #f8fafc; }
+
+    .btn-login {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .pixbox {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fafc;
+      padding: 14px;
+      display: none;
+    }
+
+    .pixbox h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .pixgrid {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 12px;
+    }
+
+    .pixqr {
+      width: 230px;
+      height: 230px;
+      border: 1px solid #d9e2ee;
+      border-radius: 10px;
+      object-fit: contain;
+      background: #fff;
+    }
+
+    .pixcode {
+      min-height: 150px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      resize: vertical;
+    }
+
+    .pixactions { margin-top: 8px; }
+
+    .boleto-actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      margin-top: 12px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      padding: 10px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      color: #334155;
+      min-height: 46px;
+    }
+
+    .trust {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #e8eef7;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .trust img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .debug {
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid #fcd34d;
+      background: #fffbeb;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .debug-top {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 11px;
+      border: 1px solid #fde68a;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff;
+      color: #78350f;
+      font-weight: 700;
+    }
+
+    .debug-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-debug {
+      border: none;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-health { background: #f59e0b; color: #111827; }
+    .btn-copy { background: #ef4444; color: #fff; }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 26px; }
+      .grid { grid-template-columns: 1fr; }
+      .pixgrid { grid-template-columns: 1fr; }
+      .pixqr { width: 210px; height: 210px; }
+      .content { padding: 16px; }
+      .warnbox { margin: 12px 16px 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div>
+          <div class="brand-row">
+            <img src="meumanager-logo-completo.png" alt="Meu Manager" />
+            <h1>Checkout Meu Manager</h1>
+          </div>
+          <p class="muted">Finalize sua assinatura com segurança via Mercado Pago.</p>
+        </div>
+
+        <div class="pill" id="envWrap" title="Produção usa /api no Hosting. Emulador usa localhost.">
+          <span>Ambiente</span>
+          <select id="env" aria-label="Ambiente">
+            <option value="prod">produção</option>
+            <option value="emu">emulador</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="warnFile" class="warnbox">
+        Você abriu esta página em <b>file://</b>. Isso pode bloquear chamadas de API.
+        <br />Use: <b>https://meumanager-b02b0.web.app/checkout.html</b>
+      </div>
+
+      <div class="content">
+        <div class="grid">
+          <div class="row">
+            <label for="plano">Plano</label>
+            <select id="plano">
+              <option value="pro">Plano Pro</option>
+              <option value="business">Plano Business</option>
+            </select>
+            <div class="small">Valores validados no backend.</div>
+          </div>
+
+          <div class="row">
+            <label for="periodo">Período</label>
+            <select id="periodo">
+              <option value="mensal">Mensal</option>
+              <option value="anual">Anual</option>
+            </select>
+            <div class="small">O total é calculado automaticamente.</div>
+          </div>
+
+          <div class="row full">
+            <label for="paymentMethod">Forma de pagamento</label>
+            <select id="paymentMethod">
+              <option value="checkout">Checkout Mercado Pago</option>
+              <option value="pix">Pix direto</option>
+              <option value="boleto">Boleto direto</option>
+            </select>
+            <div id="paymentHint" class="small">Use checkout para cartão; para boleto, use o fluxo direto.</div>
+          </div>
+
+          <div class="row">
+            <label for="nome">Nome (opcional)</label>
+            <input id="nome" type="text" placeholder="Ex: Luiz Cabalo" />
+          </div>
+
+          <div class="row">
+            <label for="cpf">CPF (obrigatório para Pix/Boleto)</label>
+            <input id="cpf" type="text" placeholder="000.000.000-00" />
+          </div>
+
+          <div class="row full">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="seuemail@dominio.com" />
+            <div class="small">Enviaremos confirmações para este email.</div>
+          </div>
+
+          <div class="row full">
+            <label for="ref">Referência (opcional)</label>
+            <input id="ref" type="text" placeholder="empresaId para rastrear a assinatura" />
+          </div>
+        </div>
+
+        <button class="btn-main" id="btnCheckout">Pagar no checkout</button>
+
+        <div class="alt-payments">
+          <button class="btn-alt" id="btnPix">Gerar Pix</button>
+          <button class="btn-alt" id="btnBoleto">Gerar Boleto</button>
+          <a class="btn-login" id="btnLogin" href="login.html">Entrar</a>
+        </div>
+
+        <div id="pixBox" class="pixbox">
+          <h3>Pix gerado</h3>
+          <div class="pixgrid">
+            <img id="pixQrImg" class="pixqr" alt="QR Code Pix" />
+            <div>
+              <div class="small">Escaneie o QR Code ou copie o código abaixo:</div>
+              <textarea id="pixCode" class="pixcode" readonly></textarea>
+              <div class="pixactions">
+                <button class="btn-alt" id="btnPixCopyCode" type="button">Copiar código Pix</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="boletoBox" class="pixbox">
+          <h3>Boleto gerado</h3>
+          <div class="small">Se o PDF não abrir automaticamente, copie a linha digitável:</div>
+          <textarea id="boletoCode" class="pixcode" readonly></textarea>
+          <div id="boletoMeta" class="small" style="margin-top:8px;"></div>
+          <div class="boleto-actions">
+            <button class="btn-alt" id="btnBoletoOpen" type="button">Abrir boleto</button>
+            <button class="btn-alt" id="btnBoletoCopyCode" type="button">Copiar linha digitável</button>
+          </div>
+        </div>
+
+        <div id="debugPanel" class="debug">
+          <div class="debug-top">
+            <span class="badge" id="badgeBase">Base: -</span>
+            <span class="small" style="color:#78350f;">Modo técnico (debug)</span>
+          </div>
+          <div class="debug-buttons">
+            <button class="btn-debug btn-health" id="btnHealth" type="button">Health</button>
+            <button class="btn-debug btn-copy" id="btnCopy" type="button">Copiar logs</button>
+          </div>
+        </div>
+
+        <div id="status" class="status">Pronto para iniciar pagamento.</div>
+
+        <div class="trust">
+          <span>Pagamento seguro</span>
+          <span>SSL 256-bit</span>
+          <img src="icones-sociais/Mercado-Pago.ico" alt="Mercado Pago" />
+          <span>Mercado Pago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/env-loader.js?v=4.1.3"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+
+  <script src="/firebase-global.js?v=4.1.3"></script>
+
+  <script>
+    const HOSTING_ORIGIN = "https://meumanager-b02b0.web.app";
+    const PROD_SAME_ORIGIN_BASE = "/api";
+    const PROD_ABSOLUTE_BASE = HOSTING_ORIGIN + "/api";
+    const EMU_FUNCTIONS_BASE = "http://127.0.0.1:5001/meumanager-b02b0/us-central1/api";
+
+    const $ = (id) => document.getElementById(id);
+    const qs = new URLSearchParams(location.search);
+    const debugMode = qs.get("debug") === "1" || location.hostname === "127.0.0.1" || location.hostname === "localhost";
+
+    const logLines = [];
+    function safeJson(x) { try { return JSON.stringify(x, null, 2); } catch { return String(x); } }
+    function log(msg, obj) {
+      const line = `[${new Date().toLocaleString()}] ${msg}` + (obj ? `\n${safeJson(obj)}` : "");
+      logLines.push(line);
+      $("status").textContent = debugMode ? line + "\n\n" + logLines.slice(-10).join("\n\n") : msg;
+      console.log(msg, obj || "");
+    }
+
+    function isOnHosting() {
+      return location.origin === HOSTING_ORIGIN || location.hostname.endsWith(".web.app") || location.hostname.endsWith(".firebaseapp.com");
+    }
+
+    function getBaseUrl() {
+      if ($("env").value === "emu") return EMU_FUNCTIONS_BASE;
+      return isOnHosting() ? PROD_SAME_ORIGIN_BASE : PROD_ABSOLUTE_BASE;
+    }
+
+    function limpaCpf(v) { return String(v || "").replace(/\D/g, ""); }
+
+    function getEmpresaIdFromSession() {
+      try {
+        const active = String(localStorage.getItem("ft_active_account") || "").trim();
+        if (active) return active;
+      } catch {}
+
+      try {
+        const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "null");
+        const id = String(sessao?.empresaId || sessao?.activeEmpresaId || "").trim();
+        if (id) return id;
+      } catch {}
+
+      try {
+        const legacy = String(localStorage.getItem("empresaId") || "").trim();
+        if (legacy) return legacy;
+      } catch {}
+
+      return "";
+    }
+
+    function hidePixBox() {
+      $("pixBox").style.display = "none";
+      $("pixCode").value = "";
+      $("pixQrImg").removeAttribute("src");
+    }
+
+    function hideBoletoBox() {
+      $("boletoBox").style.display = "none";
+      $("boletoCode").value = "";
+      $("boletoMeta").textContent = "";
+      $("btnBoletoOpen").dataset.url = "";
+      $("btnBoletoOpen").disabled = true;
+    }
+
+    function showPixBox(copiaECola) {
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(copiaECola)}`;
+      $("pixCode").value = copiaECola;
+      $("pixQrImg").src = qrUrl;
+      $("pixBox").style.display = "block";
+    }
+
+    function showBoletoBox({ linhaDigitavel, url, vencimento }) {
+      $("boletoCode").value = linhaDigitavel || "";
+      $("boletoMeta").textContent = vencimento ? `Vencimento: ${vencimento}` : "";
+      $("btnBoletoOpen").dataset.url = url || "";
+      $("btnBoletoOpen").disabled = !url;
+      $("boletoBox").style.display = "block";
+    }
+
+    function syncPaymentUi() {
+      const method = $("paymentMethod")?.value || "checkout";
+      const hideCheckout = method === "boleto";
+      $("btnCheckout").classList.toggle("hidden", hideCheckout);
+
+      if (method === "boleto") {
+        $("paymentHint").textContent = "Boleto selecionado: use o botão Gerar Boleto abaixo.";
+      } else if (method === "pix") {
+        $("paymentHint").textContent = "Pix selecionado: use o botão Gerar Pix abaixo.";
+      } else {
+        $("paymentHint").textContent = "Use checkout para cartão; para boleto, use o fluxo direto.";
+      }
+    }
+
+    async function waitFirebase() {
+      try {
+        if (typeof window.waitFirebaseReady === "function") {
+          await window.waitFirebaseReady();
+          return true;
+        }
+      } catch {}
+
+      let tries = 0;
+      while (tries++ < 25) {
+        if (window.firebase?.apps?.length && window.firebase?.auth) return true;
+        await new Promise((r) => setTimeout(r, 120));
+      }
+      return false;
+    }
+
+    async function getAuthUserSafe() {
+      const ok = await waitFirebase();
+      if (!ok) return { uid: "", email: "" };
+
+      try {
+        const auth = window.firebase.auth();
+        const u = auth.currentUser;
+        if (u) return { uid: u.uid, email: u.email || "" };
+
+        const user = await new Promise((resolve) => {
+          let done = false;
+          const t = setTimeout(() => { if (!done) resolve(null); }, 6000);
+          const unsub = auth.onAuthStateChanged((usr) => {
+            if (done) return;
+            done = true;
+            clearTimeout(t);
+            try { unsub && unsub(); } catch {}
+            resolve(usr || null);
+          });
+        });
+
+        if (user) return { uid: user.uid, email: user.email || "" };
+      } catch (e) {
+        log("Falha ao ler autenticação", { error: String(e) });
+      }
+      return { uid: "", email: "" };
+    }
+
+    async function callApi(path, payload, method = "POST") {
+      const url = `${getBaseUrl()}${path}`;
+      log(`${method} ${url}`, payload ? { payload } : null);
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: payload ? JSON.stringify(payload) : undefined,
+      });
+
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
+      if (!res.ok) {
+        log(`Erro ${res.status}`, data);
+        throw new Error(data?.error || data?.message || `HTTP ${res.status}`);
+      }
+
+      log("OK", data);
+      return data;
+    }
+
+    async function buildPayload({ requireUserId }) {
+      const authUser = await getAuthUserSafe();
+
+      const plano = $("plano").value;
+      const periodo = $("periodo").value;
+      const email = ($("email").value || authUser.email || "").trim();
+      const nome = ($("nome").value || "").trim();
+      const cpf = limpaCpf($("cpf").value);
+      const refInput = ($("ref").value || "").trim();
+      const refAuto = getEmpresaIdFromSession();
+      const ref = refInput || refAuto || "";
+      const userId = authUser.uid || null;
+
+      if (!email) throw new Error("Informe o email.");
+      if (requireUserId && !userId) throw new Error("Você precisa estar logado.");
+
+      return { plano, periodo, userId, email, nome: nome || null, cpf: cpf || null, reference: ref || null };
+    }
+
+    async function checkEmailExistsInAuth(email) {
+      const ok = await waitFirebase();
+      if (!ok) return { ok: false, exists: null, methods: [] };
+
+      try {
+        const auth = window.firebase.auth();
+        const methods = await auth.fetchSignInMethodsForEmail(email);
+        return { ok: true, exists: Array.isArray(methods) && methods.length > 0, methods: methods || [] };
+      } catch {
+        return { ok: false, exists: null, methods: [] };
+      }
+    }
+
+    async function warnIfEmailNotRegistered(email) {
+      if (!email) return;
+
+      const authUser = await getAuthUserSafe();
+      const authEmail = (authUser?.email || "").trim().toLowerCase();
+      const checkEmail = String(email || "").trim().toLowerCase();
+      if (authEmail && authEmail === checkEmail) return;
+
+      const res = await checkEmailExistsInAuth(email);
+      if (res.ok && res.exists === false) {
+        alert(
+          "Este email ainda não tem conta no Meu Manager.\n\n" +
+          "Você pode pagar normalmente e criar a conta depois com este mesmo email."
+        );
+      }
+    }
+
+    $("btnCheckout").addEventListener("click", async () => {
+      if ($("paymentMethod")?.value !== "checkout") $("paymentMethod").value = "checkout";
+      syncPaymentUi();
+      $("btnCheckout").disabled = true;
+      try {
+        const payload = await buildPayload({ requireUserId: false });
+        await warnIfEmailNotRegistered(payload.email);
+
+        const data = await callApi("/criarPreferencia", payload, "POST");
+        const initPoint = data?.initPoint || data?.init_point || data?.sandboxInitPoint || data?.sandbox_init_point;
+        if (!initPoint) throw new Error("Preferência criada sem URL de checkout.");
+
+        log("Redirecionando para pagamento...");
+        window.location.href = initPoint;
+      } catch (e) {
+        log("Falha no checkout", { error: String(e) });
+        alert(e.message || String(e));
+      } finally {
+        $("btnCheckout").disabled = false;
+      }
+    });
+
+    $("btnPix").addEventListener("click", async () => {
+      if ($("paymentMethod")) $("paymentMethod").value = "pix";
+      syncPaymentUi();
+      hidePixBox();
+      hideBoletoBox();
+      $("btnPix").disabled = true;
+      try {
+        const payload = await buildPayload({ requireUserId: false });
+        await warnIfEmailNotRegistered(payload.email);
+        if (!payload.cpf) throw new Error("Pix precisa de CPF.");
+
+        const data = await callApi("/gerarPix", payload, "POST");
+        const copiaECola = data?.copiaECola || data?.qrCode || data?.qr_code || data?.qrCodeText;
+
+        if (copiaECola) {
+          showPixBox(copiaECola);
+          log("Pix gerado com sucesso.");
+        } else {
+          log("Pix gerado.", data);
+          alert("Pix gerado! Verifique os detalhes.");
+        }
+      } catch (e) {
+        log("Falha no Pix", { error: String(e) });
+        alert(e.message || String(e));
+      } finally {
+        $("btnPix").disabled = false;
+      }
+    });
+
+    $("btnBoleto").addEventListener("click", async () => {
+      if ($("paymentMethod")) $("paymentMethod").value = "boleto";
+      syncPaymentUi();
+      hidePixBox();
+      hideBoletoBox();
+      $("btnBoleto").disabled = true;
+      try {
+        const payload = await buildPayload({ requireUserId: false });
+        await warnIfEmailNotRegistered(payload.email);
+        if (!payload.cpf) throw new Error("Boleto precisa de CPF.");
+
+        const data = await callApi("/gerarBoleto", payload, "POST");
+        const boletoUrl =
+          data?.pdfUrl ||
+          data?.boletoUrl ||
+          data?.ticket_url ||
+          data?.transaction_details?.external_resource_url ||
+          data?.url ||
+          data?.link ||
+          "";
+        const linhaDigitavel =
+          data?.boleto ||
+          data?.barcode ||
+          data?.linhaDigitavel ||
+          data?.digitable_line ||
+          data?.transaction_details?.digitable_line ||
+          "";
+        const status = String(data?.status || "");
+        const statusDetail = String(data?.statusDetail || data?.status_detail || "");
+        const vencimento = data?.dataVencimento || "";
+
+        if (status === "rejected") {
+          const reasonMap = {
+            rejected_by_bank: "rejeitado pelo banco emissor",
+          };
+          const reason = reasonMap[statusDetail] || statusDetail || "motivo não informado";
+          throw new Error(`Boleto recusado (${reason}). Tente outro CPF ou use Pix/cartão.`);
+        }
+
+        showBoletoBox({ linhaDigitavel, url: boletoUrl, vencimento });
+
+        if (boletoUrl) {
+          log("Boleto gerado. Abrindo PDF...");
+          window.open(boletoUrl, "_blank");
+        } else if (linhaDigitavel) {
+          log("Boleto gerado sem PDF. Use a linha digitável.");
+        } else {
+          log("Boleto gerado, mas sem PDF e sem linha digitável.", data);
+          alert("Boleto gerado, porém sem dados para abrir agora. Tente novamente em instantes.");
+        }
+      } catch (e) {
+        log("Falha no Boleto", { error: String(e) });
+        alert(e.message || String(e));
+      } finally {
+        $("btnBoleto").disabled = false;
+      }
+    });
+
+    $("btnPixCopyCode").addEventListener("click", async () => {
+      try {
+        const code = ($("pixCode").value || "").trim();
+        if (!code) throw new Error("Nenhum código Pix disponível.");
+        await navigator.clipboard.writeText(code);
+        log("Código Pix copiado.");
+      } catch (e) {
+        log("Não foi possível copiar Pix", { error: String(e) });
+        alert(e.message || String(e));
+      }
+    });
+
+    $("btnBoletoOpen").addEventListener("click", () => {
+      try {
+        const url = ($("btnBoletoOpen").dataset.url || "").trim();
+        if (!url) throw new Error("Este boleto não retornou link de PDF.");
+        window.open(url, "_blank");
+      } catch (e) {
+        alert(e.message || String(e));
+      }
+    });
+
+    $("btnBoletoCopyCode").addEventListener("click", async () => {
+      try {
+        const code = ($("boletoCode").value || "").trim();
+        if (!code) throw new Error("Nenhuma linha digitável disponível.");
+        await navigator.clipboard.writeText(code);
+        log("Linha digitável copiada.");
+      } catch (e) {
+        log("Não foi possível copiar a linha digitável", { error: String(e) });
+        alert(e.message || String(e));
+      }
+    });
+
+    $("btnHealth").addEventListener("click", async () => {
+      try {
+        const url = `${getBaseUrl()}/health`;
+        const res = await fetch(url);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error("Health não OK");
+        log("Health OK", data);
+      } catch (e) {
+        log("Falha no health", { error: String(e) });
+      }
+    });
+
+    $("btnCopy").addEventListener("click", async () => {
+      try {
+        const all = logLines.join("\n\n");
+        await navigator.clipboard.writeText(all);
+        log("Logs copiados.");
+      } catch (e) {
+        log("Falha ao copiar logs", { error: String(e) });
+      }
+    });
+
+    (async () => {
+      if (location.protocol === "file:") $("warnFile").style.display = "block";
+      hideBoletoBox();
+
+      $("paymentMethod").addEventListener("change", syncPaymentUi);
+
+      if (!debugMode) {
+        $("debugPanel").style.display = "none";
+        $("envWrap").style.display = "none";
+      } else {
+        $("debugPanel").style.display = "block";
+        $("envWrap").style.display = "inline-flex";
+      }
+
+      try {
+        const p = (qs.get("plano") || "").toLowerCase();
+        const per = (qs.get("periodo") || "").toLowerCase();
+        const method = (qs.get("metodo") || qs.get("paymentMethod") || "").toLowerCase();
+        if (p && ["pro", "business"].includes(p)) $("plano").value = p;
+        if (per && ["mensal", "anual"].includes(per)) $("periodo").value = per;
+        if (method && ["checkout", "pix", "boleto"].includes(method)) $("paymentMethod").value = method;
+      } catch {}
+
+      const back = encodeURIComponent(location.href);
+      $("btnLogin").href = `login.html?redirect=${back}`;
+
+      $("badgeBase").textContent = "Base: " + getBaseUrl();
+      const u = await getAuthUserSafe();
+      if (u?.email && !$("email").value) $("email").value = u.email;
+      if (!$("ref").value) $("ref").value = getEmpresaIdFromSession();
+      syncPaymentUi();
+
+      if (u?.uid) log("Usuário autenticado detectado.", { email: u.email || "" });
+      else log("Pronto para pagamento.");
+    })();
+
+    $("env").addEventListener("change", () => {
+      $("badgeBase").textContent = "Base: " + getBaseUrl();
+      log("Ambiente alterado.", { env: $("env").value, base: getBaseUrl() });
+    });
+  </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estoque FIFO - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="/style.css?v=4.1.11" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="estoque">
+  <div id="header-container"></div>
+  <div id="sidebar-container"></div>
+
+  <main class="dashboard">
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-warehouse"></i> Estoque FIFO</h1>
+    </div>
+
+    <!-- ================= TOOLBAR ================= -->
+    <div class="toolbar-produtos">
+      <div class="toolbar-left">
+        <div class="search-box">
+          <i class="fa-solid fa-barcode"></i>
+          <input id="estoque-busca-sku" type="text" placeholder="Buscar por SKU..." />
+        </div>
+
+        <div class="search-box">
+          <i class="fa-solid fa-tag"></i>
+          <input id="estoque-busca-marca" type="text" placeholder="Buscar por Marca..." />
+        </div>
+
+        <button id="btn-limpar-filtros" class="btn btn-outline" type="button" title="Limpar filtros">
+          <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+        </button>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="filter-group">
+          <select id="filtro-sku" class="filter-select">
+            <option value="">Todos SKUs</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-fornecedor" class="filter-select">
+            <option value="">Todos Fornecedores</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-status" class="filter-select">
+            <option value="">Todos Status</option>
+            <option value="ATIVO">Ativo</option>
+            <option value="ARQUIVADO">Arquivado</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-saldo" class="filter-select">
+            <option value="">Todo Saldo</option>
+            <option value="com">Com estoque</option>
+            <option value="sem">Sem estoque</option>
+            <option value="baixo">Estoque baixo (???5)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RESUMO ================= -->
+    <div class="resumo-linha">
+      <span id="contador-estoque" class="contador-resultados"></span>
+
+      <div class="resumo-totais">
+        <!-- Lotes: aparece S?" sem filtro -->
+        <span class="resumo-item" id="wrap-total-lotes" style="display:none;">
+          <i class="fa-solid fa-layer-group"></i>
+          Lotes: <strong id="total-lotes">0</strong>
+        </span>
+        <span class="resumo-separador" id="sep-total-lotes" style="display:none;">|</span>
+
+        <span class="resumo-item">
+          <i class="fa-solid fa-boxes-stacked"></i>
+          <strong id="total-itens">0 itens</strong>
+        </span>
+
+        <span class="resumo-separador">|</span>
+
+        <span class="resumo-item">
+          <i class="fa-solid fa-dollar-sign"></i>
+          Valor Total: <strong id="valor-estoque" class="valor-destaque">R$ 0,00</strong>
+        </span>
+
+        <!-- Menor/Maior/MÃ©dia: aparecem S?" com filtro -->
+        <span id="wrap-stats-preco" style="display:none;">
+          <span class="resumo-separador">|</span>
+          <span class="resumo-item">
+            <i class="fa-solid fa-arrow-down"></i>
+            Menor: <strong id="preco-menor" style="color:#dc2626;">R$ 0,00</strong>
+          </span>
+          <span class="resumo-separador">|</span>
+          <span class="resumo-item">
+            <i class="fa-solid fa-arrow-up"></i>
+            Maior: <strong id="preco-maior" style="color:#16a34a;">R$ 0,00</strong>
+          </span>
+          <span class="resumo-separador">|</span>
+          <span class="resumo-item">
+            <i class="fa-solid fa-chart-line"></i>
+            MÃ©dia: <strong id="preco-medio" style="color:#2563eb;">R$ 0,00</strong>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <section class="card forn-section" style="overflow-x:auto;">
+      <table class="forn-table" style="min-width:1400px;">
+        <thead>
+          <tr>
+            <th class="center">Lote</th>
+            <th>Data Compra</th>
+            <th>SKU</th>
+            <th>Produto</th>
+            <th>Marca</th>
+            <th>Fornecedor</th>
+            <th>Pedido</th>
+            <th class="center">Qtd Ini</th>
+            <th class="center">Saldo</th>
+            <th class="right">Custo Unit</th>
+            <th class="right">Valor Total</th>
+            <th class="center">Status</th>
+            <th class="center">Consumo</th>
+            <th class="center">AÃ§Ãµes</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-estoque-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script src="/performance-fix.js?v=4.1.3"></script>
+  <script src="/lazy-table-helper.js?v=4.1.3"></script>
+  <script src="/header-manager.js?v=4.1.15"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script src="/firebase-global.js?v=4.1.3"></script>
+  <script src="/firebase-sync.js?v=4.1.3"></script>
+  <script src="/script.js?v=4.1.15"></script>
+  <script src="/configuracoes.js?v=4.1.3"></script>
+  <script src="/estoque.js?v=4.1.3"></script>
+
+  <script type="module">
+    import { initializeLayout } from "/components/layout.js?v=4.1.3";
+    initializeLayout();
+  </script>
+</body>
+</html>
+
+
+
+
+
+

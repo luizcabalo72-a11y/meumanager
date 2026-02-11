@@ -1,0 +1,24 @@
+{
+    "name": "meumanager-functions",
+    "description": "Cloud Functions para Meu Manager - Integração Mercado Pago",
+    "version": "1.0.0",
+    "engines": {
+        "node": "22"
+    },
+    "main": "index.js",
+    "scripts": {
+        "serve": "firebase emulators:start --only functions",
+        "deploy": "firebase deploy --only functions",
+        "logs": "firebase functions:log"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.3",
+        "express": "^5.2.1",
+        "firebase-admin": "^11.11.0",
+        "firebase-functions": "^7.0.5",
+        "mercadopago": "^2.0.6",
+        "nodemailer": "^6.9.11"
+    },
+    "private": true
+}

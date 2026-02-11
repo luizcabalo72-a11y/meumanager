@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Meu Manager</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="/style.css?v=4.1.12" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="dashboard">
+
+  <!-- ================= LAYOUT: Header e Sidebar Componentizados ================= -->
+  <div id="header-container"></div>
+  <div id="sidebar-container"></div>
+
+  <!-- ================= MAIN ================= -->
+  <main class="dashboard">
+
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-chart-line"></i> Dashboard</h1>
+      <div id="dashboard-seats-pill" class="dashboard-seats-pill is-loading" hidden>
+        <i class="fa-solid fa-users"></i>
+        <span id="dashboard-seats-text">Usuarios: --/--</span>
+      </div>
+    </div>
+
+    <!-- ================= FILTROS DE Período ================= -->
+    <div class="dash-period-bar">
+      <div class="period-selects">
+        <select id="filtro-mes" class="pill-select" title="mês">
+          <option value="">Todos os Meses</option>
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+
+        <select id="filtro-ano" class="pill-select" title="Ano">
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+        </select>
+      </div>
+
+      <div class="period-buttons">
+        <button id="btn-este-mes" class="btn-period" type="button">
+          <i class="fa-solid fa-calendar-day"></i> Este mês
+        </button>
+        <button id="btn-este-ano" class="btn-period" type="button">
+          <i class="fa-solid fa-calendar"></i> Este Ano
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= KPIs RESULTADO ================= -->
+    <div class="kpi-section">
+      <div class="kpi-section-title">
+        <i class="fa-solid fa-chart-line"></i> Resultado
+      </div>
+
+      <div class="kpi-grid kpi-5">
+        <div class="kpi-card card-accent-blue">
+          <div class="kpi-icon vendas"><i class="fa-solid fa-dollar-sign"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Vendas</span>
+            <span class="kpi-value" id="kpi-vendas">R$ 0,00</span>
+            <span class="kpi-sub" id="kpi-vendas-var"></span>
+          </div>
+        </div>
+
+        <div class="kpi-card card-accent-green">
+          <div class="kpi-icon lucro"><i class="fa-solid fa-piggy-bank"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Lucro Líquido</span>
+            <span class="kpi-value" id="kpi-lucro">R$ 0,00</span>
+            <span class="kpi-sub" id="kpi-lucro-var"></span>
+          </div>
+        </div>
+
+        <div class="kpi-card card-accent-orange">
+          <div class="kpi-icon margem"><i class="fa-solid fa-percent"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Margem</span>
+            <span class="kpi-value" id="kpi-margem">0%</span>
+            <span class="kpi-sub">sobre vendas</span>
+          </div>
+        </div>
+
+        <div class="kpi-card card-accent-purple">
+          <div class="kpi-icon roi"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">ROI</span>
+            <span class="kpi-value" id="kpi-roi">0%</span>
+            <span class="kpi-sub">retorno s/ custo</span>
+          </div>
+        </div>
+
+        <!-- META -->
+        <div class="kpi-card meta-card card-accent-pink">
+          <div class="kpi-icon meta"><i class="fa-solid fa-bullseye"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label" id="kpi-meta-titulo">Meta Mensal</span>
+            <span class="kpi-value" id="kpi-meta-valor">R$ 0,00 / R$ 6.000,00</span>
+            <div class="meta-progress">
+              <div class="meta-bar" id="kpi-meta-bar" style="width:0%"></div>
+            </div>
+            <span class="kpi-sub" id="kpi-meta-pct">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= KPIs INVESTIMENTO ================= -->
+    <div class="kpi-section">
+      <div class="kpi-section-title">
+        <i class="fa-solid fa-boxes-stacked"></i> Investimento
+      </div>
+
+      <div class="kpi-grid kpi-3">
+        <div class="kpi-card card-accent-blue">
+          <div class="kpi-icon inventario"><i class="fa-solid fa-warehouse"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Inventário</span>
+            <span class="kpi-value" id="kpi-inventario">R$ 0,00</span>
+            <span class="kpi-sub" id="kpi-inventario-qtd">0 itens</span>
+          </div>
+        </div>
+
+        <div class="kpi-card card-accent-teal">
+          <div class="kpi-icon compras-mes"><i class="fa-solid fa-cart-shopping"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Compras no mês</span>
+            <span class="kpi-value" id="kpi-compras-mes">R$ 0,00</span>
+            <span class="kpi-sub" id="kpi-compras-mes-qtd">0 pedidos</span>
+          </div>
+        </div>
+
+        <div class="kpi-card card-accent-red">
+          <div class="kpi-icon compras-ano"><i class="fa-solid fa-cart-flatbed"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Compras no Ano</span>
+            <span class="kpi-value" id="kpi-compras-ano">R$ 0,00</span>
+            <span class="kpi-sub" id="kpi-compras-ano-qtd">0 pedidos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= GRÁFICO + DEMONSTRATIVO ================= -->
+    <div class="dash-grid-2">
+
+      <section class="card dash-chart-card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-chart-area"></i> Faturamento x Lucro</h3>
+          <span class="card-subtitle">Últimos 6 meses</span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="graficoVendas"></canvas>
+        </div>
+      </section>
+
+      <section class="card dash-demo-card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-list-check"></i> Demonstrativo</h3>
+          <span class="card-subtitle" id="demo-periodo">Todo o Período</span>
+        </div>
+
+        <div class="demo-table">
+          <div class="demo-row">
+            <span class="demo-label">Total Faturado</span>
+            <span class="demo-value" id="demo-faturado">R$ 0,00</span>
+            <span class="demo-pct">100%</span>
+            <div class="demo-bar"><div class="demo-bar-fill receita" style="width:100%"></div></div>
+          </div>
+
+          <div class="demo-row">
+            <span class="demo-label">Custo Produto (CMV)</span>
+            <span class="demo-value neg" id="demo-cmv">R$ 0,00</span>
+            <span class="demo-pct" id="demo-cmv-pct">0%</span>
+            <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-cmv-bar" style="width:0%"></div></div>
+          </div>
+
+          <div class="demo-row destaque">
+            <span class="demo-label">Lucro Bruto</span>
+            <span class="demo-value" id="demo-lucro-bruto">R$ 0,00</span>
+            <span class="demo-pct" id="demo-lucro-bruto-pct">0%</span>
+            <div class="demo-bar"><div class="demo-bar-fill lucro" id="demo-lucro-bruto-bar" style="width:0%"></div></div>
+          </div>
+
+          <div class="demo-row">
+            <span class="demo-label">Comissões</span>
+            <span class="demo-value neg" id="demo-comissao">R$ 0,00</span>
+            <span class="demo-pct" id="demo-comissao-pct">0%</span>
+            <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-comissao-bar" style="width:0%"></div></div>
+          </div>
+
+          <div class="demo-row">
+            <span class="demo-label">Frete</span>
+            <span class="demo-value neg" id="demo-frete">R$ 0,00</span>
+            <span class="demo-pct" id="demo-frete-pct">0%</span>
+            <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-frete-bar" style="width:0%"></div></div>
+          </div>
+
+          <div class="demo-row">
+            <span class="demo-label">Outros Gastos</span>
+            <span class="demo-value neg" id="demo-outros">R$ 0,00</span>
+            <span class="demo-pct" id="demo-outros-pct">0%</span>
+            <div class="demo-bar"><div class="demo-bar-fill custo" id="demo-outros-bar" style="width:0%"></div></div>
+          </div>
+
+          <div class="demo-row destaque">
+            <span class="demo-label">Lucro Operacional</span>
+            <span class="demo-value" id="demo-lucro-oper">R$ 0,00</span>
+            <span class="demo-pct" id="demo-lucro-oper-pct">0%</span>
+            <div class="demo-bar"><div class="demo-bar-fill lucro" id="demo-lucro-oper-bar" style="width:0%"></div></div>
+          </div>
+
+          <div class="demo-row total">
+            <span class="demo-label">LUCRO Líquido</span>
+            <span class="demo-value" id="demo-lucro-liq">R$ 0,00</span>
+            <span class="demo-pct" id="demo-lucro-liq-pct">0%</span>
+            <div class="demo-bar"><div class="demo-bar-fill lucro-final" id="demo-lucro-liq-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ========== CHART.JS (antes do dashboard.js) ========== -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- ========== FIREBASE COMPAT (sempre antes do firebase-global) ========== -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Global (inicializa e dispara 'firebase-ready') -->
+  <script src="/firebase-global.js?v=4.1.4"></script>
+
+  <!-- Firebase Sync (intercepta localStorage antes do resto do app) -->
+  <script src="/firebase-sync.js?v=4.1.4"></script>
+
+  <!-- ========== APP ========== -->
+  <script src="/header-manager.js?v=4.1.15"></script>
+  <script src="/script.js?v=4.1.15"></script>
+  <script src="/dashboard.js?v=4.1.5"></script>
+
+  <!-- ========== LAYOUT MODULAR (com guard anti-duplo) ========== -->
+  <script type="module">
+    import { initializeLayout } from "/components/layout.js?v=4.1.5";
+    if (!window.__mm_layout_inited__) {
+      window.__mm_layout_inited__ = true;
+      initializeLayout();
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+

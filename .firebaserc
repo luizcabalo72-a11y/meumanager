@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "meumanager-b02b0",
+    "prod": "meumanager-b02b0"
+  },
+  "targets": {},
+  "etags": {}
+}

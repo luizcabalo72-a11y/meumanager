@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produtos - Meu Manager</title>
+
+  <!-- Anti-cache -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <!-- Cache-bust no CSS -->
+  <link rel="stylesheet" href="/style.css?v=4.1.11" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- ?o. CSS fallback s? desta tela (se style.css NÃƒO tiver as classes) -->
+  <style>
+    :root{
+      --mm-bg:#f6f7fb;
+      --mm-card:#ffffff;
+      --mm-text:#111827;
+      --mm-muted:#6b7280;
+      --mm-border:#e5e7eb;
+      --mm-primary:#16a34a;
+      --mm-primary-2:#0f7a35;
+      --mm-outline:#0b5cab;
+      --mm-shadow: 0 10px 30px rgba(15, 23, 42, .06);
+      --mm-radius: 14px;
+    }
+
+    body { background: var(--mm-bg); color: var(--mm-text); }
+    main.dashboard { padding: 18px; }
+
+    .dashboard-top{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin: 6px 0 14px;
+    }
+    .dashboard-top h1{
+      font-size: 22px;
+      margin: 0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .menu-toggle{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:44px; height:44px;
+      border:1px solid var(--mm-border);
+      border-radius:12px;
+      background: var(--mm-card);
+      box-shadow: var(--mm-shadow);
+      cursor:pointer;
+    }
+    .menu-toggle:active{ transform: translateY(1px); }
+
+    .toolbar-produtos{
+      background: var(--mm-card);
+      border: 1px solid var(--mm-border);
+      border-radius: var(--mm-radius);
+      box-shadow: var(--mm-shadow);
+      padding: 14px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .toolbar-left, .toolbar-right{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-box{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border: 1px solid var(--mm-border);
+      background:#fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-width: 280px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .04);
+    }
+    .search-box i{ color: var(--mm-muted); }
+    .search-box input{
+      border:none; outline:none;
+      width: 100%;
+      font-size: 14px;
+      color: var(--mm-text);
+      background: transparent;
+    }
+
+    .filter-group{ display:flex; gap:8px; }
+    .filter-select{
+      height: 40px;
+      padding: 0 10px;
+      border: 1px solid var(--mm-border);
+      border-radius: 12px;
+      background:#fff;
+      color: var(--mm-text);
+      font-size: 13.5px;
+      min-width: 170px;
+    }
+
+    .btn{
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight: 700;
+      font-size: 13.5px;
+      user-select: none;
+    }
+    .btn-primary{
+      background: var(--mm-primary);
+      border-color: var(--mm-primary);
+      color:#fff;
+    }
+    .btn-primary:hover{ background: var(--mm-primary-2); border-color: var(--mm-primary-2); }
+    .btn-outline{
+      background:#fff;
+      border-color: var(--mm-outline);
+      color: var(--mm-outline);
+    }
+    .btn-outline:hover{ filter: brightness(.98); }
+
+    .card.forn-section{
+      background: var(--mm-card);
+      border: 1px solid var(--mm-border);
+      border-radius: var(--mm-radius);
+      box-shadow: var(--mm-shadow);
+      padding: 0;
+      overflow: hidden;
+    }
+    .forn-table{
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+    .forn-table thead th{
+      text-align:left;
+      font-size: 12px;
+      letter-spacing: .02em;
+      color: var(--mm-muted);
+      background: #f9fafb;
+      border-bottom: 1px solid var(--mm-border);
+      padding: 12px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .forn-table tbody td{
+      border-bottom: 1px solid var(--mm-border);
+      padding: 12px 12px;
+      font-size: 13.5px;
+      vertical-align: middle;
+    }
+    .forn-table tbody tr:hover{ background: #f9fafb; }
+    .center{ text-align:center; }
+
+    @media (max-width: 720px){
+      .search-box{ min-width: 100%; }
+      .filter-select{ min-width: 100%; }
+      .toolbar-produtos{ padding: 12px; }
+    }
+  </style>
+</head>
+
+<body data-page="produtos">
+  <!-- LAYOUT -->
+  <div id="header-container"></div>
+  <div id="sidebar-container"></div>
+
+  <!-- MAIN -->
+  <main class="dashboard">
+
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-box"></i> Produtos</h1>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar-produtos">
+
+      <div class="toolbar-left">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="prod-busca" type="text" placeholder="Buscar SKU, produto, marca..." />
+        </div>
+
+        <button id="abrir-modal-produto" class="btn btn-primary" type="button">
+          <i class="fa-solid fa-plus"></i> Novo Produto
+        </button>
+
+        <button id="btn-limpar-filtros" class="btn btn-outline" type="button" title="Limpar filtros">
+          <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+        </button>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="filter-group">
+          <select id="filtro-categoria" class="filter-select">
+            <option value="">Todas Categorias</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-marca" class="filter-select">
+            <option value="">Todas Marcas</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-status" class="filter-select">
+            <option value="">Todos Status</option>
+            <option value="ATIVO">Ativo</option>
+            <option value="INATIVO">Inativo</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+    <!-- /TOOLBAR -->
+
+    <section class="card forn-section" style="overflow-x:auto;">
+      <table class="forn-table" style="min-width:1100px;">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Marca</th>
+            <th class="center">Un</th>
+            <th class="center">Status</th>
+            <th class="center">AÃ§Ãµes</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-produtos-body"></tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- ?o. Helpers -->
+  <script src="/performance-fix.js?v=4.1.3"></script>
+  <script src="/lazy-table-helper.js?v=4.1.3"></script>
+
+  <!-- ?o. Layout modular PRIMEIRO (pra montar header/sidebar antes do resto) -->
+  <script type="module">
+    import { initializeLayout } from "/components/layout.js?v=4.1.3";
+    initializeLayout();
+  </script>
+
+  <!-- Header manager -->
+  <script src="/header-manager.js?v=4.1.15"></script>
+
+  <!-- Firebase Compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="/firebase-global.js?v=4.1.3"></script>
+  <script src="/firebase-sync.js?v=4.1.3"></script>
+
+  <!-- Core -->
+  <script src="/script.js?v=4.1.15"></script>
+
+  <!-- pÃ¡gina -->
+  <script src="/produtos.js?v=4.1.3"></script>
+</body>
+</html>
+
+
+
+
+
+

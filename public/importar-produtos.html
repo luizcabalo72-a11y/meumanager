@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Importar Produtos com PreÃ§os - Meu Manager</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 { color: #333; margin-bottom: 10px; font-size: 28px; }
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 30px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .message {
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: left;
+    }
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+    .message.error {
+      background: #fee2e2;
+      color: #7f1d1d;
+      border: 1px solid #fca5a5;
+    }
+    .message.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: left;
+      overflow-x: auto;
+      font-size: 11px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>?Y"? Importando Produtos...</h1>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill">0%</div>
+    </div>
+
+    <div id="message" class="message info">? Iniciando importaÃ§Ã£o...</div>
+  </div>
+
+  <script>
+    async function importarProdutosComPrecos() {
+      const messageDiv = document.getElementById('message');
+      const progressFill = document.getElementById('progressFill');
+
+      function updateProgress(percent, text) {
+        progressFill.style.width = percent + '%';
+        progressFill.textContent = Math.round(percent) + '%';
+        messageDiv.className = 'message info';
+        messageDiv.innerHTML = text || (percent + '%');
+      }
+
+      try {
+        updateProgress(5, '?Y"? Obtendo sessÃ£o...');
+
+        // 1. ObtÃªm sessÃ£o
+        const sessao = JSON.parse(localStorage.getItem('ft_sessao'));
+        if (!sessao) {
+          throw new Error('Nenhuma sessÃ£o encontrada! FaÃ§a login primeiro.');
+        }
+        const empresaId = sessao.empresaId;
+
+        updateProgress(15, '?Y"? Carregando backup...');
+
+        // 2. Carrega backup
+        const response = await fetch('backup.json');
+        if (!response.ok) {
+          throw new Error('Arquivo backup.json NÃƒO encontrado');
+        }
+        const backup = await response.json();
+        updateProgress(25, '?o" Backup carregado');
+
+        // 3. Extrai dados
+        const produtosOriginais = backup.dados?.produtos || [];
+        const compras = backup.dados?.compras || [];
+        const vendas = backup.dados?.vendas || [];
+
+        updateProgress(35, `?Y"S Processando ${produtosOriginais.length} produtos...`);
+
+        // 4. Cria mapa de PreÃ§os por SKU
+        const precosPorSku = {};
+        
+        console.log('Processando compras:', compras.length);
+        // Compras tÃªm estrutura direta: .sku, .unitBase ou .unitFinal
+        for (const compra of compras) {
+          if (compra.sku) {
+            const preco = compra.unitFinal || compra.unitBase || 0;
+            if (preco > 0) {
+              if (!precosPorSku[compra.sku] || preco > precosPorSku[compra.sku]) {
+                precosPorSku[compra.sku] = preco;
+              }
+            }
+          }
+        }
+
+        // Vendas tambÃ©m tÃªm estrutura direta: .sku, .valorUnit
+        for (const venda of vendas) {
+          if (venda.sku) {
+            const preco = venda.valorUnit || 0;
+            if (preco > 0) {
+              if (!precosPorSku[venda.sku] || preco > precosPorSku[venda.sku]) {
+                precosPorSku[venda.sku] = preco;
+              }
+            }
+          }
+        }
+
+        updateProgress(50, `?Y'? Encontrados PreÃ§os para ${Object.keys(precosPorSku).length} produtos`);
+
+        // 5. ReconstrÃ³i produtos
+        const produtosReconstruidos = produtosOriginais.map(p => {
+          const sku = p.sku || p.id || '';
+          const preco = precosPorSku[sku] || 0;
+          
+          return {
+            id: p.id || p.sku || '',
+            sku: p.sku || p.id || '',
+            nome: p.nome || p.produto || 'Produto sem nome',
+            produto: p.produto || p.nome || 'Produto sem nome',
+            descricao: p.descricao || p.produto || p.nome || '',
+            preco: parseFloat(preco) || 0,
+            precoVenda: parseFloat(preco) || 0,
+            estoque: parseInt(p.estoque) || 0,
+            categoria: p.categoria || 'Sem categoria',
+            marca: p.marca || '',
+            status: p.status || 'ATIVO',
+            un: p.un || 'UN',
+            empresaId: empresaId,
+            _empresaId: empresaId,
+            createdAt: p.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+        });
+
+        updateProgress(75, `?o. ${produtosReconstruidos.length} produtos prontos`);
+
+        // 6. Salva no localStorage
+        const chave = 'acc_' + empresaId + '__produtos';
+        localStorage.setItem(chave, JSON.stringify(produtosReconstruidos));
+
+        updateProgress(90, '?Y'? Dados salvos');
+
+        // 7. Log dos primeiros 5 produtos
+        let logProdutos = '<strong>Primeiros 5 produtos:</strong><pre>';
+        for (let i = 0; i < Math.min(5, produtosReconstruidos.length); i++) {
+          const p = produtosReconstruidos[i];
+          logProdutos += (i+1) + '. ' + p.nome + '\n' +
+                         '   SKU: ' + p.sku + '\n' +
+                         '   PreÃ§o: R$ ' + p.preco.toFixed(2) + '\n' +
+                         '   Estoque: ' + p.estoque + '\n\n';
+        }
+        logProdutos += '</pre>';
+
+        updateProgress(100, '?o. ImportaÃ§Ã£o Completa!');
+
+        messageDiv.className = 'message success';
+        messageDiv.innerHTML = '<strong>?o. Produtos Importados com Sucesso!</strong><br>' +
+          'Total: ' + produtosReconstruidos.length + ' produtos<br>' +
+          'Com PreÃ§os: ' + Object.keys(precosPorSku).length + '<br>' +
+          logProdutos +
+          '<br>Redirecionando para produtos em 2 segundos...';
+
+        setTimeout(function() {
+          window.location.href = 'produtos.html';
+        }, 2000);
+
+      } catch (error) {
+        console.error('Erro:', error);
+        messageDiv.className = 'message error';
+        messageDiv.innerHTML = '<strong>?O Erro:</strong><br>' +
+          error.message + '<br>' +
+          '<button onclick="location.reload()" style="' +
+            'background: #f48771; color: white; border: none; ' +
+            'padding: 8px 16px; border-radius: 4px; cursor: pointer; ' +
+            'margin-top: 10px;">Tentar Novamente</button>';
+      }
+    }
+
+    // Inicia automaticamente
+    importarProdutosComPrecos();
+  </script>
+</body>
+</html>
+
+

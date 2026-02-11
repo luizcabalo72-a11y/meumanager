@@ -1,0 +1,97 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ================= HELPERS ================= */
+
+    function isLogged() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isLogged() && request.auth.uid == uid;
+    }
+
+    function isMember(empresaId) {
+      return isLogged() &&
+        exists(/databases/$(database)/documents/empresas/$(empresaId)/members/$(request.auth.uid));
+    }
+
+    function memberRole(empresaId) {
+      return get(/databases/$(database)/documents/empresas/$(empresaId)/members/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin(empresaId) {
+      return isMember(empresaId) && memberRole(empresaId) == 'admin';
+    }
+
+    function subscriptionStatus(empresaId) {
+      return exists(/databases/$(database)/documents/subscriptions/$(empresaId))
+        ? get(/databases/$(database)/documents/subscriptions/$(empresaId)).data.status
+        : "none";
+    }
+
+    function isSubscriptionActive(empresaId) {
+      let st = subscriptionStatus(empresaId);
+      return st == "active" || st == "trialing";
+    }
+
+    /* ================= USERS ================= */
+    match /users/{uid} {
+      allow read: if isSelf(uid);
+
+      // Permite criar/atualizar o próprio doc (campos básicos)
+      allow create: if isSelf(uid);
+      allow update: if isSelf(uid);
+      allow delete: if false;
+
+      // Subcoleção para listar empresas do usuário
+      match /memberships/{empresaId} {
+        allow read: if isSelf(uid);
+        // criação/atualização via Cloud Functions (evita elevação de privilégio)
+        allow write: if false;
+      }
+    }
+
+    /* ================= EMPRESAS ================= */
+    match /empresas/{empresaId} {
+      // Ler dados da empresa: apenas membros
+      allow read: if isMember(empresaId);
+
+      // Criar/deletar: somente backend (Cloud Functions)
+      allow create, delete: if false;
+
+      // Atualizar: somente admin
+      allow update: if isAdmin(empresaId);
+
+      // Controle de membros: somente leitura (admin gerencia via backend)
+      match /members/{uid} {
+        allow read: if isMember(empresaId);
+        allow write: if false;
+      }
+
+      // Dados do sistema (datasets) — documentos, por exemplo:
+      // empresas/{empresaId}/dados/produtos
+      match /dados/{dataset} {
+        allow read, write: if isMember(empresaId) && isSubscriptionActive(empresaId);
+      }
+
+      // Se você tiver outras subcoleções no futuro
+      match /{document=**} {
+        allow read, write: if isMember(empresaId);
+      }
+    }
+
+    /* ================= SUBSCRIPTIONS ================= */
+    match /subscriptions/{empresaId} {
+      allow read: if isMember(empresaId);
+      allow write: if false;
+    }
+
+    /* ================= BLOQUEIA O RESTO ================= */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

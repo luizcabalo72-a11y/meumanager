@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <!-- META ANTI-CACHE (IMPORTANTE) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compras - Meu Manager</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="/style.css?v=4.1.11" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* MantÃ©m as 4 primeiras colunas "coladas" (ID / Data / SKU / Produto) */
+    .forn-table { min-width: 2200px; }
+    .forn-table th:nth-child(1),
+    .forn-table td:nth-child(1) { position: sticky; left: 0; background: #fff; z-index: 3; }
+    .forn-table th:nth-child(2),
+    .forn-table td:nth-child(2) { position: sticky; left: 62px; background: #fff; z-index: 3; }
+    .forn-table th:nth-child(3),
+    .forn-table td:nth-child(3) { position: sticky; left: 162px; background: #fff; z-index: 3; }
+    .forn-table th:nth-child(4),
+    .forn-table td:nth-child(4) { position: sticky; left: 292px; background: #fff; z-index: 3; }
+
+    .forn-table td:nth-child(4),
+    .forn-table th:nth-child(4) { box-shadow: 6px 0 12px rgba(15,23,42,.08); }
+
+    /* inputs date com mesmo visual do select */
+    .filter-select[type="date"] { padding: 9px 12px; }
+  
+    /* botÃ£o de status na tabela (usa o mesmo visual de .pill) */
+    .pill.pill-click{
+      border: none;
+      cursor: pointer;
+    }
+    .pill.pill-click:focus{
+      outline: 2px solid rgba(37,99,235,.35);
+      outline-offset: 2px;
+    }
+
+    /* =============================
+       STATUS (PILLS) + AÃ§Ãµes (?cones) - padrÃ£o do print
+       Escopo: apenas Compras
+    ============================= */
+    .compras-row-actions{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      min-width:86px;
+    }
+
+    .icon-btn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,.10);
+      background:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    .icon-btn:hover{
+      border-color:rgba(15,23,42,.18);
+      box-shadow:0 6px 16px rgba(2,6,23,.08);
+    }
+    .icon-btn:active{ transform:scale(.98); }
+    .icon-btn i{ font-size:14px; opacity:.9; }
+    .icon-btn.icon-edit i{ color:#0f172a; }
+    .icon-btn.icon-del  i{ color:#ef4444; }
+
+    .pill-status{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 12px;
+      border-radius:999px;
+      font-weight:800;
+      letter-spacing:.6px;
+      font-size:12px;
+      border:1px solid transparent;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      transition:transform .06s ease, filter .15s ease;
+    }
+    .pill-status:hover{ filter:brightness(.98); }
+    .pill-status:active{ transform:scale(.99); }
+
+    .pill-concl{  background:#dcfce7; color:#166534; border-color:#bbf7d0; }
+    .pill-transp{ background:#dbeafe; color:#1d4ed8; border-color:#bfdbfe; }
+    .pill-aguard{ background:#fef9c3; color:#a16207; border-color:#fde68a; }
+    .pill-cancel{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+  </style>
+</head>
+
+<body data-page="compras">
+  <!-- ================= LAYOUT: Header e Sidebar Componentizados ================= -->
+  <div id="header-container"></div>
+  <div id="sidebar-container"></div>
+
+  <!-- ================= MAIN ================= -->
+  <main class="dashboard">
+
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-cart-shopping"></i> Compras</h1>
+    </div>
+
+    <!-- ================= TOOLBAR COM FILTROS (mesmo padrÃ£o de Vendas) ================= -->
+    <div class="toolbar-produtos">
+
+      <div class="toolbar-left">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="compra-busca" type="text" placeholder="Buscar SKU, produto, fornecedor, pedido..." />
+        </div>
+
+        <button id="abrir-modal-compra" class="btn btn-primary" type="button">
+          <i class="fa-solid fa-plus"></i> Nova Compra
+        </button>
+
+        <button id="btn-limpar-filtros" class="btn btn-outline" type="button" title="Limpar filtros">
+          <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+        </button>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="filter-group">
+          <select id="filtro-fornecedor" class="filter-select">
+            <option value="">Todos Fornecedores</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-marca" class="filter-select">
+            <option value="">Todas Marcas</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-status" class="filter-select">
+            <option value="">Todos Status</option>
+            <option value="AGUARD">Aguardando</option>
+            <option value="TRANSP">Em Transporte</option>
+            <option value="CONCL">concluÃ­do</option>
+            <option value="CANCEL">Cancelado</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select id="filtro-periodo" class="filter-select">
+            <option value="">Todo PerÃ­odo</option>
+            <option value="hoje">Hoje</option>
+            <option value="7d">?ltimos 7 dias</option>
+            <option value="30d">?ltimos 30 dias</option>
+            <option value="90d">?ltimos 90 dias</option>
+            <option value="mes">Este mÃªs</option>
+            <option value="este-ano">Este ano</option>
+            <option value="ano-passado">Ano passado</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <input id="filtro-data-inicio" class="filter-select" type="date" title="Data inicial" />
+        </div>
+
+        <div class="filter-group">
+          <input id="filtro-data-fim" class="filter-select" type="date" title="Data final" />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= RESUMO ================= -->
+    <div class="vendas-resumo">
+      <span id="contador-compras" class="contador-resultados"></span>
+      <div class="vendas-totais">
+        <span class="total-item">Itens: <strong id="qtd-itens-compras">0</strong></span>
+        <span class="total-item">Total: <strong id="total-compras">R$ 0,00</strong></span>
+      </div>
+    </div>
+
+    <!-- ================= TABELA ================= -->
+    <section class="card forn-section vendas-table-card">
+      <div class="table-scroll-container vendas-scroll">
+        <div class="table-wrapper vendas-wrapper" id="compras-table-wrapper">
+          <table class="forn-table" id="compras-table">
+            <thead>
+              <tr>
+                <th class="center" style="width:62px;">ID</th>
+                <th class="center" style="width:100px;">Data Compra</th>
+                <th style="width:130px;">SKU</th>
+                <th style="width:320px;">Produto</th>
+                <th style="width:90px;">Marca</th>
+                <th style="width:120px;">Fornecedor</th>
+                <th style="width:130px;">NÂº Pedido</th>
+                <th style="width:110px;">Lote (8)</th>
+                <th style="width:160px;">Rastreio</th>
+                <th class="center" style="width:60px;">Qtd</th>
+                <th class="right" style="width:95px;">Unit Base</th>
+                <th class="right" style="width:95px;">Desconto</th>
+                <th class="right" style="width:90px;">Frete</th>
+                <th class="right" style="width:90px;">Imposto</th>
+                <th class="right" style="width:95px;">Unit Final</th>
+                <th class="right" style="width:95px;">Total</th>
+                <th class="center" style="width:110px;">Prev. Entrega</th>
+                <th class="center" style="width:110px;">Entrega Real</th>
+                <th class="center" style="width:90px;">Status</th>
+                <th class="center" style="width:80px;">AÃ§Ãµes</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-compras-body"></tbody>
+          </table>
+        </div>
+
+        <!-- barra horizontal fixa (mesmo CSS das vendas) -->
+        <div class="vendas-xbar" id="compras-xbar" aria-hidden="true">
+          <div class="vendas-xbar-inner" id="compras-xbar-inner"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== SCRIPTS (ordem segura) ========== -->
+  <script src="/header-manager.js?v=4.1.15"></script>
+
+  <!-- Firebase Compat Global -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-functions-compat.js"></script>
+
+  <script src="/firebase-global.js?v=4.1.4"></script>
+  <script src="/firebase-sync.js?v=4.1.4"></script>
+
+  <script src="/script.js?v=4.1.15"></script>
+
+  <!-- ========== LAYOUT MODULAR ========== -->
+  <script type="module">
+    import { initializeLayout } from "/components/layout.js";
+    if (!window.__mm_layout_inited__) {
+      window.__mm_layout_inited__ = true;
+      initializeLayout();
+    }
+  </script>
+
+  <!-- page -->
+  <script src="/compras.js?v=4.3.4"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+

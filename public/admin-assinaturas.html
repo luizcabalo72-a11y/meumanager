@@ -1,0 +1,148 @@
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Assinaturas - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="stylesheet" href="/style.css?v=4.1.11" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    .admin-toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .admin-toolbar .left,
+    .admin-toolbar .right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .admin-search{ min-width:260px; }
+    .admin-muted{ color:#64748b; font-size:12px; }
+
+    .admin-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 12px;
+      border-radius:999px;
+      font-weight:800;
+      letter-spacing:.5px;
+      font-size:11px;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+    .admin-pill.trial{ background:#fef9c3; color:#a16207; border-color:#fde68a; }
+    .admin-pill.active{ background:#dcfce7; color:#166534; border-color:#bbf7d0; }
+    .admin-pill.expired{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+
+    .admin-days.warn{ color:#b45309; font-weight:700; }
+    .admin-days.critical{ color:#b91c1c; font-weight:800; }
+
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12px; }
+
+    .admin-table-wrapper{ overflow:auto; }
+    .admin-table{ min-width: 980px; }
+    .admin-empty{ padding:14px; color:#64748b; }
+  </style>
+</head>
+
+<body data-page="admin-assinaturas">
+
+<!-- ================= LAYOUT: Header e Sidebar Componentizados ================= -->
+<div id="header-container"></div>
+<div id="sidebar-container"></div>
+
+<main class="dashboard">
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-user-shield"></i> Admin Assinaturas</h1>
+  </div>
+
+  <section class="card" style="margin-bottom:16px;">
+    <div class="admin-toolbar">
+      <div class="left">
+        <input id="filtro-busca" class="filter-select admin-search" type="text" placeholder="Buscar empresa, email, ID..." />
+        <select id="filtro-status" class="filter-select">
+          <option value="">Todos Status</option>
+          <option value="trialing">Trial</option>
+          <option value="active">Ativo</option>
+          <option value="expired">Expirado</option>
+        </select>
+        <button id="btn-recarregar" class="btn btn-outline">
+          <i class="fa-solid fa-rotate"></i> Atualizar
+        </button>
+      </div>
+      <div class="right admin-muted">
+        <span id="contador-assinaturas">0 empresas</span>
+        <span>.</span>
+        <span id="admin-ultima-atualizacao">?ltima atualizaÃ§Ã£o: --</span>
+      </div>
+    </div>
+
+    <div class="table-scroll-container">
+      <div class="admin-table-wrapper">
+        <table class="forn-table admin-table">
+          <thead>
+            <tr>
+              <th style="width:160px;">Empresa ID</th>
+              <th style="width:220px;">Empresa</th>
+              <th style="width:220px;">Email</th>
+              <th style="width:90px;">Plano</th>
+              <th style="width:110px;">Status</th>
+              <th class="center" style="width:130px;">Trial Fim</th>
+              <th class="center" style="width:90px;">Dias</th>
+              <th class="center" style="width:130px;">Expira Em</th>
+              <th class="center" style="width:150px;">Atualizado</th>
+            </tr>
+          </thead>
+          <tbody id="admin-assinaturas-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ========== SCRIPTS (ordem segura) ========== -->
+<script src="/header-manager.js?v=4.1.15"></script>
+
+<!-- Firebase Compat Global -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-functions-compat.js"></script>
+
+<script src="/firebase-global.js?v=4.1.4"></script>
+<script src="/firebase-sync.js?v=4.1.4"></script>
+
+<script src="/script.js?v=4.1.15"></script>
+
+<!-- ========== LAYOUT MODULAR ========== -->
+<script type="module">
+  import { initializeLayout } from "/components/layout.js";
+  if (!window.__mm_layout_inited__) {
+    window.__mm_layout_inited__ = true;
+    initializeLayout();
+  }
+</script>
+
+<script src="/admin-assinaturas.js?v=1.0.0"></script>
+
+</body>
+</html>
+
+
+
+
+
+

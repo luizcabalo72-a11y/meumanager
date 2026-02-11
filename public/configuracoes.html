@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configurações - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="stylesheet" href="/style.css?v=4.1.12" />
+  <link rel="stylesheet" href="configuracoes.css?v=4.1.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="configuracoes">
+
+<!-- ================= LAYOUT: Header e Sidebar Componentizados ================= -->
+<div id="header-container"></div>
+<div id="sidebar-container"></div>
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-gear"></i> Configurações</h1>
+  </div>
+
+  <div class="config-page">
+
+    <!-- Info da empresa logada -->
+    <div class="card" style="padding: 16px 20px; background: #f0f9ff; border-left: 4px solid var(--blue); margin-bottom: 24px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="fa-solid fa-info-circle" style="font-size: 24px; color: var(--blue);"></i>
+          <div>
+            <strong style="color: #1e293b;">Empresa Ativa:</strong>
+            <span id="hint-conta-ativa" style="color: #64748b; margin-left: 8px;">Carregando...</span>
+            <div style="margin-top: 8px;">
+              <span id="config-seats-pill" class="config-seats-pill is-loading" hidden>Plano Trial | Usuarios: --/--</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-nova-empresa" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nova Empresa
+          </button>
+          <button id="btn-gerenciar-usuarios" class="btn btn-outline">
+            <i class="fa-solid fa-users"></i> Gerenciar Usuários
+          </button>
+          <button id="btn-ver-empresas" class="btn btn-outline">
+            <i class="fa-solid fa-list"></i> Ver Todas
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MINHAS EMPRESAS ========== -->
+    <div id="secao-empresas" style="display: none; margin-bottom: 24px;">
+      <div class="card">
+        <div class="card-header" style="padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-buildings"></i> Minhas Empresas
+          </h2>
+          <button id="btn-fechar-empresas" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-times"></i> Fechar
+          </button>
+        </div>
+        <div style="padding: 20px;">
+          <div id="lista-empresas-config" class="empresas-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LINHA 0: DADOS DA EMPRESA ATIVA ========== -->
+    <div class="config-row">
+      <div class="config-card config-2">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
+            <i class="fa-solid fa-building"></i>
+          </div>
+          <div>
+            <h3>Dados da Empresa</h3>
+            <small>Informações que aparecem no sistema</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="config-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="form-group">
+              <label><i class="fa-solid fa-building"></i> Razão Social *</label>
+              <input type="text" id="cfg-empresa-razao" placeholder="Ex: Ferratec Tools Ltda" />
+              <span class="hint">Nome oficial registrado</span>
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-signature"></i> Nome Fantasia *</label>
+              <input type="text" id="cfg-empresa-nome" placeholder="Ex: Ferratec" />
+              <span class="hint">Nome que aparece no sistema</span>
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-id-card"></i> CNPJ / CPF</label>
+              <input type="text" id="cfg-empresa-documento" placeholder="00.000.000/0000-00" maxlength="18" />
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-receipt"></i> Inscrição Estadual</label>
+              <input type="text" id="cfg-empresa-ie" placeholder="000.000.000.000" />
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-phone"></i> Telefone</label>
+              <input type="text" id="cfg-empresa-telefone" placeholder="(00) 00000-0000" maxlength="15" />
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-envelope"></i> E-mail Comercial</label>
+              <input type="email" id="cfg-empresa-email" placeholder="contato@empresa.com" />
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-map-marker-alt"></i> Cidade / UF</label>
+              <input type="text" id="cfg-empresa-cidade" placeholder="São Paulo - SP" />
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-globe"></i> Site</label>
+              <input type="url" id="cfg-empresa-site" placeholder="https://www.empresa.com" />
+            </div>
+          </div>
+
+          <!-- Logo -->
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #334155;">
+              <i class="fa-solid fa-image"></i> Logo da Empresa
+            </label>
+            <div style="display: flex; align-items: center; gap: 20px;">
+              <div id="preview-logo" style="width: 100px; height: 100px; border: 2px dashed #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden;">
+                <i class="fa-solid fa-image" style="font-size: 32px; color: #94a3b8;"></i>
+              </div>
+              <div>
+                <label for="input-logo" class="btn btn-outline" style="cursor: pointer; display: inline-block;">
+                  <i class="fa-solid fa-upload"></i> Escolher Logo
+                </label>
+                <input type="file" id="input-logo" accept="image/*" style="display: none;" />
+                <p style="margin-top: 8px; font-size: 12px; color: #64748b;">PNG, JPG ou SVG. Tamanho recomendado: 200x200px</p>
+                <button id="btn-remover-logo" class="btn btn-danger btn-sm" style="margin-top: 8px; display: none;">
+                  <i class="fa-solid fa-trash"></i> Remover Logo
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+            <button id="btn-salvar-empresa" class="btn btn-success" style="padding: 12px 24px; font-size: 16px;">
+              <i class="fa-solid fa-save"></i> Salvar Dados da Empresa
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LINHA 1: Saldo Inicial + Tarifas ML ========== -->
+    <div class="config-row">
+
+      <!-- Saldo Inicial -->
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon">
+            <i class="fa-solid fa-coins"></i>
+          </div>
+          <div>
+            <h3>Saldo Inicial</h3>
+            <small>Ponto de partida do financeiro</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-calendar"></i> Data início</label>
+            <input type="text" id="cfg-data-inicio-financeiro" placeholder="01/01/2025" maxlength="10" />
+            <span class="hint">Data a partir da qual o financeiro será calculado</span>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-dollar-sign"></i> Saldo</label>
+            <input type="text" id="cfg-saldo-inicial" placeholder="0,00" />
+            <span class="hint">Valor em caixa na data de início</span>
+          </div>
+          <button id="btn-salvar-saldo-card" class="btn btn-primary" style="width: 100%; margin-top: 12px;">
+            <i class="fa-solid fa-save"></i> Salvar Saldo e Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarifas ML -->
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: #FFE600;">
+            <i class="fa-solid fa-percent" style="color: #333;"></i>
+          </div>
+          <div>
+            <h3>Tarifas Mercado Livre</h3>
+            <small>Comissões padrão por tipo de anúncio</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-star"></i> Clássico</label>
+            <div class="input-with-suffix">
+              <input type="number" id="cfg-tarifa-classico" value="12" min="0" max="100" step="0.1" />
+              <span>%</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-crown"></i> Premium</label>
+            <div class="input-with-suffix">
+              <input type="number" id="cfg-tarifa-premium" value="17" min="0" max="100" step="0.1" />
+              <span>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ?o. NOVA LINHA: METAS -->
+    <div class="config-row">
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: #ec4899;">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <div>
+            <h3>Metas</h3>
+            <small>Usadas no Dashboard (Meta Mensal e Anual)</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-calendar-day"></i> Meta Mensal</label>
+            <input type="text" id="cfg-meta-mensal" placeholder="6.000,00" />
+            <span class="hint">Ex.: 6000 (o Dashboard usa isso na barra de progresso)</span>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-calendar"></i> Meta Anual</label>
+            <input type="text" id="cfg-meta-anual" placeholder="72.000,00" />
+            <span class="hint">Ex.: 72000 (recomendado para visão anual)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LINHA 2: Margens + Estoque ========== -->
+    <div class="config-row">
+
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: #22c55e;">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <div>
+            <h3>Margens padrão</h3>
+            <small>Margens sugeridas para simulação</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-arrow-down"></i> Margem Mínima</label>
+            <div class="input-with-suffix">
+              <input type="number" id="cfg-margem-minima" value="15" min="0" max="100" step="1" />
+              <span>%</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-arrow-up"></i> Margem Alvo</label>
+            <div class="input-with-suffix">
+              <input type="number" id="cfg-margem-alvo" value="30" min="0" max="100" step="1" />
+              <span>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: #f97316;">
+            <i class="fa-solid fa-warehouse"></i>
+          </div>
+          <div>
+            <h3>Controle de Estoque</h3>
+            <small>Alertas e limites</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-box"></i> Estoque mínimo</label>
+            <input type="number" id="cfg-estoque-minimo" value="5" min="0" step="1" />
+            <span class="hint">Quantidade Mínima para alerta</span>
+          </div>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="cfg-alerta-estoque" checked style="width: auto;" />
+              <span>Ativar alerta de estoque baixo</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== LINHA 3: Impostos + Tema ========== -->
+    <div class="config-row">
+
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: #ef4444;">
+            <i class="fa-solid fa-landmark"></i>
+          </div>
+          <div>
+            <h3>Impostos</h3>
+            <small>Configuração tributária</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-receipt"></i> Imposto padrão</label>
+            <div class="input-with-suffix">
+              <input type="number" id="cfg-imposto-default" value="0" min="0" max="100" step="0.1" />
+              <span>%</span>
+            </div>
+            <span class="hint">Deixe 0 se for isento ou calcular manualmente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fa-solid fa-palette"></i>
+          </div>
+          <div>
+            <h3>Personalização</h3>
+            <small>Cor do tema</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-droplet"></i> Cor Principal</label>
+            <div class="color-picker-box">
+              <input type="color" id="cfg-cor-tema" value="#003366" />
+              <span id="cfg-cor-valor">#003366</span>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <button type="button" class="cor-rapida" data-cor="#003366" style="width: 32px; height: 32px; background: #003366; border: 2px solid #fff; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" title="Azul"></button>
+              <button type="button" class="cor-rapida" data-cor="#dc2626" style="width: 32px; height: 32px; background: #dc2626; border: 2px solid #fff; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" title="Vermelho"></button>
+              <button type="button" class="cor-rapida" data-cor="#16a34a" style="width: 32px; height: 32px; background: #16a34a; border: 2px solid #fff; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" title="Verde"></button>
+              <button type="button" class="cor-rapida" data-cor="#7c3aed" style="width: 32px; height: 32px; background: #7c3aed; border: 2px solid #fff; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" title="Roxo"></button>
+              <button type="button" class="cor-rapida" data-cor="#ea580c" style="width: 32px; height: 32px; background: #ea580c; border: 2px solid #fff; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" title="Laranja"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== LINHA 4: Links Sociais ========== -->
+    <div class="config-row">
+      <div class="config-card config-2">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fa-solid fa-share-nodes"></i>
+          </div>
+          <div>
+            <h3>Links Sociais</h3>
+            <small>Redes sociais e canais de venda (exibidos no header)</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="config-grid">
+            <div class="form-group">
+              <label><img src="icones-sociais/Email.ico" alt="E-mail" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> E-mail</label>
+              <input type="email" id="social-email" placeholder="contato@empresa.com" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/wuazap.ico" alt="WhatsApp" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> WhatsApp</label>
+              <input type="text" id="social-whatsapp" placeholder="11999999999" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Youtube.ico" alt="YouTube" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> YouTube</label>
+              <input type="url" id="social-youtube" placeholder="https://youtube.com/@canal" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Insagran.ico" alt="Instagram" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> Instagram</label>
+              <input type="url" id="social-instagram" placeholder="https://instagram.com/perfil" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Facebook.ico" alt="Facebook" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> Facebook</label>
+              <input type="url" id="social-facebook" placeholder="https://facebook.com/pagina" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Printerest.ico" alt="Pinterest" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> Pinterest</label>
+              <input type="url" id="social-pinterest" placeholder="https://pinterest.com/perfil" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Facebook.ico" alt="Marketplace" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> Marketplace</label>
+              <input type="url" id="social-marketplace" placeholder="Link do marketplace" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Mercado-Livre.ico" alt="Mercado Livre" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> Mercado Livre</label>
+              <input type="url" id="social-mercadolivre" placeholder="https://mercadolivre.com.br/..." />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Mercado-Pago.ico" alt="Mercado Pago" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> Mercado Pago</label>
+              <input type="url" id="social-mercadopago" placeholder="Link Mercado Pago" />
+            </div>
+            <div class="form-group">
+              <label><img src="icones-sociais/Aliexpress.ico" alt="AliExpress" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"> AliExpress</label>
+              <input type="url" id="social-aliexpress" placeholder="https://aliexpress.com/..." />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LINHA 5: Backup + Estatísticas ========== -->
+    <div class="config-row">
+
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: #3b82f6;">
+            <i class="fa-solid fa-download"></i>
+          </div>
+          <div>
+            <h3>Backup & Dados</h3>
+            <small>Exportar, importar e limpar dados</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div class="backup-buttons">
+            <button type="button" id="btn-exportar-backup" class="btn btn-primary">
+              <i class="fa-solid fa-file-export"></i> Exportar Backup
+            </button>
+            <button type="button" id="btn-importar-backup" class="btn btn-outline">
+              <i class="fa-solid fa-file-import"></i> Importar Backup
+            </button>
+            <input type="file" id="input-importar-backup" accept=".json" style="display: none;" />
+            <button type="button" id="btn-limpar-dados" class="btn-danger-light">
+              <i class="fa-solid fa-trash"></i> Limpar Todos os Dados
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-card config-1">
+        <div class="config-card-header">
+          <div class="config-icon" style="background: #8b5cf6;">
+            <i class="fa-solid fa-chart-bar"></i>
+          </div>
+          <div>
+            <h3>Estatísticas</h3>
+            <small>Resumo dos dados armazenados</small>
+          </div>
+        </div>
+        <div class="config-card-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div style="text-align: center; padding: 16px; background: #f8fafc; border-radius: 8px;">
+              <div style="font-size: 28px; font-weight: 700; color: var(--blue);" id="stat-produtos">0</div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Produtos</div>
+            </div>
+            <div style="text-align: center; padding: 16px; background: #f8fafc; border-radius: 8px;">
+              <div style="font-size: 28px; font-weight: 700; color: var(--blue);" id="stat-fornecedores">0</div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Fornecedores</div>
+            </div>
+            <div style="text-align: center; padding: 16px; background: #f8fafc; border-radius: 8px;">
+              <div style="font-size: 28px; font-weight: 700; color: var(--blue);" id="stat-compras">0</div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Compras</div>
+            </div>
+            <div style="text-align: center; padding: 16px; background: #f8fafc; border-radius: 8px;">
+              <div style="font-size: 28px; font-weight: 700; color: var(--blue);" id="stat-vendas">0</div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Vendas</div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 16px; padding: 12px; background: #fef3c7; border-radius: 8px;">
+            <div style="font-size: 14px; color: #92400e;">
+              <i class="fa-solid fa-database"></i>
+              <strong id="stat-tamanho">0 KB</strong> usados
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== BOTÃO SALVAR (Sticky Bottom) ========== -->
+    <div class="config-save">
+      <button type="button" id="btn-salvar-config" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk"></i> Salvar Todas as Configurações
+      </button>
+    </div>
+
+    <div style="text-align: center; padding: 20px;">
+      <small id="config-ultima-atualizacao" style="color: #9ca3af;">Carregando...</small>
+    </div>
+
+  </div>
+</main>
+
+<!-- ================= MODAL NOVA EMPRESA ================= -->
+<div id="modal-nova-empresa" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-plus-circle"></i> Cadastrar Nova Empresa</h3>
+      <button class="modal-close" onclick="fecharModalNovaEmpresa()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="form-nova-empresa">
+        <div class="form-group">
+          <label for="nova-empresa-razao"><i class="fa-solid fa-building"></i> Razão Social *</label>
+          <input type="text" id="nova-empresa-razao" class="form-control" required placeholder="Nome oficial da empresa" />
+        </div>
+
+        <div class="form-group">
+          <label for="nova-empresa-fantasia"><i class="fa-solid fa-signature"></i> Nome Fantasia *</label>
+          <input type="text" id="nova-empresa-fantasia" class="form-control" required placeholder="Nome usado no dia a dia" />
+        </div>
+
+        <div class="form-group">
+          <label for="nova-empresa-cnpj"><i class="fa-solid fa-id-card"></i> CNPJ</label>
+          <input type="text" id="nova-empresa-cnpj" class="form-control" maxlength="18" placeholder="00.000.000/0000-00" />
+        </div>
+
+        <div class="form-group">
+          <label for="nova-empresa-saldo"><i class="fa-solid fa-wallet"></i> Saldo Inicial em Caixa</label>
+          <input type="text" id="nova-empresa-saldo" class="form-control" placeholder="R$ 0,00" />
+          <span class="hint">Valor em caixa no início das operações desta empresa</span>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="fecharModalNovaEmpresa()">Cancelar</button>
+      <button type="button" class="btn btn-success" onclick="criarNovaEmpresa()">
+        <i class="fa-solid fa-check"></i> Criar e Ativar Empresa
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL USUÁRIOS ================= -->
+<div id="modal-membros-config" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 760px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-users"></i> Usuários da Empresa</h3>
+      <button class="modal-close" onclick="fecharModalMembrosConfig()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="membros-config-empresa-id" />
+
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-weight:700;color:#0f172a;" id="membros-config-empresa-nome">Empresa</div>
+        <div style="font-size:13px;color:#475569;" id="membros-config-resumo">Plano: - | Usuários: -</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 160px 120px;gap:10px;margin-bottom:14px;">
+        <input type="email" id="membro-config-email" class="form-control" placeholder="email do usuário" />
+        <select id="membro-config-role" class="form-control">
+          <option value="user">Usuário</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button type="button" id="btn-add-membro-config" class="btn btn-primary">
+          <i class="fa-solid fa-user-plus"></i> Adicionar
+        </button>
+      </div>
+
+      <div style="max-height:360px;overflow:auto;border:1px solid #e5e7eb;border-radius:10px;">
+        <table class="forn-table" style="margin:0;">
+          <thead>
+            <tr>
+              <th style="width:48%;">E-mail</th>
+              <th style="width:18%;">Perfil</th>
+              <th style="width:24%;">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="lista-membros-config">
+            <tr><td colspan="3" style="text-align:center;color:#64748b;">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="fecharModalMembrosConfig()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SCRIPTS - ORDEM CORRETA ========== -->
+
+<script src="/performance-fix.js?v=4.1.3"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+
+<script src="/firebase-global.js?v=4.1.4"></script>
+<script src="/firebase-sync.js?v=4.1.4"></script>
+<script src="/script.js?v=4.1.15"></script>
+<script src="/configuracoes.js?v=4.1.11"></script>
+
+<script type="module">
+  import { initializeLayout } from "/components/layout.js?v=4.1.5";
+  initializeLayout();
+</script>
+
+</body>
+</html>
+
+
+
+
+

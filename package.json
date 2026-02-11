@@ -1,0 +1,33 @@
+{
+  "name": "meumanager",
+  "version": "1.0.0",
+  "description": "Sistema de Gestão de Vendas e Financeiro",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "smoke:release": "node scripts/smoke-release.mjs",
+    "css:build": "postcss css/main.css -o dist/style.css",
+    "css:prod": "postcss css/main.css -o dist/style.min.css && gzip -9 dist/style.min.css",
+    "css:watch": "postcss css/main.css -o dist/style.css --watch",
+    "css:purge": "purgecss --css dist/style.css --content '*.html' --output dist/purged",
+    "css:analyze": "cssstats dist/style.css",
+    "build": "npm run css:prod && firebase deploy --only hosting",
+    "dev": "npm run css:watch"
+  },
+  "keywords": [
+    "vendas",
+    "financeiro",
+    "gestao",
+    "relatorios"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/preset-env": "^7.23.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.2.0"
+  }
+}
