@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerenciar Empresas - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="configuracoes.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="empresas">
+
+<!-- ================= HEADER ================= -->
+<header class="header">
+  <div class="header-left">
+    <div id="clock" class="clock-display">00:00:00</div>
+  </div>
+
+  <div class="social-icons">
+    <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+    <a href="#" title="WhatsApp"><img src="whatsapp-icon.ico" alt="WhatsApp"></a>
+    <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+    <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+    <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+    <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+    <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+    <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+    <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+    <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+  </div>
+
+  <div class="header-right">
+    <div class="logo-area"></div>
+    <div id="conta-select"></div>
+    <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <ul class="sidebar-menu">
+    <li class="menu-item"><a href="dashboard.html" class="menu-link"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+    <li class="menu-item"><a href="fornecedores.html" class="menu-link"><i class="fa-solid fa-truck"></i><span>Fornecedores</span></a></li>
+    <li class="menu-item"><a href="clientes.html" class="menu-link"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+    <li class="menu-item"><a href="produtos.html" class="menu-link"><i class="fa-solid fa-box"></i><span>Produtos</span></a></li>
+    <li class="menu-item"><a href="compras.html" class="menu-link"><i class="fa-solid fa-cart-shopping"></i><span>Compras</span></a></li>
+    <li class="menu-item"><a href="vendas.html" class="menu-link"><i class="fa-solid fa-receipt"></i><span>Vendas</span></a></li>
+    <li class="menu-item"><a href="estoque.html" class="menu-link"><i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span></a></li>
+    <li class="menu-item"><a href="simulacao.html" class="menu-link"><i class="fa-solid fa-calculator"></i><span>Simulação</span></a></li>
+    <li class="menu-item"><a href="curva-abc.html" class="menu-link"><i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span></a></li>
+    <li class="menu-item"><a href="financeiro.html" class="menu-link"><i class="fa-solid fa-wallet"></i><span>Financeiro</span></a></li>
+    <li class="menu-item"><a href="relatorios.html" class="menu-link"><i class="fa-solid fa-chart-line"></i><span>Relatórios</span></a></li>
+    <li class="menu-item"><a href="configuracoes.html" class="menu-link"><i class="fa-solid fa-gear"></i><span>Configurações</span></a></li>
+    <li class="menu-item"><a href="empresas.html" class="menu-link active"><i class="fa-solid fa-buildings"></i><span>Empresas</span></a></li>
+  </ul>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-buildings"></i> Gerenciar Empresas</h1>
+  </div>
+
+  <div class="config-page">
+    
+    <!-- Info da empresa ativa -->
+    <div class="card" style="padding: 16px 20px; background: #f0f9ff; border-left: 4px solid var(--blue); margin-bottom: 24px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="fa-solid fa-info-circle" style="font-size: 24px; color: var(--blue);"></i>
+          <div>
+            <strong style="color: #1e293b;">Empresa Ativa:</strong>
+            <span id="hint-empresa-ativa" style="color: #64748b; margin-left: 8px;">Carregando...</span>
+          </div>
+        </div>
+        <button id="btn-nova-empresa" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Nova Empresa
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de Empresas -->
+    <div class="card">
+      <div class="card-header" style="padding: 20px; border-bottom: 1px solid #e5e7eb;">
+        <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-building"></i> Minhas Empresas
+        </h2>
+      </div>
+      <div style="padding: 20px;">
+        <div id="lista-empresas" class="empresas-grid">
+          <!-- Preenchido via JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- ================= MODAL NOVA EMPRESA ================= -->
+<div id="modal-empresa" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-header">
+      <h3 id="modal-title">Nova Empresa</h3>
+      <button class="modal-close" onclick="fecharModalEmpresa()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="form-empresa">
+        <input type="hidden" id="empresa-id" />
+        
+        <div class="form-group">
+          <label for="empresa-razao">Razão Social *</label>
+          <input type="text" id="empresa-razao" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label for="empresa-fantasia">Nome Fantasia</label>
+          <input type="text" id="empresa-fantasia" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="empresa-cnpj">CNPJ</label>
+          <input type="text" id="empresa-cnpj" class="form-control" maxlength="18" placeholder="00.000.000/0000-00" />
+        </div>
+
+        <div class="form-group">
+          <label for="empresa-ie">Inscrição Estadual</label>
+          <input type="text" id="empresa-ie" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="empresa-email">E-mail</label>
+          <input type="email" id="empresa-email" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="empresa-telefone">Telefone</label>
+          <input type="text" id="empresa-telefone" class="form-control" maxlength="15" placeholder="(00) 00000-0000" />
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="fecharModalEmpresa()">Cancelar</button>
+      <button type="button" class="btn btn-primary" onclick="salvarEmpresa()">
+        <i class="fa-solid fa-save"></i> Salvar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SCRIPTS ========== -->
+<script src="header-manager.js"></script>
+<script src="performance-fix.js"></script>
+<script type="module" src="firebase-init.js"></script>
+<script src="firebase-sync.js"></script>
+<script src="script.js"></script>
+<script src="empresas.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Setup Múltiplas Empresas</title>
+</head>
+<body>
+  <h1>Criando múltiplas empresas...</h1>
+  <script>
+    // Cria 3 empresas de teste
+    const empresas = [
+      {
+        id: 'empresa_ferratec_' + Date.now(),
+        razaoSocial: 'Ferratec Tools LTDA',
+        nomeFantasia: 'Ferratec Tools'
+      },
+      {
+        id: 'empresa_lcabalo_' + Date.now(),
+        razaoSocial: 'L Cabalo Comércio LTDA',
+        nomeFantasia: 'L Cabalo'
+      },
+      {
+        id: 'empresa_teste_' + Date.now(),
+        razaoSocial: 'Empresa Teste LTDA',
+        nomeFantasia: 'Empresa Teste'
+      }
+    ];
+
+    empresas.forEach(emp => {
+      const dados = {
+        ...emp,
+        cnpj: '00.000.000/0000-00',
+        telefone: '(11) 99999-9999',
+        email: 'contato@empresa.com',
+        cidade: 'São Paulo',
+        site: 'www.empresa.com',
+        dataCadastro: new Date().toISOString()
+      };
+
+      localStorage.setItem('acc_' + emp.id + '__empresa_dados', JSON.stringify(dados));
+      localStorage.setItem('acc_' + emp.id + '__saldo_inicial', '1000');
+      localStorage.setItem('acc_' + emp.id + '__produtos', JSON.stringify([]));
+      localStorage.setItem('acc_' + emp.id + '__vendas', JSON.stringify([]));
+      localStorage.setItem('acc_' + emp.id + '__compras', JSON.stringify([]));
+    });
+
+    // Define a primeira como ativa
+    const sessao = {
+      empresaId: empresas[0].id,
+      empresa: empresas[0].razaoSocial,
+      email: 'contato@empresa.com',
+      uid: 'user_test_123',
+      nome: 'Usuário Teste'
+    };
+
+    localStorage.setItem('ft_sessao', JSON.stringify(sessao));
+    localStorage.setItem('ft_active_account', empresas[0].id);
+
+    console.log('✅ ' + empresas.length + ' empresas criadas');
+    document.write('<h2>✅ ' + empresas.length + ' empresas criadas com sucesso!</h2>');
+    document.write('<p>Empresa ativa: ' + empresas[0].nomeFantasia + '</p>');
+    document.write('<p><a href="/produtos.html">Ir para Produtos →</a></p>');
+  </script>
+</body>
+</html>

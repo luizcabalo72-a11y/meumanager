@@ -1,0 +1,19 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ig-bg-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#833AB4;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#C13584;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#E1306C;stop-opacity:1" />
+      <stop offset="85%" style="stop-color:#FD1D1D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F77737;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Fundo quadrado arredondado com gradient -->
+  <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#ig-bg-gradient)"/>
+  <!-- Círculo externo do Instagram (branco) -->
+  <circle cx="50" cy="50" r="28" fill="none" stroke="white" stroke-width="3.5"/>
+  <!-- Círculo interno -->
+  <circle cx="50" cy="50" r="19" fill="none" stroke="white" stroke-width="2.5"/>
+  <!-- Ponto do flash -->
+  <circle cx="62" cy="37" r="2.5" fill="white"/>
+</svg>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curva ABC - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body data-page="curva-abc">
+
+<!-- ================= HEADER CORRIGIDO ================= -->
+<!-- 
+  ✅ Remova o <select> hardcoded
+  ✅ Remova as imagens hardcoded (logo-ferratec, logo-lcabalo)
+  ✅ Use este template em todos os HTMLs
+-->
+
+<header class="header">
+  <div class="header-left">
+    <div id="clock" class="clock-display">00:00:00</div>
+  </div>
+
+  <div class="social-icons">
+    <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+    <a href="#" title="WhatsApp"><img src="whatsapp-icon.ico" alt="WhatsApp"></a>
+    <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+    <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+    <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+    <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+    <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+    <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+    <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+    <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+  </div>
+
+  <div class="header-right">
+    <!-- Logo será carregada dinamicamente pelo header-manager.js -->
+    <div class="logo-area">
+      <!-- Logos antigas removidas - serão substituídas dinamicamente -->
+    </div>
+    
+    <!-- Seletor hardcoded REMOVIDO -->
+    <!-- O header-manager.js criará um display dinâmico aqui -->
+    <div id="conta-select"></div>
+    
+    <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ================= SCRIPTS (adicionar antes do </body>) ================= -->
+<!--
+  Adicione esta linha ANTES de todos os outros scripts:
+  <script src="header-manager.js"></script>
+-->
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <ul class="sidebar-menu">
+
+    <li class="menu-item">
+      <a href="dashboard.html" class="menu-link">
+        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="fornecedores.html" class="menu-link">
+        <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="clientes.html" class="menu-link">
+        <i class="fa-solid fa-users"></i><span>Clientes</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="produtos.html" class="menu-link">
+        <i class="fa-solid fa-box"></i><span>Produtos</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="compras.html" class="menu-link">
+        <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="vendas.html" class="menu-link">
+        <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="estoque.html" class="menu-link">
+        <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="simulacao.html" class="menu-link">
+        <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="curva-abc.html" class="menu-link">
+        <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="financeiro.html" class="menu-link">
+        <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="relatorios.html" class="menu-link">
+        <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="configuracoes.html" class="menu-link">
+        <i class="fa-solid fa-gear"></i><span>Configurações</span>
+      </a>
+    </li>
+
+
+
+  </ul>
+</aside>
+<!-- ================= /SIDEBAR ================= -->
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-chart-pie"></i> Curva ABC</h1>
+  </div>
+
+  <!-- ================= TOOLBAR ================= -->
+  <div class="toolbar-produtos">
+    <div class="toolbar-left">
+      <span id="contador-abc" class="contador-resultados">0 SKUs analisados</span>
+    </div>
+
+    <div class="toolbar-right">
+      <div class="filter-group">
+        <label>Período:</label>
+        <select id="filtro-periodo-abc" class="filter-select">
+          <option value="">Todo período</option>
+          <option value="7d">Últimos 7 dias</option>
+          <option value="30d">Últimos 30 dias</option>
+          <option value="90d">Últimos 90 dias</option>
+          <option value="ano">Este ano (2026)</option>
+          <option value="ano-passado">Ano passado (2025)</option>
+          <option value="2025" selected>2025</option>
+          <option value="2024">2024</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Critério:</label>
+        <select id="filtro-criterio" class="filter-select">
+          <option value="faturamento" selected>Faturamento</option>
+          <option value="lucro">Lucro</option>
+          <option value="quantidade">Quantidade</option>
+        </select>
+      </div>
+
+      <button id="btn-exportar-abc" class="btn btn-outline" type="button">
+        <i class="fa-solid fa-file-csv"></i> Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= CARDS RESUMO ================= -->
+  <div class="abc-cards-grid">
+    <!-- Classe A -->
+    <div class="abc-card abc-card-a">
+      <div class="abc-card-icon">
+        <span class="abc-letra">A</span>
+      </div>
+      <div class="abc-card-content">
+        <h4>Classe A</h4>
+        <p class="abc-desc">Produtos mais importantes (80% do valor)</p>
+        <div class="abc-stats-row">
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-classe-a-itens">0</span>
+            <span class="abc-stat-label">itens (<span id="card-classe-a-percent-itens">0%</span>)</span>
+          </div>
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-classe-a-valor">R$ 0,00</span>
+            <span class="abc-stat-label">(<span id="card-classe-a-percent">0%</span> do total)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Classe B -->
+    <div class="abc-card abc-card-b">
+      <div class="abc-card-icon">
+        <span class="abc-letra">B</span>
+      </div>
+      <div class="abc-card-content">
+        <h4>Classe B</h4>
+        <p class="abc-desc">Importância intermediária (15% do valor)</p>
+        <div class="abc-stats-row">
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-classe-b-itens">0</span>
+            <span class="abc-stat-label">itens (<span id="card-classe-b-percent-itens">0%</span>)</span>
+          </div>
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-classe-b-valor">R$ 0,00</span>
+            <span class="abc-stat-label">(<span id="card-classe-b-percent">0%</span> do total)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Classe C -->
+    <div class="abc-card abc-card-c">
+      <div class="abc-card-icon">
+        <span class="abc-letra">C</span>
+      </div>
+      <div class="abc-card-content">
+        <h4>Classe C</h4>
+        <p class="abc-desc">Menor impacto (5% do valor)</p>
+        <div class="abc-stats-row">
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-classe-c-itens">0</span>
+            <span class="abc-stat-label">itens (<span id="card-classe-c-percent-itens">0%</span>)</span>
+          </div>
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-classe-c-valor">R$ 0,00</span>
+            <span class="abc-stat-label">(<span id="card-classe-c-percent">0%</span> do total)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total -->
+    <div class="abc-card abc-card-total">
+      <div class="abc-card-icon">
+        <i class="fa-solid fa-sigma"></i>
+      </div>
+      <div class="abc-card-content">
+        <h4>Total Geral</h4>
+        <p class="abc-desc">Soma de todas as classes</p>
+        <div class="abc-stats-row">
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-total-itens">0</span>
+            <span class="abc-stat-label">SKUs</span>
+          </div>
+          <div class="abc-stat-item">
+            <span class="abc-stat-number" id="card-total-valor">R$ 0,00</span>
+            <span class="abc-stat-label">valor total</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GRÁFICOS ================= -->
+  <div class="abc-charts-grid">
+    <div class="chart-card">
+      <h3><i class="fa-solid fa-chart-pie"></i> Distribuição por Classe</h3>
+      <div class="chart-wrapper" style="height: 280px;">
+        <canvas id="chart-pizza"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3><i class="fa-solid fa-chart-line"></i> Gráfico de Pareto (Top 20)</h3>
+      <div class="chart-wrapper" style="height: 280px;">
+        <canvas id="chart-pareto"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TABELA ================= -->
+  <section class="card forn-section" style="overflow-x:auto;">
+    <h3 style="padding: 15px 20px; margin:0; border-bottom: 1px solid var(--border);">
+      <i class="fa-solid fa-table"></i> Ranking de Produtos
+    </h3>
+    <table class="forn-table" style="min-width:900px;">
+      <thead>
+        <tr>
+          <th class="center" style="width:60px;">#</th>
+          <th class="center" style="width:70px;">Classe</th>
+          <th style="width:120px;">SKU</th>
+          <th style="width:250px;">Produto</th>
+          <th class="right" style="width:120px;">Valor</th>
+          <th class="center" style="width:90px;">% Total</th>
+          <th class="center" style="width:90px;">% Acum.</th>
+          <th class="center" style="width:80px;">Vendas</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-abc-body"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<!-- ========== FIREBASE ========== -->
+ <script src="header-manager.js"></script>
+<script type="module" src="firebase-config.js"></script>
+<script src="firebase-sync.js"></script>
+<script src="script.js"></script>
+<script src="configuracoes.js"></script>
+<script src="curva-abc.js"></script>
+</body>
+</html>

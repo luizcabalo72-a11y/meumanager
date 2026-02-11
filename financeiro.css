@@ -1,0 +1,525 @@
+/* =========================================================
+   FINANCEIRO.CSS — Meu Manager
+   Estilos do módulo financeiro
+========================================================= */
+
+/* ================= ABAS ================= */
+.fin-tabs {
+  display: flex;
+  gap: 4px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.fin-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fin-tab:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.fin-tab.active {
+  background: var(--blue, #003366);
+  color: #fff;
+}
+
+.fin-tab i {
+  font-size: 16px;
+}
+
+/* ================= CONTEÚDO DAS ABAS ================= */
+.fin-content {
+  display: none;
+}
+
+.fin-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= TOOLBAR ================= */
+.fin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.fin-toolbar .toolbar-left,
+.fin-toolbar .toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ================= CARDS RESUMO ================= */
+.fin-resumo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.fin-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 4px solid;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.fin-card.entradas { border-left-color: #22c55e; }
+.fin-card.saidas { border-left-color: #ef4444; }
+.fin-card.saldo { border-left-color: #3b82f6; }
+.fin-card.acumulado { border-left-color: #8b5cf6; }
+
+.fin-card-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 20px;
+}
+
+.fin-card.entradas .fin-card-icon { background: #dcfce7; color: #16a34a; }
+.fin-card.saidas .fin-card-icon { background: #fee2e2; color: #dc2626; }
+.fin-card.saldo .fin-card-icon { background: #dbeafe; color: #2563eb; }
+.fin-card.acumulado .fin-card-icon { background: #ede9fe; color: #7c3aed; }
+
+.fin-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fin-card-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.fin-card-valor {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.fin-card-sub {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ================= RESUMO LINHA ================= */
+.fin-resumo-linha {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 20px;
+  background: #f8fafc;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.fin-resumo-linha .resumo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.fin-resumo-linha .resumo-item i {
+  font-size: 16px;
+}
+
+.fin-resumo-linha .resumo-item strong {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* ================= CATEGORIAS GRID ================= */
+.categorias-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ================= DRE ================= */
+.dre-card {
+  max-width: 900px;
+}
+
+.dre-table {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dre-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.dre-row:hover {
+  background: #f8fafc;
+}
+
+.dre-row.header {
+  background: #f1f5f9;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.dre-row.header.neg .dre-valor {
+  color: #dc2626;
+}
+
+.dre-row.sub {
+  padding-left: 32px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.dre-row.sub .dre-valor {
+  color: #64748b;
+}
+
+.dre-row.total {
+  background: #e0f2fe;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.dre-row.total .dre-valor {
+  color: #0369a1;
+}
+
+.dre-row.total.highlight {
+  background: #dcfce7;
+}
+
+.dre-row.total.highlight .dre-valor {
+  color: #16a34a;
+}
+
+.dre-row.final {
+  background: linear-gradient(90deg, var(--blue, #003366), #1e40af);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.dre-row.final .dre-valor {
+  color: #fff;
+  font-size: 18px;
+}
+
+.dre-label {
+  font-size: 14px;
+}
+
+.dre-valor {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Indicadores DRE */
+.dre-indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid #e2e8f0;
+}
+
+.dre-indicador {
+  text-align: center;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+.dre-indicador .ind-label {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.dre-indicador .ind-valor {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue, #003366);
+}
+
+/* ================= STATUS BADGES FINANCEIRO ================= */
+.fin-status {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.fin-status.pendente,
+.status-pendente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.fin-status.pago,
+.fin-status.recebido,
+.status-pago,
+.status-recebido {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.fin-status.vencido,
+.status-vencido {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.fin-status.cancelado,
+.status-cancelado {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* ================= CORES AUXILIARES ================= */
+.text-success { color: #16a34a !important; }
+.text-danger { color: #dc2626 !important; }
+.text-warning { color: #d97706 !important; }
+.text-info { color: #0284c7 !important; }
+
+/* ================= TABLE RESPONSIVE ================= */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ================= RESPONSIVO ================= */
+@media (max-width: 1200px) {
+  .fin-resumo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dre-indicadores {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .fin-resumo-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .categorias-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .fin-tabs {
+    justify-content: center;
+  }
+  
+  .fin-tab {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .fin-tab span {
+    display: none;
+  }
+  
+  .dre-indicadores {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .dre-row {
+    padding: 10px 12px;
+  }
+  
+  .dre-row.sub {
+    padding-left: 20px;
+  }
+  
+  .fin-resumo-linha {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dre-indicadores {
+    grid-template-columns: 1fr;
+  }
+  
+  .fin-card {
+    padding: 16px;
+  }
+  
+  .fin-card-valor {
+    font-size: 18px;
+  }
+}
+
+/* ================= DRE STYLES ================= */
+.dre-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.dre-section {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dre-section:last-of-type {
+  border-bottom: none;
+}
+
+.dre-section-title {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dre-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.dre-linha:last-child {
+  border-bottom: none;
+}
+
+.dre-linha span:first-child {
+  color: #475569;
+  font-weight: 500;
+}
+
+.dre-linha span:last-child {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+  min-width: 120px;
+}
+
+.dre-subtotal {
+  background: #f8fafc;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border-bottom: none !important;
+  margin: 8px 0;
+  font-weight: 600;
+}
+
+.dre-subtotal span:first-child {
+  color: #1e40af;
+}
+
+.dre-subtotal span:last-child {
+  color: #1e40af;
+}
+
+.dre-total {
+  background: #16a34a;
+  color: white;
+  padding: 12px;
+  border-radius: 4px;
+  border-bottom: none !important;
+  margin-top: 12px;
+}
+
+.dre-total span {
+  color: white !important;
+}
+
+.dre-indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.dre-indicador {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.dre-ind-titulo {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dre-ind-valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e40af;
+}

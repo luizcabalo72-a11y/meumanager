@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatórios - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="financeiro.css" />
+
+  <style>
+    .rel-indicador-linha {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .rel-indicador-linha:last-child {
+      border-bottom: none;
+    }
+    .rel-indicador-linha span:first-child {
+      color: #64748b;
+      font-size: 14px;
+    }
+    .rel-indicador-linha span:last-child {
+      color: #1e293b;
+      font-weight: 600;
+      font-size: 15px;
+    }
+  </style>
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+
+<body data-page="relatorios">
+
+  <!-- ================= HEADER ================= -->
+  <header class="header">
+    <div class="header-left">
+      <div id="clock" class="clock-display">00:00:00</div>
+    </div>
+
+    <div class="social-icons">
+      <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+      <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+      <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+      <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+      <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+      <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+      <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+      <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+      <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+    </div>
+
+    <div class="header-right">
+      <div class="logo-area"></div>
+      <div id="conta-select"></div>
+
+      <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+      <li class="menu-item">
+        <a href="dashboard.html" class="menu-link">
+          <i class="fa-solid fa-house"></i><span>Dashboard</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="fornecedores.html" class="menu-link">
+          <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="clientes.html" class="menu-link">
+          <i class="fa-solid fa-users"></i><span>Clientes</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="produtos.html" class="menu-link">
+          <i class="fa-solid fa-box"></i><span>Produtos</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="compras.html" class="menu-link">
+          <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="vendas.html" class="menu-link">
+          <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="estoque.html" class="menu-link">
+          <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="simulacao.html" class="menu-link">
+          <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="curva-abc.html" class="menu-link">
+          <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="financeiro.html" class="menu-link">
+          <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="relatorios.html" class="menu-link active">
+          <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="configuracoes.html" class="menu-link">
+          <i class="fa-solid fa-gear"></i><span>Configurações</span>
+        </a>
+      </li>
+
+    </ul>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="dashboard">
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-chart-line"></i> Relatórios</h1>
+    </div>
+
+    <!-- ================= ABAS DE RELATÓRIOS ================= -->
+    <section class="fin-tabs">
+      <button class="fin-tab active" data-tab="resumo">
+        <i class="fa-solid fa-rectangle-list"></i> <span>Resumo Geral</span>
+      </button>
+      <button class="fin-tab" data-tab="dre">
+        <i class="fa-solid fa-clipboard-list"></i> <span>DRE Mensal</span>
+      </button>
+      <button class="fin-tab" data-tab="fluxo-anual">
+        <i class="fa-solid fa-chart-area"></i> <span>Fluxo Anual</span>
+      </button>
+      <button class="fin-tab" data-tab="análise">
+        <i class="fa-solid fa-magnifying-glass-chart"></i> <span>Análise</span>
+      </button>
+    </section>
+
+    <!-- ================= RESUMO GERAL ================= -->
+    <div id="tab-resumo" class="fin-content active">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0; color: #1e293b;">Período:</h2>
+        </div>
+        <div class="toolbar-right">
+          <select id="resumo-mes" class="filter-select">
+            <option value="-1" selected>📅 Ano Inteiro</option>
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+          </select>
+
+          <select id="resumo-ano" class="filter-select">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025" selected>2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+          </select>
+
+          <button id="btn-exportar-resumo" class="btn btn-outline">
+            <i class="fa-solid fa-download"></i> Exportar
+          </button>
+        </div>
+      </div>
+
+      <div class="rel-grid-resumo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="kpi-card">
+          <div class="kpi-icon vendas"><i class="fa-solid fa-dollar-sign"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Receita Total</span>
+            <span class="kpi-value" id="resumo-receita">R$ 0,00</span>
+            <span class="kpi-sub" id="resumo-receita-qtd">0 lançamentos</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon despesas" style="background: linear-gradient(135deg, #fed7aa 0%, #fecaca 100%);"><i class="fa-solid fa-money-bill-wave"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Despesas</span>
+            <span class="kpi-value" id="resumo-despesas">R$ 0,00</span>
+            <span class="kpi-sub" id="resumo-despesas-qtd">0 contas</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon lucro"><i class="fa-solid fa-piggy-bank"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Lucro Líquido</span>
+            <span class="kpi-value" id="resumo-lucro">R$ 0,00</span>
+            <span class="kpi-sub" id="resumo-margem">0% margem</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon roi" style="background: linear-gradient(135deg, #fef08a 0%, #fed7aa 100%);"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Média por Dia</span>
+            <span class="kpi-value" id="resumo-media">R$ 0,00</span>
+            <span class="kpi-sub">Lucro diário</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="padding: 16px 20px; margin: 0; border-bottom: 1px solid #e5e7eb;">
+          <i class="fa-solid fa-chart-bar"></i> Comparativo Receita vs Despesa
+        </h3>
+        <div style="padding: 20px; position: relative; height: 300px;">
+          <canvas id="canvas-resumo-comparativo"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= DRE MENSAL ================= -->
+    <div id="tab-dre" class="fin-content">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0;">DRE Detalhado</h2>
+        </div>
+        <div class="toolbar-right">
+          <select id="dre-mes" class="filter-select">
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+          </select>
+
+          <select id="dre-ano" class="filter-select">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025" selected>2025</option>
+            <option value="2026">2026</option>
+          </select>
+
+          <button id="btn-exportar-dre" class="btn btn-outline">
+            <i class="fa-solid fa-file-pdf"></i> PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="card dre-card" id="dre-container-rel"></div>
+    </div>
+
+    <!-- ================= FLUXO ANUAL ================= -->
+    <div id="tab-fluxo-anual" class="fin-content">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0;">Fluxo de Caixa Anual</h2>
+        </div>
+        <div class="toolbar-right">
+          <select id="fluxo-ano" class="filter-select">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025" selected>2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+          </select>
+
+          <button id="btn-exportar-fluxo" class="btn btn-outline">
+            <i class="fa-solid fa-download"></i> Exportar
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="padding: 20px; position: relative; height: 350px;">
+          <canvas id="canvas-fluxo-anual"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="padding: 16px 20px; margin: 0; border-bottom: 1px solid #e5e7eb;">
+          <i class="fa-solid fa-table"></i> Resumo por Mês
+        </h3>
+        <div class="table-responsive">
+          <table class="forn-table">
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th class="right">Entradas</th>
+                <th class="right">Saídas</th>
+                <th class="right">Saldo</th>
+                <th class="right">% Variação</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-fluxo-mensal"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ANÁLISE AVANÇADA ================= -->
+    <div id="tab-análise" class="fin-content">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0;">Análise Financeira Avançada</h2>
+        </div>
+        <div class="toolbar-right">
+          <button id="btn-gerar-analise" class="btn btn-primary">
+            <i class="fa-solid fa-refresh"></i> Atualizar
+          </button>
+        </div>
+      </div>
+
+      <div class="rel-grid-analise" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="kpi-card">
+          <div class="kpi-icon vendas"><i class="fa-solid fa-calculator"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Ticket Médio</span>
+            <span class="kpi-value" id="analise-ticket">R$ 0,00</span>
+            <span class="kpi-sub">Venda média</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon despesas" style="background: linear-gradient(135deg, #fed7aa 0%, #fecaca 100%);"><i class="fa-solid fa-hourglass-end"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Contas Pendentes</span>
+            <span class="kpi-value" id="analise-pendentes">R$ 0,00</span>
+            <span class="kpi-sub" id="analise-pendentes-qtd">0 contas</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon lucro"><i class="fa-solid fa-exclamation-triangle"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Contas Vencidas</span>
+            <span class="kpi-value" id="analise-vencidas">R$ 0,00</span>
+            <span class="kpi-sub" id="analise-vencidas-qtd">0 contas</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon roi" style="background: linear-gradient(135deg, #fef08a 0%, #fed7aa 100%);"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Taxa de Crescimento</span>
+            <span class="kpi-value" id="analise-crescimento">0%</span>
+            <span class="kpi-sub">Últimos 3 meses</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="padding: 16px 20px; margin: 0; border-bottom: 1px solid #e5e7eb;">
+          <i class="fa-solid fa-chart-pie"></i> Distribuição de Receitas
+        </h3>
+        <div style="padding: 20px; position: relative; height: 300px;">
+          <canvas id="canvas-analise-pizza"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="padding: 16px 20px; margin: 0; border-bottom: 1px solid #e5e7eb;">
+          <i class="fa-solid fa-list"></i> Indicadores Financeiros
+        </h3>
+        <div style="padding: 20px;">
+          <div class="rel-indicador-linha">
+            <span>Lucratividade Geral</span>
+            <span id="ind-lucratividade">0%</span>
+          </div>
+          <div class="rel-indicador-linha">
+            <span>Índice de Solvência</span>
+            <span id="ind-solvencia">0%</span>
+          </div>
+          <div class="rel-indicador-linha">
+            <span>Taxa de Recuperação</span>
+            <span id="ind-recuperacao">0%</span>
+          </div>
+          <div class="rel-indicador-linha">
+            <span>Capital de Giro</span>
+            <span id="ind-capital">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script src="header-manager.js"></script>
+  <script src="performance-fix.js"></script>
+  <script type="module" src="firebase-init.js"></script>
+  <script src="firebase-sync.js"></script>
+  <script src="script.js"></script>
+  <script src="configuracoes.js"></script>
+  <script src="financeiro.js"></script>
+  <script src="relatorios.js"></script>
+
+</body>
+</html>

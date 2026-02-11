@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento Aprovado - Meu Manager</title>
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .success-card {
+      background: white;
+      border-radius: 20px;
+      padding: 50px 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    }
+    
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 25px;
+      animation: scaleIn 0.5s ease;
+    }
+    
+    @keyframes scaleIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    
+    .success-icon i {
+      font-size: 50px;
+      color: white;
+    }
+    
+    .success-card h1 {
+      font-size: 28px;
+      color: #166534;
+      margin-bottom: 10px;
+    }
+    
+    .success-card p {
+      color: #6b7280;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+    
+    .plan-info {
+      background: #f0fdf4;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+    
+    .plan-info h3 {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+    
+    .plan-info .plan-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #166534;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .plan-info .plan-name i {
+      color: #22c55e;
+    }
+    
+    .btn-access {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, #003366 0%, #004488 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .btn-access:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,51,102,0.3);
+    }
+    
+    .help-text {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    
+    .help-text a {
+      color: #003366;
+    }
+    
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="success-card">
+    <div class="success-icon">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    
+    <h1>Pagamento Aprovado! 🎉</h1>
+    <p>Sua assinatura foi ativada com sucesso. Você já pode aproveitar todos os recursos do seu plano.</p>
+    
+    <div class="plan-info">
+      <h3>Seu plano</h3>
+      <div class="plan-name">
+        <i class="fa-solid fa-crown"></i>
+        <span id="plan-name">Plano Pro</span>
+      </div>
+    </div>
+    
+    <a href="dashboard.html" class="btn-access">
+      <i class="fa-solid fa-rocket"></i>
+      Acessar o Sistema
+    </a>
+    
+    <p class="help-text">
+      Enviamos um email de confirmação para você.<br>
+      Dúvidas? <a href="mailto:suporte@meumanager.com.br">Entre em contato</a>
+    </p>
+  </div>
+
+  <script type="module" src="firebase-config.js"></script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Pega parâmetros da URL
+      const params = new URLSearchParams(window.location.search);
+      const paymentId = params.get("payment_id");
+      const status = params.get("status");
+      const externalRef = params.get("external_reference");
+      
+      // Atualiza plano no Firebase
+      if (externalRef) {
+        try {
+          const ref = JSON.parse(decodeURIComponent(externalRef));
+          const planoNome = ref.plano === "business" ? "Plano Business" : "Plano Pro";
+          document.getElementById("plan-name").textContent = planoNome;
+          
+          // Aguarda Firebase
+          let attempts = 0;
+          while (!window.FirebaseApp && attempts < 50) {
+            await new Promise(r => setTimeout(r, 100));
+            attempts++;
+          }
+          
+          if (window.FirebaseApp) {
+            const { db, doc, setDoc, serverTimestamp } = window.FirebaseApp;
+            
+            // Atualiza assinatura no Firestore
+            await setDoc(doc(db, "subscriptions", ref.empresaId), {
+              plano: ref.plano,
+              periodo: ref.periodo,
+              status: "active",
+              paymentId: paymentId,
+              activatedAt: serverTimestamp(),
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+            
+            // Atualiza sessão local
+            const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "{}");
+            sessao.plano = ref.plano;
+            sessao.planoStatus = "active";
+            localStorage.setItem("ft_sessao", JSON.stringify(sessao));
+            
+            console.log("✅ Plano ativado:", ref.plano);
+          }
+          
+        } catch (error) {
+          console.error("Erro ao processar retorno:", error);
+        }
+      }
+      
+      // Confetti simples
+      createConfetti();
+    });
+    
+    function createConfetti() {
+      const colors = ['#22c55e', '#16a34a', '#003366', '#f59e0b', '#3b82f6'];
+      const confettiContainer = document.createElement('div');
+      confettiContainer.className = 'confetti';
+      document.body.appendChild(confettiContainer);
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          left: ${Math.random() * 100}%;
+          top: -10px;
+          opacity: ${Math.random()};
+          transform: rotate(${Math.random() * 360}deg);
+          animation: fall ${2 + Math.random() * 3}s linear forwards;
+        `;
+        confettiContainer.appendChild(confetti);
+      }
+      
+      // Adiciona animação
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fall {
+          to {
+            top: 100vh;
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Remove após animação
+      setTimeout(() => confettiContainer.remove(), 5000);
+    }
+  </script>
+
+</body>
+</html>

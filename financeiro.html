@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financeiro - Meu Manager</title>
+
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="financeiro.css" />
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="financeiro">
+
+  <!-- ================= HEADER ================= -->
+  <header class="header">
+    <div class="header-left">
+      <div id="clock" class="clock-display">00:00:00</div>
+    </div>
+
+    <div class="social-icons">
+      <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+      <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+      <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+      <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+      <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+      <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+      <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+      <a href="#" title="Mercado Pago"><img src="mercadopago-icon.png" alt="Mercado Pago"></a>
+      <a href="#" title="AliExpress"><img src="aliexpress-icon.ico" alt="AliExpress"></a>
+    </div>
+
+    <div class="header-right">
+      <div class="logo-area"></div>
+
+      <!-- O Header Manager substitui isso por um display com a empresa logada -->
+      <div id="conta-select"></div>
+
+      <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+
+      <li class="menu-item">
+        <a href="dashboard.html" class="menu-link">
+          <i class="fa-solid fa-house"></i><span>Dashboard</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="fornecedores.html" class="menu-link">
+          <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="clientes.html" class="menu-link">
+          <i class="fa-solid fa-users"></i><span>Clientes</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="produtos.html" class="menu-link">
+          <i class="fa-solid fa-box"></i><span>Produtos</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="compras.html" class="menu-link">
+          <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="vendas.html" class="menu-link">
+          <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="estoque.html" class="menu-link">
+          <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="simulacao.html" class="menu-link">
+          <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="curva-abc.html" class="menu-link">
+          <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="financeiro.html" class="menu-link active">
+          <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="relatorios.html" class="menu-link">
+          <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="configuracoes.html" class="menu-link">
+          <i class="fa-solid fa-gear"></i><span>Configurações</span>
+        </a>
+      </li>
+
+
+
+    </ul>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="dashboard">
+    <div class="dashboard-top">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1><i class="fa-solid fa-wallet"></i> Financeiro</h1>
+    </div>
+
+    <!-- ================= ABAS ================= -->
+    <section class="fin-tabs">
+      <button class="fin-tab active" data-tab="fluxo">
+        <i class="fa-solid fa-chart-line"></i> <span>Fluxo de Caixa</span>
+      </button>
+      <button class="fin-tab" data-tab="pagar">
+        <i class="fa-solid fa-file-invoice-dollar"></i> <span>Contas a Pagar</span>
+      </button>
+      <button class="fin-tab" data-tab="receber">
+        <i class="fa-solid fa-hand-holding-dollar"></i> <span>Contas a Receber</span>
+      </button>
+      <button class="fin-tab" data-tab="categorias">
+        <i class="fa-solid fa-tags"></i> <span>Categorias</span>
+      </button>
+      <button class="fin-tab" data-tab="dre">
+        <i class="fa-solid fa-clipboard-list"></i> <span>DRE</span>
+      </button>
+    </section>
+
+    <!-- ================= CONTEÚDO FLUXO DE CAIXA ================= -->
+    <div id="tab-fluxo" class="fin-content active">
+      
+      <!-- Filtros de Período -->
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0; color: #1e293b;">Período:</h2>
+        </div>
+        <div class="toolbar-right">
+          <select id="fluxo-mes" class="filter-select">
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+          </select>
+
+          <select id="fluxo-ano" class="filter-select">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cards Resumo -->
+      <div class="fin-resumo-grid">
+        <div class="fin-card entradas">
+          <div class="fin-card-icon">
+            <i class="fa-solid fa-arrow-down"></i>
+          </div>
+          <div class="fin-card-info">
+            <span class="fin-card-label">Entradas</span>
+            <span class="fin-card-valor" id="kpi-entradas">R$ 0,00</span>
+            <span class="fin-card-sub" id="kpi-entradas-count">0 lançamentos</span>
+          </div>
+        </div>
+
+        <div class="fin-card saidas">
+          <div class="fin-card-icon">
+            <i class="fa-solid fa-arrow-up"></i>
+          </div>
+          <div class="fin-card-info">
+            <span class="fin-card-label">Saídas</span>
+            <span class="fin-card-valor" id="kpi-saidas">R$ 0,00</span>
+            <span class="fin-card-sub" id="kpi-saidas-count">0 lançamentos</span>
+          </div>
+        </div>
+
+        <div class="fin-card saldo">
+          <div class="fin-card-icon">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <div class="fin-card-info">
+            <span class="fin-card-label">Saldo do Mês</span>
+            <span class="fin-card-valor" id="kpi-saldo-mes">R$ 0,00</span>
+            <span class="fin-card-sub" id="kpi-margem">0% margem</span>
+          </div>
+        </div>
+
+        <div class="fin-card acumulado">
+          <div class="fin-card-icon">
+            <i class="fa-solid fa-piggy-bank"></i>
+          </div>
+          <div class="fin-card-info">
+            <span class="fin-card-label">Saldo Acumulado</span>
+            <span class="fin-card-valor" id="kpi-saldo-acum">R$ 0,00</span>
+            <span class="fin-card-sub">
+              <span id="kpi-saldo-aviso" class="kpi-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i> Configure o saldo inicial
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico (Placeholder - adicionar Chart.js depois) -->
+      <div class="card">
+        <h3 style="padding: 16px 20px; margin: 0; border-bottom: 1px solid #e5e7eb;">
+          <i class="fa-solid fa-chart-area"></i> Fluxo Mensal
+        </h3>
+        <div style="padding: 20px; text-align: center; color: #94a3b8;">
+          <i class="fa-solid fa-chart-line" style="font-size: 48px; opacity: 0.3;"></i>
+          <p>Gráfico do fluxo mensal (implementar com Chart.js)</p>
+        </div>
+      </div>
+
+      <!-- Movimentações -->
+      <div class="card">
+        <h3 style="padding: 16px 20px; margin: 0; border-bottom: 1px solid #e5e7eb;">
+          <i class="fa-solid fa-list"></i> Movimentações do Mês
+        </h3>
+        <div class="table-responsive">
+          <table class="forn-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Tipo</th>
+                <th class="right">Valor</th>
+                <th>Origem</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-movimentos"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= CONTEÚDO CONTAS A PAGAR ================= -->
+    <div id="tab-pagar" class="fin-content">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <button id="btn-nova-pagar" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nova Conta a Pagar
+          </button>
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="pagar-busca" type="text" placeholder="Buscar..." />
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <select id="pagar-status" class="filter-select">
+            <option value="">Todos Status</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="PAGO">Pago</option>
+            <option value="VENCIDO">Vencido</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+          <select id="pagar-categoria" class="filter-select">
+            <option value="">Todas Categorias</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fin-resumo-linha" id="resumo-pagar"></div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table class="forn-table">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Vencimento</th>
+                <th>Pagamento</th>
+                <th class="right">Valor</th>
+                <th>Status</th>
+                <th class="center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-pagar-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= CONTEÚDO CONTAS A RECEBER ================= -->
+    <div id="tab-receber" class="fin-content">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <button id="btn-nova-receber" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nova Conta a Receber
+          </button>
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="receber-busca" type="text" placeholder="Buscar..." />
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <select id="receber-status" class="filter-select">
+            <option value="">Todos Status</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="RECEBIDO">Recebido</option>
+            <option value="VENCIDO">Vencido</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+          <select id="receber-origem" class="filter-select">
+            <option value="">Todas Origens</option>
+            <option value="VENDA">Venda</option>
+            <option value="SERVICO">Serviço</option>
+            <option value="OUTROS">Outros</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fin-resumo-linha" id="resumo-receber"></div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table class="forn-table">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th>Cliente/Origem</th>
+                <th>Vencimento</th>
+                <th>Recebimento</th>
+                <th class="right">Valor</th>
+                <th>Status</th>
+                <th class="center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-receber-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= CONTEÚDO CATEGORIAS ================= -->
+    <div id="tab-categorias" class="fin-content">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0;">Categorias Financeiras</h2>
+        </div>
+        <div class="toolbar-right">
+          <button id="btn-nova-categoria" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nova Categoria
+          </button>
+        </div>
+      </div>
+
+      <div class="categorias-grid" id="categorias-container"></div>
+    </div>
+
+    <!-- ================= CONTEÚDO DRE ================= -->
+    <div id="tab-dre" class="fin-content">
+      <div class="fin-toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0;">Demonstrativo de Resultado (DRE)</h2>
+        </div>
+        <div class="toolbar-right">
+          <select id="dre-mes" class="filter-select">
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+          </select>
+
+          <select id="dre-ano" class="filter-select">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+          </select>
+
+          <button id="btn-exportar-dre" class="btn btn-outline">
+            <i class="fa-solid fa-file-pdf"></i> Exportar
+          </button>
+        </div>
+      </div>
+
+      <div class="card dre-card">
+        <div style="padding: 20px;">
+          <p style="text-align: center; color: #64748b; margin: 0 0 20px 0;">
+            <strong id="dre-periodo">Janeiro 2026</strong>
+          </p>
+          
+          <div class="dre-section">
+            <h4 class="dre-section-title">📈 RECEITAS</h4>
+            <div class="dre-linha">
+              <span>Vendas de Produtos</span>
+              <span id="dre-vendas">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Outras Receitas</span>
+              <span id="dre-outras-receitas">R$ 0,00</span>
+            </div>
+            <div class="dre-linha dre-subtotal">
+              <span>= RECEITA TOTAL</span>
+              <span id="dre-receita-bruta">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="dre-section">
+            <h4 class="dre-section-title">➖ DEDUÇÕES</h4>
+            <div class="dre-linha">
+              <span>Comissões</span>
+              <span id="dre-comissoes">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Taxas</span>
+              <span id="dre-taxas">R$ 0,00</span>
+            </div>
+            <div class="dre-linha dre-subtotal">
+              <span>= DEDUÇÕES TOTAL</span>
+              <span id="dre-deducoes">R$ 0,00</span>
+            </div>
+            <div class="dre-linha dre-subtotal" style="background: #f0f9ff;">
+              <span style="font-weight: 600;">= RECEITA LÍQUIDA</span>
+              <span id="dre-receita-liquida" style="font-weight: 600;">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="dre-section">
+            <h4 class="dre-section-title">📦 CMV (Custo da Mercadoria Vendida)</h4>
+            <div class="dre-linha">
+              <span>CMV</span>
+              <span id="dre-cmv">R$ 0,00</span>
+            </div>
+            <div class="dre-linha dre-subtotal" style="background: #f0f9ff;">
+              <span style="font-weight: 600;">= LUCRO BRUTO</span>
+              <span id="dre-lucro-bruto" style="font-weight: 600;">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="dre-section">
+            <h4 class="dre-section-title">💸 DESPESAS OPERACIONAIS</h4>
+            <div class="dre-linha">
+              <span>Frete / Envio</span>
+              <span id="dre-frete">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Embalagens</span>
+              <span id="dre-embalagens">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Marketing</span>
+              <span id="dre-marketing">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Outras Variáveis</span>
+              <span id="dre-outras-var">R$ 0,00</span>
+            </div>
+            <div class="dre-linha dre-subtotal">
+              <span>= Total Despesas Variáveis</span>
+              <span id="dre-despesas-op">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="dre-section">
+            <h4 class="dre-section-title">🏢 DESPESAS FIXAS</h4>
+            <div class="dre-linha">
+              <span>Aluguel</span>
+              <span id="dre-aluguel">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Internet / Telefone</span>
+              <span id="dre-internet">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Contador</span>
+              <span id="dre-contador">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Mensalidades</span>
+              <span id="dre-mensalidades">R$ 0,00</span>
+            </div>
+            <div class="dre-linha">
+              <span>Outras Fixas</span>
+              <span id="dre-outras-fixas">R$ 0,00</span>
+            </div>
+            <div class="dre-linha dre-subtotal">
+              <span>= Total Despesas Fixas</span>
+              <span id="dre-despesas-fixas">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="dre-section">
+            <div class="dre-linha dre-subtotal" style="background: #f0f9ff;">
+              <span style="font-weight: 600;">= EBIT (Lucro Operacional)</span>
+              <span id="dre-ebit" style="font-weight: 600;">R$ 0,00</span>
+            </div>
+            <div class="dre-linha dre-total">
+              <span style="font-weight: 700;">💰 LUCRO LÍQUIDO</span>
+              <span id="dre-lucro-liquido" style="font-weight: 700;">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="dre-indicadores">
+            <div class="dre-indicador">
+              <div class="dre-ind-titulo">Margem Bruta</div>
+              <div class="dre-ind-valor" id="dre-margem-bruta">0%</div>
+            </div>
+            <div class="dre-indicador">
+              <div class="dre-ind-titulo">Margem Op.</div>
+              <div class="dre-ind-valor" id="dre-margem-op">0%</div>
+            </div>
+            <div class="dre-indicador">
+              <div class="dre-ind-titulo">Margem Líq.</div>
+              <div class="dre-ind-valor" id="dre-margem-liquida">0%</div>
+            </div>
+            <div class="dre-indicador">
+              <div class="dre-ind-titulo">ROI</div>
+              <div class="dre-ind-valor" id="dre-roi">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========== MODAIS ========== -->
+  <!-- (Adicionar os modais de Conta a Pagar e Conta a Receber conforme necessário) -->
+
+  <!-- ========== SCRIPTS - ORDEM CORRIGIDA ========== -->
+   <script src="header-manager.js"></script>
+  <script src="performance-fix.js"></script>
+  <script src="header-manager.js"></script>
+  <script type="module" src="firebase-init.js"></script>
+  <script src="firebase-sync.js"></script>
+  <script src="script.js"></script>
+  <script src="configuracoes.js"></script>
+  <script src="financeiro.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planos - Meu Manager</title>
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      min-height: 100vh;
+      color: #1e293b;
+    }
+    
+    .pricing-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    /* ============ HEADER ============ */
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .pricing-header img {
+      height: 60px;
+      margin-bottom: 20px;
+    }
+    
+    .pricing-header h1 {
+      font-size: 42px;
+      font-weight: 800;
+      color: #003366;
+      margin-bottom: 15px;
+    }
+    
+    .pricing-header p {
+      font-size: 18px;
+      color: #6b7280;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    /* ============ TOGGLE PERÍODO ============ */
+    .pricing-toggle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+    
+    .pricing-toggle span {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .pricing-toggle span.active {
+      color: #003366;
+      font-weight: 700;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: #cbd5e1;
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .toggle-switch.active {
+      background: #003366;
+    }
+    
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .toggle-switch.active::after {
+      transform: translateX(24px);
+    }
+    
+    .save-badge {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+    }
+    
+    /* ============ PRICING GRID ============ */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+    
+    @media (max-width: 900px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+    
+    /* ============ PRICING CARD ============ */
+    .pricing-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .pricing-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    
+    .pricing-card.popular {
+      border-color: #003366;
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(0,51,102,0.2);
+    }
+    
+    .pricing-card.popular:hover {
+      transform: scale(1.05) translateY(-5px);
+    }
+    
+    /* Badge Popular */
+    .pricing-card.popular::before {
+      content: 'MAIS POPULAR';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #003366 0%, #004488 100%);
+      color: white;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0,51,102,0.3);
+    }
+    
+    /* Card Header */
+    .pricing-card .card-header {
+      text-align: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 24px;
+    }
+    
+    .pricing-card .card-header h3 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #003366;
+      margin-bottom: 6px;
+    }
+    
+    .pricing-card .card-header .subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+    
+    .pricing-card .price {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 4px;
+    }
+    
+    .pricing-card .price .currency {
+      font-size: 20px;
+      font-weight: 600;
+      color: #003366;
+    }
+    
+    .pricing-card .price .amount {
+      font-size: 48px;
+      font-weight: 900;
+      color: #003366;
+      line-height: 1;
+    }
+    
+    .pricing-card .price .period {
+      font-size: 16px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    
+    .pricing-card .annual-savings {
+      font-size: 12px;
+      color: #22c55e;
+      font-weight: 600;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .pricing-card .annual-savings.show {
+      display: block;
+    }
+    
+    /* Features */
+    .pricing-features {
+      list-style: none;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+    
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #374151;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+    
+    .pricing-features li i {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    
+    .pricing-features li i.fa-check {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    
+    .pricing-features li i.fa-xmark {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .pricing-features li.disabled {
+      color: #9ca3af;
+    }
+    
+    /* CTA Button */
+    .pricing-cta {
+      width: 100%;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+    }
+    
+    .pricing-cta.primary {
+      background: linear-gradient(135deg, #003366 0%, #004488 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(0,51,102,0.3);
+    }
+    
+    .pricing-cta.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,51,102,0.4);
+    }
+    
+    .pricing-cta.secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .pricing-cta.secondary:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+    
+    /* ============ GARANTIA ============ */
+    .guarantee {
+      text-align: center;
+      margin-top: 50px;
+      padding: 40px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-radius: 20px;
+      border: 2px solid #22c55e;
+    }
+    
+    .guarantee i {
+      font-size: 50px;
+      color: #22c55e;
+      margin-bottom: 15px;
+    }
+    
+    .guarantee h3 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #166534;
+      margin-bottom: 10px;
+    }
+    
+    .guarantee p {
+      font-size: 16px;
+      color: #6b7280;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    /* ============ FAQ ============ */
+    .faq-section {
+      margin-top: 80px;
+    }
+    
+    .faq-section h2 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 800;
+      color: #003366;
+      margin-bottom: 40px;
+    }
+    
+    .faq-grid {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .faq-item {
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid #e5e7eb;
+    }
+    
+    .faq-question {
+      padding: 20px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 15px;
+      color: #374151;
+      transition: all 0.2s;
+    }
+    
+    .faq-question:hover {
+      background: #f9fafb;
+      color: #003366;
+    }
+    
+    .faq-question i {
+      transition: transform 0.3s;
+      color: #9ca3af;
+    }
+    
+    .faq-answer {
+      padding: 0 24px;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      color: #6b7280;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+    
+    .faq-item.open .faq-answer {
+      padding: 0 24px 20px;
+      max-height: 300px;
+    }
+    
+    .faq-item.open .faq-question {
+      color: #003366;
+    }
+    
+    .faq-item.open .faq-question i {
+      transform: rotate(180deg);
+      color: #003366;
+    }
+    
+    /* ============ FOOTER ============ */
+    .pricing-footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .pricing-footer p {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    
+    .pricing-footer .back-link {
+      color: #003366;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .pricing-footer .back-link:hover {
+      gap: 12px;
+    }
+    
+    /* ============ RESPONSIVO ============ */
+    @media (max-width: 768px) {
+      .pricing-header h1 {
+        font-size: 28px;
+      }
+      
+      .pricing-header p {
+        font-size: 16px;
+      }
+      
+      .pricing-card.popular {
+        transform: scale(1);
+      }
+      
+      .pricing-card.popular:hover {
+        transform: translateY(-5px);
+      }
+      
+      .guarantee {
+        padding: 30px 20px;
+      }
+      
+      .faq-section h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="pricing-page">
+    
+    <!-- ============ HEADER ============ -->
+    <div class="pricing-header">
+      <img src="meumanager-logo-completo.png" alt="Meu Manager">
+      <h1>Escolha o plano ideal para seu negócio</h1>
+      <p>Gerencie suas vendas em marketplaces de forma simples e eficiente. Comece grátis e escale quando precisar.</p>
+    </div>
+    
+    <!-- ============ TOGGLE MENSAL/ANUAL ============ -->
+    <div class="pricing-toggle">
+      <span class="active" id="label-mensal">Mensal</span>
+      <div class="toggle-switch" id="toggle-periodo" onclick="togglePeriodo()"></div>
+      <span id="label-anual">Anual</span>
+      <span class="save-badge">Economize 20%</span>
+    </div>
+    
+    <!-- ============ PRICING CARDS ============ -->
+    <div class="pricing-grid">
+      
+      <!-- STARTER -->
+      <div class="pricing-card">
+        <div class="card-header">
+          <h3>Starter</h3>
+          <p class="subtitle">Para quem está começando</p>
+          <div class="price">
+            <span class="currency">R$</span>
+            <span class="amount">0</span>
+            <span class="period">/mês</span>
+          </div>
+          <p class="annual-savings">Grátis para sempre!</p>
+        </div>
+        
+        <ul class="pricing-features">
+          <li><i class="fa-solid fa-check"></i> Até 50 produtos</li>
+          <li><i class="fa-solid fa-check"></i> 30 vendas/mês</li>
+          <li><i class="fa-solid fa-check"></i> 1 usuário</li>
+          <li><i class="fa-solid fa-check"></i> 1 canal de venda</li>
+          <li><i class="fa-solid fa-check"></i> Dashboard básico</li>
+          <li class="disabled"><i class="fa-solid fa-xmark"></i> Relatórios avançados</li>
+          <li class="disabled"><i class="fa-solid fa-xmark"></i> Backup automático</li>
+          <li class="disabled"><i class="fa-solid fa-xmark"></i> Suporte prioritário</li>
+        </ul>
+        
+        <button class="pricing-cta secondary" onclick="cadastrar()">
+          <i class="fa-solid fa-rocket"></i> Começar Grátis
+        </button>
+      </div>
+      
+      <!-- PRO -->
+      <div class="pricing-card popular">
+        <div class="card-header">
+          <h3>Pro</h3>
+          <p class="subtitle">Para vendedores em crescimento</p>
+          <div class="price">
+            <span class="currency">R$</span>
+            <span class="amount" id="preco-pro">47</span>
+            <span class="period">/mês</span>
+          </div>
+          <p class="annual-savings" id="economia-pro">Economia de R$ 120/ano!</p>
+        </div>
+        
+        <ul class="pricing-features">
+          <li><i class="fa-solid fa-check"></i> Até 500 produtos</li>
+          <li><i class="fa-solid fa-check"></i> Vendas ilimitadas</li>
+          <li><i class="fa-solid fa-check"></i> 3 usuários</li>
+          <li><i class="fa-solid fa-check"></i> 5 canais de venda</li>
+          <li><i class="fa-solid fa-check"></i> Dashboard completo</li>
+          <li><i class="fa-solid fa-check"></i> Relatórios avançados</li>
+          <li><i class="fa-solid fa-check"></i> Backup diário</li>
+          <li><i class="fa-solid fa-check"></i> Suporte por email</li>
+        </ul>
+        
+        <button class="pricing-cta primary" onclick="checkout('pro')">
+          <i class="fa-solid fa-crown"></i> Assinar Pro
+        </button>
+      </div>
+      
+      <!-- BUSINESS -->
+      <div class="pricing-card">
+        <div class="card-header">
+          <h3>Business</h3>
+          <p class="subtitle">Para operações maiores</p>
+          <div class="price">
+            <span class="currency">R$</span>
+            <span class="amount" id="preco-business">97</span>
+            <span class="period">/mês</span>
+          </div>
+          <p class="annual-savings" id="economia-business">Economia de R$ 240/ano!</p>
+        </div>
+        
+        <ul class="pricing-features">
+          <li><i class="fa-solid fa-check"></i> Produtos ilimitados</li>
+          <li><i class="fa-solid fa-check"></i> Vendas ilimitadas</li>
+          <li><i class="fa-solid fa-check"></i> 10 usuários</li>
+          <li><i class="fa-solid fa-check"></i> Canais ilimitados</li>
+          <li><i class="fa-solid fa-check"></i> Dashboard completo</li>
+          <li><i class="fa-solid fa-check"></i> Relatórios + exportação</li>
+          <li><i class="fa-solid fa-check"></i> Backup em tempo real</li>
+          <li><i class="fa-solid fa-check"></i> Suporte prioritário</li>
+          <li><i class="fa-solid fa-check"></i> API de integração</li>
+        </ul>
+        
+        <button class="pricing-cta primary" onclick="checkout('business')">
+          <i class="fa-solid fa-building"></i> Assinar Business
+        </button>
+      </div>
+      
+    </div>
+    
+    <!-- ============ GARANTIA ============ -->
+    <div class="guarantee">
+      <i class="fa-solid fa-shield-check"></i>
+      <h3>Garantia de 7 dias</h3>
+      <p>Se não ficar satisfeito, devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia.</p>
+    </div>
+    
+    <!-- ============ FAQ ============ -->
+    <div class="faq-section">
+      <h2>Perguntas Frequentes</h2>
+      
+      <div class="faq-grid">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            Posso mudar de plano depois?
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Sim! Você pode fazer upgrade ou downgrade a qualquer momento. O valor será calculado proporcionalmente ao tempo restante da sua assinatura atual.
+          </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            Como funciona o trial gratuito?
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Você tem 14 dias para testar todas as funcionalidades do plano Pro gratuitamente. Não pedimos cartão de crédito para o trial. Se gostar, é só assinar!
+          </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            Meus dados ficam seguros?
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Sim! Usamos Firebase (Google Cloud) para armazenamento, com criptografia em trânsito e em repouso, além de backups automáticos. Seus dados são 100% seguros e você pode exportá-los a qualquer momento.
+          </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            Quais formas de pagamento vocês aceitam?
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Aceitamos cartão de crédito (todas as bandeiras), PIX e boleto bancário. Os pagamentos são processados com segurança pelo Mercado Pago.
+          </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            Preciso de suporte técnico para configurar?
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Não! O sistema é intuitivo e fácil de usar. Mas se precisar de ajuda, oferecemos tutoriais em vídeo, documentação completa e suporte por email (ou prioritário nos planos pagos).
+          </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            Posso cancelar a qualquer momento?
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Sim! Não há fidelidade ou multa por cancelamento. Você pode cancelar sua assinatura a qualquer momento diretamente nas configurações da sua conta.
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <!-- ============ FOOTER ============ -->
+    <div class="pricing-footer">
+      <p>Dúvidas? Entre em contato: <strong>suporte@meumanager.com.br</strong></p>
+      <a href="index.html" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Voltar para o site
+      </a>
+    </div>
+    
+  </div>
+  
+  <script>
+    // ============ ESTADO ============
+    let isAnual = false;
+    
+    const precos = {
+      mensal: { pro: 47, business: 97 },
+      anual: { pro: 37, business: 77 }
+    };
+    
+    // ============ TOGGLE PERÍODO ============
+    function togglePeriodo() {
+      isAnual = !isAnual;
+      
+      // Toggle visual
+      document.getElementById('toggle-periodo').classList.toggle('active', isAnual);
+      document.getElementById('label-mensal').classList.toggle('active', !isAnual);
+      document.getElementById('label-anual').classList.toggle('active', isAnual);
+      
+      // Atualiza preços
+      const periodo = isAnual ? 'anual' : 'mensal';
+      document.getElementById('preco-pro').textContent = precos[periodo].pro;
+      document.getElementById('preco-business').textContent = precos[periodo].business;
+      
+      // Mostra/esconde economia
+      document.getElementById('economia-pro').classList.toggle('show', isAnual);
+      document.getElementById('economia-business').classList.toggle('show', isAnual);
+    }
+    
+    // ============ TOGGLE FAQ ============
+    function toggleFaq(el) {
+      // Fecha outros
+      document.querySelectorAll('.faq-item.open').forEach(item => {
+        if (item !== el) item.classList.remove('open');
+      });
+      
+      // Toggle atual
+      el.classList.toggle('open');
+    }
+    
+    // ============ CADASTRAR (Plano Grátis) ============
+    function cadastrar() {
+      window.location.href = 'cadastro.html';
+    }
+    
+    // ============ CHECKOUT ============
+    function checkout(plano) {
+      const periodo = isAnual ? 'anual' : 'mensal';
+      
+      // Verifica se está logado
+      let sessao = null;
+      try {
+        sessao = JSON.parse(localStorage.getItem("ft_sessao"));
+      } catch (e) {}
+      
+      if (!sessao || !sessao.email) {
+        // Salva intenção de compra
+        localStorage.setItem("checkout_intent", JSON.stringify({ 
+          plano, 
+          periodo,
+          timestamp: Date.now()
+        }));
+        
+        // Mostra mensagem e redireciona
+        if (confirm(`Para assinar o plano ${plano.toUpperCase()}, você precisa estar logado.\n\nDeseja fazer login ou criar uma conta?`)) {
+          window.location.href = "login.html";
+        }
+        return;
+      }
+      
+      // Redireciona para checkout
+      window.location.href = `checkout.html?plano=${plano}&periodo=${periodo}`;
+    }
+    
+    // ============ VERIFICAR INTENÇÃO DE CHECKOUT ============
+    document.addEventListener('DOMContentLoaded', () => {
+      // Se voltou do login com intenção de checkout
+      const intent = localStorage.getItem("checkout_intent");
+      if (intent) {
+        try {
+          const { plano, periodo, timestamp } = JSON.parse(intent);
+          
+          // Verifica se não expirou (30 minutos)
+          if (Date.now() - timestamp < 30 * 60 * 1000) {
+            const sessao = JSON.parse(localStorage.getItem("ft_sessao"));
+            
+            if (sessao && sessao.email) {
+              // Limpa intenção
+              localStorage.removeItem("checkout_intent");
+              
+              // Redireciona para checkout
+              window.location.href = `checkout.html?plano=${plano}&periodo=${periodo}`;
+            }
+          } else {
+            // Expirou, limpa
+            localStorage.removeItem("checkout_intent");
+          }
+        } catch (e) {
+          localStorage.removeItem("checkout_intent");
+        }
+      }
+    });
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendas - Meu Manager</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png" />
+  <link rel="shortcut icon" type="image/png" href="meumanager-logo-completo.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body data-page="vendas">
+
+<!-- ================= HEADER CORRIGIDO ================= -->
+<!-- 
+  ✅ Remova o <select> hardcoded
+  ✅ Remova as imagens hardcoded (logo-ferratec, logo-lcabalo)
+  ✅ Use este template em todos os HTMLs
+-->
+
+<header class="header">
+  <div class="header-left">
+    <div id="clock" class="clock-display">00:00:00</div>
+  </div>
+
+  <div class="social-icons">
+    <a href="#" title="E-mail"><img src="email-icon.ico" alt="E-mail"></a>
+    <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="#" title="YouTube"><img src="youtube-icon.ico" alt="YouTube"></a>
+    <a href="#" title="Instagram"><img src="instagram-icon.ico" alt="Instagram"></a>
+    <a href="#" title="Facebook"><img src="facebook-icon.ico" alt="Facebook"></a>
+    <a href="#" title="Pinterest"><img src="icone-pinterest.ico" alt="Pinterest"></a>
+    <a href="#" title="Marketplace"><img src="marketplace-icon.ico" alt="Marketplace"></a>
+    <a href="#" title="Mercado Livre"><img src="icone-mercadolivre.ico" alt="Mercado Livre"></a>
+    <a href="#" title="Mercado Pago"><i class="fa-solid fa-credit-card"></i></a>
+    <a href="#" title="AliExpress"><i class="fa-brands fa-square-a"></i></a>
+  </div>
+
+  <div class="header-right">
+    <!-- Logo será carregada dinamicamente pelo header-manager.js -->
+    <div class="logo-area">
+      <!-- Logos antigas removidas - serão substituídas dinamicamente -->
+    </div>
+    
+    <!-- Seletor hardcoded REMOVIDO -->
+    <!-- O header-manager.js criará um display dinâmico aqui -->
+    <div id="conta-select"></div>
+    
+    <button id="btn-logout" class="btn-logout" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ================= SCRIPTS (adicionar antes do </body>) ================= -->
+<!--
+  Adicione esta linha ANTES de todos os outros scripts:
+  <script src="header-manager.js"></script>
+-->
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <ul class="sidebar-menu">
+
+    <li class="menu-item">
+      <a href="dashboard.html" class="menu-link">
+        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="fornecedores.html" class="menu-link">
+        <i class="fa-solid fa-truck"></i><span>Fornecedores</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="clientes.html" class="menu-link">
+        <i class="fa-solid fa-users"></i><span>Clientes</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="produtos.html" class="menu-link">
+        <i class="fa-solid fa-box"></i><span>Produtos</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="compras.html" class="menu-link">
+        <i class="fa-solid fa-cart-shopping"></i><span>Compras</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="vendas.html" class="menu-link">
+        <i class="fa-solid fa-receipt"></i><span>Vendas</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="estoque.html" class="menu-link">
+        <i class="fa-solid fa-warehouse"></i><span>Estoque FIFO</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="simulacao.html" class="menu-link">
+        <i class="fa-solid fa-calculator"></i><span>Simulação</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="curva-abc.html" class="menu-link">
+        <i class="fa-solid fa-chart-pie"></i><span>Curva ABC</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="financeiro.html" class="menu-link">
+        <i class="fa-solid fa-wallet"></i><span>Financeiro</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="relatorios.html" class="menu-link">
+        <i class="fa-solid fa-chart-line"></i><span>Relatórios</span>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="configuracoes.html" class="menu-link">
+        <i class="fa-solid fa-gear"></i><span>Configurações</span>
+      </a>
+    </li>
+
+
+
+  </ul>
+</aside>
+<!-- ================= /SIDEBAR ================= -->
+
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+
+  <div class="dashboard-top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1><i class="fa-solid fa-receipt"></i> Vendas</h1>
+  </div>
+
+  <!-- ================= TOOLBAR COM FILTROS ================= -->
+  <div class="toolbar-produtos">
+    
+    <div class="toolbar-left">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="venda-busca" type="text" placeholder="Buscar SKU, produto, canal, pedido..." />
+      </div>
+
+      <button id="abrir-modal-venda" class="btn btn-primary" type="button">
+        <i class="fa-solid fa-plus"></i> Registrar Venda
+      </button>
+
+      <button id="btn-limpar-filtros" class="btn btn-outline" type="button" title="Limpar filtros">
+        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+      </button>
+    </div>
+
+    <div class="toolbar-right">
+      <div class="filter-group">
+        <select id="filtro-canal" class="filter-select">
+          <option value="">Todos Canais</option>
+          <option value="ML">ML</option>
+          <option value="Shopee">Shopee</option>
+          <option value="Facebook">Facebook</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Loja Integrada">Loja Integrada</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <select id="filtro-status" class="filter-select">
+          <option value="">Todos Status</option>
+          <option value="AGUARD">Aguardando</option>
+          <option value="TRANSP">Em Transporte</option>
+          <option value="CONCL">Concluído</option>
+          <option value="CANCEL">Cancelado</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <select id="filtro-periodo" class="filter-select">
+          <option value="">Todo Período</option>
+          <option value="hoje">Hoje</option>
+          <option value="7d">Últimos 7 dias</option>
+          <option value="30d">Últimos 30 dias</option>
+          <option value="mes">Este mês</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <select id="filtro-lucro" class="filter-select">
+          <option value="">Todo Lucro</option>
+          <option value="positivo">Lucro positivo</option>
+          <option value="negativo">Lucro negativo</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Contador e Totais -->
+  <div class="vendas-resumo">
+    <span id="contador-vendas" class="contador-resultados"></span>
+    <div class="vendas-totais">
+      <span class="total-item">Total: <strong id="total-vendas">R$ 0,00</strong></span>
+      <span class="total-item">Lucro: <strong id="total-lucro">R$ 0,00</strong></span>
+    </div>
+  </div>
+
+  <section class="card forn-section" style="overflow-x:auto;">
+    <table class="forn-table" style="min-width:1600px;">
+      <thead>
+        <tr>
+          <th class="center" style="width:50px;">ID</th>
+          <th class="center" style="width:90px;">Data</th>
+          <th style="width:100px;">SKU</th>
+          <th style="width:180px;">Produto</th>
+          <th class="center" style="width:50px;">Qtd</th>
+          <th style="width:70px;">Canal</th>
+          <th style="width:130px;">Nº Pedido</th>
+          <th class="right" style="width:90px;">Valor Uni</th>
+          <th class="right" style="width:90px;">Custo Uni</th>
+          <th class="right" style="width:90px;">Valor Tot</th>
+          <th class="center" style="width:70px;">Com. %</th>
+          <th class="right" style="width:90px;">Com. R$</th>
+          <th class="right" style="width:80px;">Frete</th>
+          <th class="right" style="width:90px;">Saldo ML</th>
+          <th class="right" style="width:80px;">CMV</th>
+          <th class="right" style="width:80px;">Outros</th>
+          <th class="right" style="width:90px;">Lucro</th>
+          <th style="width:100px;">Obs</th>
+          <th class="center" style="width:90px;">Status</th>
+          <th class="center" style="width:80px;">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-vendas-body"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<!-- ========== FIREBASE ========== -->
+ <script src="header-manager.js"></script>
+<script type="module" src="firebase-init.js"></script>
+<script src="firebase-sync.js"></script>
+<script src="script.js"></script>
+<script src="vendas.js"></script>
+</body>

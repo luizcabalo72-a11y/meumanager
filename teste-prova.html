@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Prova que Funciona</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    #teste { border: 2px solid red; padding: 10px; margin: 20px 0; min-height: 30px; }
+    button { padding: 10px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Teste de Renderização</h1>
+  <div id="teste"></div>
+  
+  <button onclick="testar1()">Teste 1: Uma Empresa</button>
+  <button onclick="testar2()">Teste 2: Duas Empresas</button>
+  <button onclick="limpar()">Limpar localStorage</button>
+
+  <script>
+    function testar1() {
+      const id = 'test_' + Date.now();
+      localStorage.clear();
+      localStorage.setItem('acc_' + id + '__empresa_dados', JSON.stringify({
+        razaoSocial: 'Empresa Un',
+        nomeFantasia: 'Empresa Um'
+      }));
+      localStorage.setItem('ft_sessao', JSON.stringify({
+        empresaId: id,
+        empresa: 'Empresa Um'
+      }));
+      location.reload();
+    }
+
+    function testar2() {
+      const id1 = 'test1_' + Date.now();
+      const id2 = 'test2_' + Date.now();
+      localStorage.clear();
+      localStorage.setItem('acc_' + id1 + '__empresa_dados', JSON.stringify({
+        razaoSocial: 'Empresa Um',
+        nomeFantasia: 'Empresa Um'
+      }));
+      localStorage.setItem('acc_' + id2 + '__empresa_dados', JSON.stringify({
+        razaoSocial: 'Empresa Dois',
+        nomeFantasia: 'Empresa Dois'
+      }));
+      localStorage.setItem('ft_sessao', JSON.stringify({
+        empresaId: id1,
+        empresa: 'Empresa Um'
+      }));
+      location.reload();
+    }
+
+    function limpar() {
+      localStorage.clear();
+      location.reload();
+    }
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="header-manager.js"></script>
+</body>
+</html>

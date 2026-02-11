@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Manager - Gestão de Vendas para Marketplaces</title>
+  <meta name="description" content="Sistema completo para gerenciar vendas no Mercado Livre, Shopee e outros marketplaces. Controle estoque, calcule lucros e aumente suas vendas.">
+  
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #003366;
+      --primary-light: #004488;
+      --accent: #22c55e;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --bg: #ffffff;
+      --bg-alt: #f8fafc;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+    
+    .navbar img {
+      height: 40px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    /* Mobile Menu Button */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: var(--primary) !important;
+      color: #ffffff !important;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-light) !important;
+      color: #ffffff !important;
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Hero */
+    .hero {
+      padding: 140px 40px 80px;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .hero p {
+      font-size: 20px;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+    
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 50px;
+    }
+    
+    .hero-image {
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: 16px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+      overflow: hidden;
+      background: linear-gradient(135deg, #003366 0%, #004488 50%, #0066aa 100%);
+      padding: 40px;
+    }
+    
+    .hero-image img {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+    }
+    
+    /* Dashboard Placeholder */
+    .dashboard-placeholder {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: left;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .dashboard-header h3 {
+      color: var(--primary);
+      font-size: 18px;
+    }
+    
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .stat-card {
+      background: var(--bg-alt);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .stat-card .icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    .stat-card .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-card .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    
+    .dashboard-chart {
+      background: var(--bg-alt);
+      border-radius: 10px;
+      padding: 20px;
+      height: 150px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      gap: 10px;
+    }
+    
+    .chart-bar {
+      width: 40px;
+      background: linear-gradient(to top, var(--primary), var(--primary-light));
+      border-radius: 6px 6px 0 0;
+      transition: height 0.3s;
+    }
+    
+    /* Logos */
+    .logos-section {
+      padding: 50px 40px;
+      text-align: center;
+      background: white;
+    }
+    
+    .logos-section p {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
+    
+    .logo-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 18px;
+    }
+    
+    .logo-item i {
+      font-size: 28px;
+    }
+    
+    .logo-ml { color: #ffe600; }
+    .logo-shopee { color: #ee4d2d; }
+    .logo-amazon { color: #ff9900; }
+    .logo-magalu { color: #0086ff; }
+    
+    /* Features */
+    .features {
+      padding: 80px 40px;
+      background: var(--bg-alt);
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .section-title h2 {
+      font-size: 36px;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+    
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .feature-card {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      margin-bottom: 20px;
+    }
+    
+    .feature-card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    
+    /* CTA */
+    .cta-section {
+      padding: 80px 40px;
+      background: var(--primary);
+      text-align: center;
+      color: white;
+    }
+    
+    .cta-section h2 {
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+    
+    .cta-section p {
+      opacity: 0.9;
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    
+    .cta-section .btn-primary {
+      background: white !important;
+      color: var(--primary) !important;
+    }
+    
+    .cta-section .btn-primary:hover {
+      background: #f0f0f0 !important;
+      color: var(--primary) !important;
+    }
+    
+    /* Footer */
+    footer {
+      background: #0a1628;
+      color: white;
+      padding: 50px 40px 30px;
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+    }
+    
+    .footer-brand img {
+      height: 40px;
+      margin-bottom: 15px;
+      filter: brightness(0) invert(1);
+    }
+    
+    .footer-brand p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    
+    .footer-links h4 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+      color: #94a3b8;
+    }
+    
+    .footer-links a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 5px 0;
+      font-size: 14px;
+    }
+    
+    .footer-links a:hover {
+      color: #22c55e;
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid #1e293b;
+      padding-top: 30px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+    }
+    
+    /* ============================================
+       RESPONSIVO - MOBILE
+       ============================================ */
+    @media (max-width: 768px) {
+      /* Navbar Mobile */
+      .navbar {
+        padding: 12px 15px;
+      }
+      
+      .navbar img {
+        height: 32px;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      /* Hero Mobile */
+      .hero {
+        padding: 90px 15px 40px;
+      }
+      
+      .hero h1 {
+        font-size: 26px;
+        margin-bottom: 15px;
+      }
+      
+      .hero p {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      
+      .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
+      
+      .hero-buttons .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+      }
+      
+      /* Dashboard Mobile */
+      .hero-image {
+        padding: 12px;
+        border-radius: 12px;
+        margin: 0 -5px;
+      }
+      
+      .dashboard-placeholder {
+        padding: 12px;
+        border-radius: 8px;
+      }
+      
+      .dashboard-header {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+      }
+      
+      .dashboard-header h3 {
+        font-size: 13px;
+      }
+      
+      .dashboard-header span {
+        font-size: 11px !important;
+      }
+      
+      .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+      
+      .stat-card {
+        padding: 10px 8px;
+        border-radius: 8px;
+      }
+      
+      .stat-card .icon {
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+      
+      .stat-card .value {
+        font-size: 14px;
+      }
+      
+      .stat-card .label {
+        font-size: 8px;
+      }
+      
+      .dashboard-chart {
+        height: 60px;
+        padding: 10px;
+        gap: 4px;
+      }
+      
+      .chart-bar {
+        width: 15px;
+        border-radius: 3px 3px 0 0;
+      }
+      
+      /* Logos Mobile */
+      .logos-section {
+        padding: 30px 15px;
+      }
+      
+      .logos-section p {
+        font-size: 11px;
+        margin-bottom: 15px;
+      }
+      
+      .logos {
+        gap: 15px;
+      }
+      
+      .logo-item {
+        font-size: 12px;
+        gap: 5px;
+      }
+      
+      .logo-item i {
+        font-size: 18px;
+      }
+      
+      /* Features Mobile */
+      .features {
+        padding: 40px 15px;
+      }
+      
+      .section-title {
+        margin-bottom: 30px;
+      }
+      
+      .section-title h2 {
+        font-size: 22px;
+      }
+      
+      .section-title p {
+        font-size: 14px;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .feature-card {
+        padding: 20px;
+        border-radius: 12px;
+      }
+      
+      .feature-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+      
+      .feature-card h3 {
+        font-size: 16px;
+      }
+      
+      .feature-card p {
+        font-size: 13px;
+      }
+      
+      /* CTA Mobile */
+      .cta-section {
+        padding: 40px 15px;
+      }
+      
+      .cta-section h2 {
+        font-size: 22px;
+      }
+      
+      .cta-section p {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      
+      /* Footer Mobile */
+      footer {
+        padding: 30px 15px 20px;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+      
+      .footer-brand img {
+        height: 30px;
+      }
+      
+      .footer-brand p {
+        font-size: 12px;
+      }
+      
+      .footer-links h4 {
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+      
+      .footer-links a {
+        font-size: 13px;
+        padding: 4px 0;
+      }
+      
+      .footer-bottom {
+        padding-top: 20px;
+        font-size: 11px;
+      }
+    }
+    
+    /* Telas muito pequenas */
+    @media (max-width: 360px) {
+      .hero h1 {
+        font-size: 22px;
+      }
+      
+      .stat-card .value {
+        font-size: 12px;
+      }
+      
+      .chart-bar {
+        width: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Navbar -->
+  <nav class="navbar">
+    <img src="meumanager-logo-completo.png" alt="Meu Manager">
+    <button class="mobile-menu-btn">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="nav-links">
+      <a href="#features">Funcionalidades</a>
+      <a href="planos.html">Preços</a>
+      <a href="#faq">FAQ</a>
+      <a href="login.html" class="btn btn-outline">Entrar</a>
+      <a href="cadastro.html" class="btn btn-primary">Criar Conta Grátis</a>
+    </div>
+  </nav>
+  
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Gerencie suas vendas em marketplaces de forma simples</h1>
+    <p>Controle estoque, calcule lucros reais, gere relatórios e aumente suas vendas no Mercado Livre, Shopee e outros canais.</p>
+    
+    <div class="hero-buttons">
+      <a href="cadastro.html" class="btn btn-primary">
+        <i class="fa-solid fa-rocket"></i> Começar Grátis
+      </a>
+      <a href="#demo" class="btn btn-outline">
+        <i class="fa-solid fa-play"></i> Ver Demo
+      </a>
+    </div>
+    
+    <div class="hero-image">
+      <div class="dashboard-placeholder">
+        <div class="dashboard-header">
+          <h3><i class="fa-solid fa-chart-line"></i> Dashboard - Meu Manager</h3>
+          <span style="color: var(--text-muted); font-size: 14px;">Janeiro 2026</span>
+        </div>
+        
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div class="icon">📦</div>
+            <div class="value">1.248</div>
+            <div class="label">Vendas</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">💰</div>
+            <div class="value">R$ 89.450</div>
+            <div class="label">Faturamento</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">📈</div>
+            <div class="value">R$ 24.320</div>
+            <div class="label">Lucro Líquido</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon">⭐</div>
+            <div class="value">27,2%</div>
+            <div class="label">Margem</div>
+          </div>
+        </div>
+        
+        <div class="dashboard-chart">
+          <div class="chart-bar" style="height: 60%;"></div>
+          <div class="chart-bar" style="height: 75%;"></div>
+          <div class="chart-bar" style="height: 45%;"></div>
+          <div class="chart-bar" style="height: 90%;"></div>
+          <div class="chart-bar" style="height: 70%;"></div>
+          <div class="chart-bar" style="height: 85%;"></div>
+          <div class="chart-bar" style="height: 95%;"></div>
+          <div class="chart-bar" style="height: 80%;"></div>
+          <div class="chart-bar" style="height: 65%;"></div>
+          <div class="chart-bar" style="height: 100%;"></div>
+          <div class="chart-bar" style="height: 88%;"></div>
+          <div class="chart-bar" style="height: 72%;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Logos -->
+  <section class="logos-section">
+    <p>Integrado com os principais marketplaces</p>
+    <div class="logos">
+      <div class="logo-item">
+        <i class="fa-solid fa-handshake logo-ml"></i>
+        <span>Mercado Livre</span>
+      </div>
+      <div class="logo-item">
+        <i class="fa-solid fa-store logo-shopee"></i>
+        <span>Shopee</span>
+      </div>
+      <div class="logo-item">
+        <i class="fa-brands fa-amazon logo-amazon"></i>
+        <span>Amazon</span>
+      </div>
+      <div class="logo-item">
+        <i class="fa-solid fa-shopping-bag logo-magalu"></i>
+        <span>Magalu</span>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="section-title">
+      <h2>Tudo que você precisa em um só lugar</h2>
+      <p>Ferramentas poderosas para vendedores de marketplace</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <h3>Dashboard Inteligente</h3>
+        <p>Visualize vendas, lucros e métricas importantes em tempo real. Tome decisões baseadas em dados.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-warehouse"></i></div>
+        <h3>Controle de Estoque FIFO</h3>
+        <p>Gerencie seu estoque com precisão usando o método FIFO. Saiba exatamente seu custo por unidade.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-calculator"></i></div>
+        <h3>Simulador de Preços</h3>
+        <p>Calcule o preço ideal considerando comissões, frete, impostos e margem de lucro desejada.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+        <h3>Curva ABC</h3>
+        <p>Identifique seus produtos mais rentáveis e otimize seu portfólio de vendas.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+        <h3>Relatórios Detalhados</h3>
+        <p>Gere relatórios de vendas, compras e lucratividade. Exporte para Excel ou PDF.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-cloud"></i></div>
+        <h3>Backup na Nuvem</h3>
+        <p>Seus dados salvos automaticamente na nuvem. Acesse de qualquer dispositivo.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Pronto para aumentar seus lucros?</h2>
+    <p>Junte-se a milhares de vendedores que já usam o Meu Manager</p>
+    <a href="cadastro.html" class="btn btn-primary">
+      <i class="fa-solid fa-rocket"></i> Criar Conta Grátis
+    </a>
+  </section>
+  
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="meumanager-logo-completo.png" alt="Meu Manager">
+        <p>Sistema de gestão completo para vendedores de marketplace. Simples, poderoso e acessível.</p>
+      </div>
+      
+      <div class="footer-links">
+        <h4>Produto</h4>
+        <a href="#features">Funcionalidades</a>
+        <a href="planos.html">Preços</a>
+        <a href="#">Integrações</a>
+        <a href="#">Atualizações</a>
+      </div>
+      
+      <div class="footer-links">
+        <h4>Suporte</h4>
+        <a href="#">Central de Ajuda</a>
+        <a href="#">Tutoriais</a>
+        <a href="#">Contato</a>
+        <a href="#">Status</a>
+      </div>
+      
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <a href="#">Termos de Uso</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2026 Meu Manager. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+  
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Senha - Meu Manager</title>
+  <link rel="icon" type="image/png" href="meumanager-logo-completo.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #003366 0%, #001a33 100%);
+      padding: 20px;
+    }
+    
+    .recover-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    
+    .recover-card img {
+      height: 50px;
+      margin-bottom: 25px;
+    }
+    
+    .recover-card h1 {
+      font-size: 24px;
+      color: #003366;
+      margin-bottom: 10px;
+    }
+    
+    .recover-card p {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #003366;
+    }
+    
+    .btn-recover {
+      width: 100%;
+      padding: 16px;
+      background: #003366;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    
+    .btn-recover:hover {
+      background: #002244;
+    }
+    
+    .back-link {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .back-link a {
+      color: #003366;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .alert.error {
+      background: #fef2f2;
+      color: #dc2626;
+      display: block;
+    }
+    
+    .alert.success {
+      background: #f0fdf4;
+      color: #16a34a;
+      display: block;
+    }
+    
+    .success-icon {
+      font-size: 60px;
+      color: #22c55e;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .success-state .success-icon { display: block; }
+    .success-state form { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="recover-card" id="recover-card">
+    <img src="meumanager-logo-completo.png" alt="Meu Manager">
+    
+    <div class="success-icon">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    
+    <h1 id="title">Recuperar Senha</h1>
+    <p id="subtitle">Digite seu email e enviaremos um link para redefinir sua senha.</p>
+    
+    <div class="alert" id="alert"></div>
+    
+    <form id="form-recover">
+      <div class="form-group">
+        <label for="email">Email cadastrado</label>
+        <input type="email" id="email" placeholder="seu@email.com" required>
+      </div>
+      
+      <button type="submit" class="btn-recover">
+        <i class="fa-solid fa-paper-plane"></i> Enviar Link
+      </button>
+    </form>
+    
+    <p class="back-link">
+      <a href="login.html"><i class="fa-solid fa-arrow-left"></i> Voltar ao login</a>
+    </p>
+  </div>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script src="firebase-auth-complete.js"></script>
+  
+  <script>
+    document.getElementById("form-recover").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById("email").value.trim();
+      const alert = document.getElementById("alert");
+      
+      try {
+        let attempts = 0;
+        while (!window.Auth && attempts < 50) {
+          await new Promise(r => setTimeout(r, 100));
+          attempts++;
+        }
+        
+        const result = await window.Auth.recuperarSenha(email);
+        
+        // Mostra sucesso
+        document.getElementById("recover-card").classList.add("success-state");
+        document.getElementById("title").textContent = "Email Enviado!";
+        document.getElementById("subtitle").textContent = 
+          `Enviamos um link de recuperação para ${email}. Verifique sua caixa de entrada e spam.`;
+        
+      } catch (error) {
+        alert.textContent = error.message;
+        alert.className = "alert error";
+      }
+    });
+  </script>
+
+</body>
+</html>

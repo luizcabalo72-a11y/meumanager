@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste Header Manager</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+    
+    /* Header styles */
+    header {
+      background: white;
+      border-bottom: 1px solid #ddd;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header-left { display: flex; gap: 15px; align-items: center; }
+    .header-right { display: flex; gap: 20px; align-items: center; }
+    
+    #conta-select { min-width: 250px; }
+    
+    .main {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+    }
+    
+    .console {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .console div {
+      line-height: 1.4;
+      word-break: break-all;
+    }
+    
+    .success { color: #4ec9b0; }
+    .warning { color: #ce9178; }
+    .error { color: #f48771; }
+    .info { color: #9cdcfe; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <h1>📋 Teste - Header Manager</h1>
+    </div>
+    <div class="header-right">
+      <div id="conta-select"></div>
+      <button id="btn-logout">Logout</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <h2>Teste de Funcionamento do Header Manager</h2>
+    <p>Abra o console (F12) e veja os logs abaixo:</p>
+    
+    <div class="console" id="console-output"></div>
+    
+    <div style="margin-top: 20px;">
+      <button onclick="criarEmpresaTeste()">Criar Empresa Teste</button>
+      <button onclick="window.location.reload()">Recarregar</button>
+    </div>
+  </div>
+
+  <script>
+    // Redireciona logs do console para a página
+    const consoleOutput = document.getElementById('console-output');
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    
+    const captureLog = (message, type = 'info') => {
+      const div = document.createElement('div');
+      div.className = type;
+      div.textContent = String(message);
+      consoleOutput.appendChild(div);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    };
+    
+    console.log = function(...args) {
+      originalLog(...args);
+      captureLog(args.join(' '), 'success');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn(...args);
+      captureLog(args.join(' '), 'warning');
+    };
+    
+    console.error = function(...args) {
+      originalError(...args);
+      captureLog(args.join(' '), 'error');
+    };
+    
+    // Função para criar uma empresa de teste
+    function criarEmpresaTeste() {
+      const id = 'empresa_test_' + Date.now();
+      const dados = {
+        id: id,
+        razaoSocial: 'Empresa Teste',
+        nomeFantasia: 'Empresa Teste',
+        cnpj: '12.345.678/0001-90',
+        telefone: '(11) 99999-9999',
+        email: 'teste@teste.com',
+        cidade: 'São Paulo',
+        site: 'www.teste.com',
+        dataCadastro: new Date().toISOString(),
+        logo: ''
+      };
+      
+      localStorage.setItem('acc_' + id + '__empresa_dados', JSON.stringify(dados));
+      localStorage.setItem('acc_' + id + '__saldo_inicial', '1000');
+      localStorage.setItem('acc_' + id + '__produtos', JSON.stringify([]));
+      localStorage.setItem('acc_' + id + '__vendas', JSON.stringify([]));
+      localStorage.setItem('acc_' + id + '__compras', JSON.stringify([]));
+      
+      const sessao = {
+        empresaId: id,
+        empresa: 'Empresa Teste',
+        email: 'teste@teste.com',
+        uid: 'user123'
+      };
+      
+      localStorage.setItem('ft_sessao', JSON.stringify(sessao));
+      localStorage.setItem('ft_active_account', id);
+      
+      console.log('✅ Empresa teste criada:', id);
+      window.location.reload();
+    }
+  </script>
+
+  <!-- Aqui entra o header-manager.js -->
+  <script src="header-manager.js"></script>
+</body>
+</html>
