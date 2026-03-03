@@ -1,10 +1,10 @@
 /* =========================================================
-   FORNECEDORES.JS - Compat (EmpresaId atual + Legado Multi-Conta)
-   - Modo atual (SaaS): acc_<empresaId>__fornecedores
-   - Legado (multi-conta): acc_ferratec__ft_fornecedores | acc_lcabalo__lc_fornecedores
+   FORNECEDORES.JS - Multi-Conta + Firebase Sync
+   - Ferratec Tools: ft_fornecedores
+   - L. Cabalo Discos: lc_fornecedores
    - CRUD completo de fornecedores
    - Filtros: Busca, Categoria, UF, Status
-   - SINCRONIZAÇÃO COM FIREBASE (via eventos firebase-data-updated / firebase-sync-complete)
+   - SINCRONIZação COM FIREBASE
 ========================================================= */
 
 (function () {
@@ -12,55 +12,9 @@
 
   /* ================= STORAGE KEYS ================= */
   const STORAGE_KEYS = {
-    // legado
     ferratec: "ft_fornecedores",
-    lcabalo: "lc_fornecedores",
-    // padrão atual
-    atual: "fornecedores"
+    lcabalo: "lc_fornecedores"
   };
-
-  function isLegacyConta(val) {
-    const v = (val || "").trim().toLowerCase();
-    return v === "ferratec" || v === "lcabalo";
-  }
-
-  // empresaId ativa (modo atual)
-  function getEmpresaIdAtiva() {
-    const a = (localStorage.getItem("ft_active_account") || "").trim(); // hoje costuma ser empresaId
-    const b = (localStorage.getItem("empresaId") || "").trim();
-    return a || b || "";
-  }
-
-  // fallback legado (se houver conta-select antigo)
-  function getContaAtivaLegacy() {
-    const sel = document.getElementById("conta-select");
-    const v = (sel?.value || localStorage.getItem("ft_active_account") || "ferratec");
-    return isLegacyConta(v) ? v : "ferratec";
-  }
-
-  // ✅ Chave do localStorage (corrigida)
-  function getStorageKey() {
-    const empresaId = getEmpresaIdAtiva();
-
-    // modo atual: empresaId real
-    if (empresaId && !isLegacyConta(empresaId)) {
-      return `acc_${empresaId}__${STORAGE_KEYS.atual}`;
-    }
-
-    // fallback legado
-    const conta = getContaAtivaLegacy();
-    const baseKey = STORAGE_KEYS[conta] || STORAGE_KEYS.ferratec;
-    return `acc_${conta}__${baseKey}`;
-  }
-
-  // ✅ BaseKey para o Firebase (sem prefixo) — precisa bater com o que o firebase-sync usa
-  function getBaseKey() {
-    const empresaId = getEmpresaIdAtiva();
-    if (empresaId && !isLegacyConta(empresaId)) return STORAGE_KEYS.atual;
-
-    const conta = getContaAtivaLegacy();
-    return STORAGE_KEYS[conta] || STORAGE_KEYS.ferratec;
-  }
 
   /* ================= HELPERS ================= */
   const readLS = (k) => {
@@ -74,9 +28,29 @@
 
   const up = (s) => String(s || "").trim().toUpperCase();
 
+  // Detecta conta ativa
+  function getContaAtiva() {
+    const sel = document.getElementById("conta-select");
+    return sel?.value || localStorage.getItem("ft_active_account") || "ferratec";
+  }
+
+  // Chave do localStorage por conta (COM PREFIXO para Firebase Sync)
+  function getStorageKey() {
+    const conta = getContaAtiva();
+    const baseKey = STORAGE_KEYS[conta] || STORAGE_KEYS.ferratec;
+    const prefix = `acc_${conta}__`;
+    return prefix + baseKey;
+  }
+
+  // Retorna a baseKey para o Firebase (sem prefixo)
+  function getBaseKey() {
+    const conta = getContaAtiva();
+    return STORAGE_KEYS[conta] || STORAGE_KEYS.ferratec;
+  }
+
   // Gera UUID para novos registros
   function gerarUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       const r = Math.random() * 16 | 0;
       const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
@@ -235,15 +209,33 @@
                   <label>UF</label>
                   <select id="forn-uf">
                     <option value="">Selecione...</option>
-                    <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
-                    <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
-                    <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
-                    <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
-                    <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
-                    <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
-                    <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
-                    <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
-                    <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                    <option value="AC">AC</option>
+                    <option value="AL">AL</option>
+                    <option value="AP">AP</option>
+                    <option value="AM">AM</option>
+                    <option value="BA">BA</option>
+                    <option value="CE">CE</option>
+                    <option value="DF">DF</option>
+                    <option value="ES">ES</option>
+                    <option value="GO">GO</option>
+                    <option value="MA">MA</option>
+                    <option value="MT">MT</option>
+                    <option value="MS">MS</option>
+                    <option value="MG">MG</option>
+                    <option value="PA">PA</option>
+                    <option value="PB">PB</option>
+                    <option value="PR">PR</option>
+                    <option value="PE">PE</option>
+                    <option value="PI">PI</option>
+                    <option value="RJ">RJ</option>
+                    <option value="RN">RN</option>
+                    <option value="RS">RS</option>
+                    <option value="RO">RO</option>
+                    <option value="RR">RR</option>
+                    <option value="SC">SC</option>
+                    <option value="SP">SP</option>
+                    <option value="SE">SE</option>
+                    <option value="TO">TO</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -292,8 +284,8 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label>Observações</label>
-                  <input id="forn-obs" placeholder="Anotações sobre o fornecedor..." />
+                  <label>ObservAções</label>
+                  <input id="forn-obs" placeholder="AnotAções sobre o fornecedor..." />
                 </div>
               </div>
             </fieldset>
@@ -408,6 +400,7 @@
 
     window.renderTableLazy(tbody, fornecedores, (f) => {
       const st = normalizeStatus(f.status);
+      const statusClass = st === "INATIVO" ? "row-inativo" : "";
 
       // Formata o site como link clicável
       let siteDisplay = "";
@@ -476,13 +469,15 @@
     };
 
     if (editId) {
+      // Edição - Comparação como STRING
       const idx = fornecedores.findIndex(f => String(f.id) === String(editId));
       if (idx > -1) {
-        dados.id = editId;
+        dados.id = editId; // Mantém o ID original
         dados.createdAt = fornecedores[idx].createdAt || new Date().toISOString();
         fornecedores[idx] = dados;
       }
     } else {
+      // Novo registro
       dados.id = gerarUUID();
       dados.createdAt = new Date().toISOString();
       fornecedores.push(dados);
@@ -498,14 +493,18 @@
   function editarFornecedor(id) {
     const storageKey = getStorageKey();
     const fornecedores = readLS(storageKey) || [];
+    // Comparação como STRING
     const f = fornecedores.find(x => String(x.id) === String(id));
-    if (f) abrirModal(f);
+    if (f) {
+      abrirModal(f);
+    }
   }
 
   /* ================= EXCLUIR ================= */
   function excluirFornecedor(id) {
     const storageKey = getStorageKey();
     const fornecedores = readLS(storageKey) || [];
+    // Comparação como STRING
     const f = fornecedores.find(x => String(x.id) === String(id));
     if (!f) return;
 
@@ -519,6 +518,7 @@
   function alterarStatus(id, novoStatus) {
     const storageKey = getStorageKey();
     const fornecedores = readLS(storageKey) || [];
+    // Comparação como STRING
     const f = fornecedores.find(x => String(x.id) === String(id));
     if (!f) return;
 
@@ -527,38 +527,26 @@
     writeLS(storageKey, fornecedores);
   }
 
-  /* ================= MIGRAÇÃO DE DADOS ANTIGOS ================= */
+  /* ================= MIGRação DE DADOS ANTIGOS ================= */
   function migrarDadosAntigos() {
-    const empresaId = getEmpresaIdAtiva();
-    const targetAtual = (empresaId && !isLegacyConta(empresaId))
-      ? `acc_${empresaId}__${STORAGE_KEYS.atual}`
-      : null;
-
-    // 1) Se existia ft_fornecedores sem prefixo e estamos no modo atual, migra para o padrão atual
-    const dadosFTSemPrefixo = localStorage.getItem("ft_fornecedores");
-    if (dadosFTSemPrefixo && targetAtual && !localStorage.getItem(targetAtual)) {
-      localStorage.setItem(targetAtual, dadosFTSemPrefixo);
-      localStorage.removeItem("ft_fornecedores");
-      console.log("✅ Dados ft_fornecedores migrados para", targetAtual);
-    }
-
-    // 2) Migração legado (sem prefixo -> com prefixo)
-    const dadosAntigosFT = localStorage.getItem("ft_fornecedores");
-    const dadosNovosFT = localStorage.getItem("acc_ferratec__ft_fornecedores");
-
+    // Migra ft_fornecedores antigo para acc_ferratec__ft_fornecedores
+    const dadosAntigosFT = localStorage.getItem('ft_fornecedores');
+    const dadosNovosFT = localStorage.getItem('acc_ferratec__ft_fornecedores');
+    
     if (dadosAntigosFT && !dadosNovosFT) {
-      localStorage.setItem("acc_ferratec__ft_fornecedores", dadosAntigosFT);
-      localStorage.removeItem("ft_fornecedores");
-      console.log("✅ Dados ft_fornecedores migrados para acc_ferratec__ft_fornecedores");
+      localStorage.setItem('acc_ferratec__ft_fornecedores', dadosAntigosFT);
+      localStorage.removeItem('ft_fornecedores');
+      console.log('? Dados ft_fornecedores migrados para novo formato');
     }
 
-    const dadosAntigosLC = localStorage.getItem("lc_fornecedores");
-    const dadosNovosLC = localStorage.getItem("acc_lcabalo__lc_fornecedores");
-
+    // Migra lc_fornecedores antigo para acc_lcabalo__lc_fornecedores
+    const dadosAntigosLC = localStorage.getItem('lc_fornecedores');
+    const dadosNovosLC = localStorage.getItem('acc_lcabalo__lc_fornecedores');
+    
     if (dadosAntigosLC && !dadosNovosLC) {
-      localStorage.setItem("acc_lcabalo__lc_fornecedores", dadosAntigosLC);
-      localStorage.removeItem("lc_fornecedores");
-      console.log("✅ Dados lc_fornecedores migrados para acc_lcabalo__lc_fornecedores");
+      localStorage.setItem('acc_lcabalo__lc_fornecedores', dadosAntigosLC);
+      localStorage.removeItem('lc_fornecedores');
+      console.log('? Dados lc_fornecedores migrados para novo formato');
     }
   }
 
@@ -580,7 +568,7 @@
 
     document.getElementById("btn-limpar-filtros")?.addEventListener("click", limparFiltros);
 
-    // Troca de conta (legado)
+    // Troca de conta
     document.getElementById("conta-select")?.addEventListener("change", () => {
       limparFiltros();
     });
@@ -595,7 +583,8 @@
       if (btnEdit) {
         e.preventDefault();
         e.stopPropagation();
-        editarFornecedor(btnEdit.dataset.id);
+        const id = btnEdit.dataset.id;
+        editarFornecedor(id);
         return;
       }
 
@@ -603,7 +592,8 @@
       if (btnDelete) {
         e.preventDefault();
         e.stopPropagation();
-        excluirFornecedor(btnDelete.dataset.id);
+        const id = btnDelete.dataset.id;
+        excluirFornecedor(id);
         return;
       }
     });
@@ -623,17 +613,17 @@
       renderFornecedores();
     });
 
-    // ========== ESCUTA ATUALIZAÇÕES DO FIREBASE ==========
+    // ========== ESCUTA ATUALIZAções DO FIREBASE ==========
     window.addEventListener("firebase-data-updated", (e) => {
       const baseKey = getBaseKey();
       if (e.detail?.key === baseKey) {
-        console.log(`🔄 Firebase atualizou ${baseKey}, recarregando...`);
+        console.log(`?? Firebase atualizou ${baseKey}, recarregando...`);
         renderFornecedores();
       }
     });
 
     window.addEventListener("firebase-sync-complete", () => {
-      console.log("✅ Sync completo, recarregando fornecedores...");
+      console.log("?? Sync completo, recarregando fornecedores...");
       renderFornecedores();
     });
   }
@@ -642,7 +632,9 @@
   document.addEventListener("DOMContentLoaded", () => {
     if (document.body.dataset.page !== "fornecedores") return;
 
+    // Migra dados antigos (sem prefixo) para novo formato (com prefixo)
     migrarDadosAntigos();
+
     attachEvents();
     renderFornecedores();
   });

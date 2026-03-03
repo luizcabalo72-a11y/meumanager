@@ -1,0 +1,9 @@
+﻿{
+  "folders": [
+    { "name": "MeuManager (FUNCTIONS - Backend)", "path": "functions" }
+  ],
+  "settings": {
+    "search.exclude": { "**/node_modules": true },
+    "files.watcherExclude": { "**/node_modules/**": true }
+  }
+}

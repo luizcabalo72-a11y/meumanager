@@ -304,17 +304,36 @@
   }
 
   async function fetchEmpresaDoc(Firebase, empresaId, docId) {
-    const { doc, getDoc } = Firebase;
-    const ref = doc(`empresas/${empresaId}/data`, docId);
-    const snap = await getDoc(ref);
-    if (!snap || !snap.exists()) return null;
-    const data = snap.data();
+    if (!Firebase?.db || !empresaId || !docId) return null;
+
+    async function getSnapshot(collectionName) {
+      return await Firebase.db
+        .collection("empresas")
+        .doc(empresaId)
+        .collection(collectionName)
+        .doc(docId)
+        .get();
+    }
+
+    // padrao atual do firebase-sync.js: empresas/{empresaId}/dados/{dataset}
+    // fallback legado: empresas/{empresaId}/data/{dataset}
+    let snap = await getSnapshot("dados");
+    if (!snap?.exists) snap = await getSnapshot("data");
+    if (!snap?.exists) return null;
+
+    const data = snap.data() || null;
     if (!data) return null;
     if (data.empresaId && data.empresaId !== empresaId) return null;
 
-    // padrão do seu firebase-sync.js
     if (data.items !== undefined) return data.items;
     if (data.data !== undefined) return data.data;
+    if (data.lista !== undefined) return data.lista;
+
+    if (typeof data === "object" && !Array.isArray(data)) {
+      const { updatedAt, ...rest } = data;
+      return Object.keys(rest).length ? rest : null;
+    }
+
     return null;
   }
 

@@ -12,8 +12,9 @@ const admin = require("firebase-admin");
 const { FieldValue } = require("firebase-admin/firestore");
 const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
-const SECRET_NAMES = [
+const BASE_SECRET_NAMES = [
   "MP_ACCESS_TOKEN",
   "SMTP_HOST",
   "SMTP_PORT",
@@ -24,7 +25,10 @@ const SECRET_NAMES = [
   "ADMIN_EMAILS",
   "TRIAL_ALERT_DAYS",
 ];
-const secure = functions.runWith({ secrets: SECRET_NAMES });
+const secure = functions.runWith({ secrets: BASE_SECRET_NAMES });
+const secureWebhook = functions.runWith({
+  secrets: [...BASE_SECRET_NAMES, "MP_WEBHOOK_SECRET"],
+});
 
 // Trial
 const TRIAL_DAYS = 7;
@@ -537,6 +541,58 @@ exports.createEmpresa = functions.https.onCall(async (data, context) => {
     if (err instanceof functions.https.HttpsError) throw err;
     throw new functions.https.HttpsError("internal", err?.message || "Erro interno");
   }
+});
+
+exports.setSubscriptionVitalicio = secure.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.token) {
+    throw new functions.https.HttpsError("unauthenticated", "Faça login para acessar este endpoint.");
+  }
+
+  const email = String(context.auth.token.email || "").toLowerCase();
+  if (!isAdminEmail(email)) {
+    throw new functions.https.HttpsError("permission-denied", "Somente administradores podem executar esta ação.");
+  }
+
+  const empresaId = String(data?.empresaId || "").trim();
+  if (!empresaId) {
+    throw new functions.https.HttpsError("invalid-argument", "empresaId é obrigatório.");
+  }
+
+  const userId = String(data?.userId || "").trim();
+  const customMaxUsers = Number(data?.maxUsers || 0);
+  const maxUsers =
+    Number.isFinite(customMaxUsers) && customMaxUsers > 0
+      ? customMaxUsers
+      : PLAN_MEMBER_LIMITS.vitalicio;
+
+  await db.collection("subscriptions").doc(empresaId).set(
+    {
+      plano: "vitalicio",
+      periodo: "vitalicio",
+      status: "active",
+      maxUsers,
+      vitalicio: true,
+      activatedAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      expiraEm: null,
+    },
+    { merge: true }
+  );
+
+  if (userId) {
+    await db.collection("users").doc(userId).set(
+      {
+        plano: "vitalicio",
+        planoStatus: "active",
+        planoPeriodo: "vitalicio",
+        planoExpiracao: null,
+        planoAtualizadoEm: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
+
+  return { ok: true, empresaId };
 });
 
 async function ensureEmpresaExists(empresaId) {
@@ -1196,6 +1252,105 @@ function getMpToken() {
   return envStr("MP_ACCESS_TOKEN");
 }
 
+function parseBearerToken(req) {
+  const authHeader = String(req?.headers?.authorization || "");
+  return authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
+}
+
+async function requireAdminRequest(req, res) {
+  const token = parseBearerToken(req);
+  if (!token) {
+    res.status(401).json({ error: "Token ausente" });
+    return null;
+  }
+
+  try {
+    const decoded = await admin.auth().verifyIdToken(token);
+    const email = String(decoded?.email || "").toLowerCase();
+    if (!isAdminEmail(email)) {
+      res.status(403).json({ error: "Sem permissao" });
+      return null;
+    }
+    return decoded;
+  } catch (err) {
+    res.status(401).json({ error: "Token invalido" });
+    return null;
+  }
+}
+
+function parseMpSignatureHeader(rawHeader) {
+  const raw = String(rawHeader || "");
+  const parts = raw
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const parsed = {};
+  for (const item of parts) {
+    const idx = item.indexOf("=");
+    if (idx <= 0) continue;
+    const key = item.slice(0, idx).trim().toLowerCase();
+    const value = item.slice(idx + 1).trim();
+    if (key) parsed[key] = value;
+  }
+  return {
+    ts: String(parsed.ts || ""),
+    v1: String(parsed.v1 || "").toLowerCase(),
+  };
+}
+
+function extractWebhookDataId(req) {
+  const body = req?.body || {};
+  const query = req?.query || {};
+  return String(
+    body?.data?.id ||
+      body?.id ||
+      query["data.id"] ||
+      query.data_id ||
+      query.id ||
+      "",
+  ).trim();
+}
+
+function timingSafeHexEqual(a, b) {
+  const left = String(a || "").trim().toLowerCase();
+  const right = String(b || "").trim().toLowerCase();
+  if (!left || !right) return false;
+  if (!/^[0-9a-f]+$/.test(left) || !/^[0-9a-f]+$/.test(right)) return false;
+  if (left.length !== right.length) return false;
+
+  const leftBuf = Buffer.from(left, "hex");
+  const rightBuf = Buffer.from(right, "hex");
+  if (leftBuf.length !== rightBuf.length || leftBuf.length === 0) return false;
+  return crypto.timingSafeEqual(leftBuf, rightBuf);
+}
+
+function shouldEnforceWebhookSignature(secret) {
+  const hasSecret = !!String(secret || "").trim();
+  const raw = envStr("MP_WEBHOOK_ENFORCE_SIGNATURE", hasSecret ? "true" : "false")
+    .toLowerCase();
+  return raw === "true" || raw === "1" || raw === "yes";
+}
+
+function validateMercadoPagoWebhookSignature(req) {
+  const secret = envStr("MP_WEBHOOK_SECRET");
+  const enforce = shouldEnforceWebhookSignature(secret);
+  if (!enforce) return { ok: true, enforced: false };
+  if (!secret) return { ok: false, reason: "missing-secret", enforced: true };
+
+  const requestId = String(req?.headers?.["x-request-id"] || "").trim();
+  const { ts, v1 } = parseMpSignatureHeader(req?.headers?.["x-signature"]);
+  const dataId = extractWebhookDataId(req);
+
+  if (!requestId) return { ok: false, reason: "missing-x-request-id", enforced: true };
+  if (!ts || !v1) return { ok: false, reason: "invalid-x-signature", enforced: true };
+  if (!dataId) return { ok: false, reason: "missing-data-id", enforced: true };
+
+  const template = `id:${dataId};request-id:${requestId};ts:${ts};`;
+  const digest = crypto.createHmac("sha256", secret).update(template).digest("hex");
+  const ok = timingSafeHexEqual(digest, v1);
+  return { ok, reason: ok ? "" : "signature-mismatch", enforced: true };
+}
+
 function createMpClientOrNull() {
   const token = getMpToken();
   if (!token) return null;
@@ -1225,6 +1380,7 @@ function ensureMpOrReturn(res) {
 const PLANOS = {
   pro: { nome: "Plano Pro", mensal: 47, anual: 37 },
   business: { nome: "Plano Business", mensal: 97, anual: 77 },
+  vitalicio: { nome: "Plano Vitalício", unico: 4970 },
 };
 
 const PLAN_MEMBER_LIMITS = Object.freeze({
@@ -1233,7 +1389,49 @@ const PLAN_MEMBER_LIMITS = Object.freeze({
   trial: 3,
   pro: 3,
   business: 10,
+  vitalicio: 25,
 });
+
+const PERIODOS = Object.freeze(["mensal", "anual", "vitalicio"]);
+
+function getPeriodoSlug(periodo) {
+  const slug = String(periodo || "").trim().toLowerCase();
+  return PERIODOS.includes(slug) ? slug : null;
+}
+
+function getPeriodoLabel(periodo) {
+  const slug = getPeriodoSlug(periodo) || "mensal";
+  if (slug === "anual") return "Anual";
+  if (slug === "vitalicio") return "Vitalício";
+  return "Mensal";
+}
+
+function getPeriodoDescription(periodo) {
+  const slug = getPeriodoSlug(periodo) || "mensal";
+  if (slug === "anual") return "anual";
+  if (slug === "vitalicio") return "vitalícia";
+  return "mensal";
+}
+
+function getPrecoTotalForPeriodo(planoInfo, periodo) {
+  const slug = getPeriodoSlug(periodo) || "mensal";
+  if (slug === "anual") {
+    const mensal = Number(planoInfo.anual ?? planoInfo.mensal ?? 0);
+    return Number.isFinite(mensal) ? mensal * 12 : 0;
+  }
+  if (slug === "vitalicio") {
+    const unico = Number(planoInfo.unico ?? 0);
+    if (Number.isFinite(unico) && unico > 0) return unico;
+    const fallback = Number(planoInfo.anual ?? planoInfo.mensal ?? 0);
+    return Number.isFinite(fallback) ? fallback * 12 : 0;
+  }
+  const mensal = Number(planoInfo.mensal ?? 0);
+  return Number.isFinite(mensal) ? mensal : 0;
+}
+
+function isPeriodoVitalicio(periodo) {
+  return getPeriodoSlug(periodo) === "vitalicio";
+}
 
 function normalizePlanName(plano) {
   const p = String(plano || "").trim().toLowerCase();
@@ -1271,16 +1469,18 @@ async function criarPreferenciaHandler(req, res) {
   try {
     const { plano, periodo, userId, email, nome, reference } = req.body;
 
-    if (!plano || !PLANOS[plano]) return res.status(400).json({ error: "Plano invÃ¡lido" });
-    if (!periodo || !["mensal", "anual"].includes(periodo)) {
-      return res.status(400).json({ error: "PerÃ­odo invÃ¡lido" });
+    if (!plano || !PLANOS[plano]) return res.status(400).json({ error: "Plano inválido" });
+    const periodoSlug = getPeriodoSlug(periodo);
+    if (!periodoSlug) {
+      return res.status(400).json({ error: "Período inválido" });
     }
-    // ? Checkout pÃºblico: NÃƒO exige login (userId pode ser null)
-    if (!email) return res.status(400).json({ error: "Email ? obrigatÃ³rio" });
+    // ? Checkout público: NÃO exige login (userId pode ser null)
+    if (!email) return res.status(400).json({ error: "Email é obrigatório" });
 
     const planoInfo = PLANOS[plano];
-    const precoMensal = periodo === "anual" ? planoInfo.anual : planoInfo.mensal;
-    const precoTotal = periodo === "anual" ? precoMensal * 12 : precoMensal;
+    const precoTotal = getPrecoTotalForPeriodo(planoInfo, periodoSlug);
+    const periodoLabel = getPeriodoLabel(periodoSlug);
+    const periodoDesc = getPeriodoDescription(periodoSlug);
 
     const mpClient = createMpClientOrNull();
     const preference = new Preference(mpClient);
@@ -1288,9 +1488,9 @@ async function criarPreferenciaHandler(req, res) {
     const preferenceData = {
       items: [
         {
-          id: `${plano}_${periodo}`,
-          title: `${planoInfo.nome} - ${periodo === "anual" ? "Anual" : "Mensal"}`,
-          description: `Assinatura ${periodo === "anual" ? "anual" : "mensal"} do ${planoInfo.nome}`,
+          id: `${plano}_${periodoSlug}`,
+          title: `${planoInfo.nome} - ${periodoLabel}`,
+          description: `Assinatura ${periodoDesc} do ${planoInfo.nome}`,
           quantity: 1,
           currency_id: "BRL",
           unit_price: precoTotal,
@@ -1300,7 +1500,7 @@ async function criarPreferenciaHandler(req, res) {
       // ? MantÃ©m referÃªncia curta e ?til para ativaÃ§Ã£o
       // - empresaId: opcional (campo "reference" no checkout)
       // - userId: opcional (se estiver logado)
-      external_reference: JSON.stringify({ empresaId: reference || null, userId: userId || null, plano, periodo, email, timestamp: Date.now() }),
+      external_reference: JSON.stringify({ empresaId: reference || null, userId: userId || null, plano, periodo: periodoSlug, email, timestamp: Date.now() }),
       back_urls: {
         success: "https://meumanager-b02b0.web.app/sucesso.html",
         failure: "https://meumanager-b02b0.web.app/checkout.html?status=failure",
@@ -1331,7 +1531,7 @@ async function criarPreferenciaHandler(req, res) {
       empresaId: reference || null,
       email,
       plano,
-      periodo,
+      periodo: periodoSlug,
       valor: precoTotal,
       status: "pending",
       createdAt: FieldValue.serverTimestamp(),
@@ -1356,16 +1556,18 @@ async function gerarPixHandler(req, res) {
   try {
     const { plano, periodo, userId, email, nome, cpf, reference } = req.body;
 
-    if (!plano || !PLANOS[plano]) return res.status(400).json({ error: "Plano invÃ¡lido" });
-    if (!periodo || !["mensal", "anual"].includes(periodo)) {
-      return res.status(400).json({ error: "PerÃ­odo invÃ¡lido" });
+    if (!plano || !PLANOS[plano]) return res.status(400).json({ error: "Plano inválido" });
+    const periodoSlug = getPeriodoSlug(periodo);
+    if (!periodoSlug) {
+      return res.status(400).json({ error: "Período inválido" });
     }
-    // ? Checkout pÃºblico: NÃƒO exige login (userId pode ser null)
-    if (!email) return res.status(400).json({ error: "Email ? obrigatÃ³rio" });
+    // ? Checkout público: NÃO exige login (userId pode ser null)
+    if (!email) return res.status(400).json({ error: "Email ? obrigatório" });
 
     const planoInfo = PLANOS[plano];
-    const precoMensal = periodo === "anual" ? planoInfo.anual : planoInfo.mensal;
-    const precoTotal = periodo === "anual" ? precoMensal * 12 : precoMensal;
+    const precoTotal = getPrecoTotalForPeriodo(planoInfo, periodoSlug);
+    const periodoLabel = getPeriodoLabel(periodoSlug);
+    const periodoDesc = getPeriodoDescription(periodoSlug);
 
     const mpClient = createMpClientOrNull();
     const payment = new Payment(mpClient);
@@ -1380,8 +1582,8 @@ async function gerarPixHandler(req, res) {
         first_name: nome || email.split("@")[0],
         identification: { type: "CPF", number: cpfLimpo },
       },
-      external_reference: JSON.stringify({ empresaId: reference || null, userId: userId || null, plano, periodo, email, timestamp: Date.now() }),
-      description: `${planoInfo.nome} - ${periodo === "anual" ? "Anual" : "Mensal"}`,
+      external_reference: JSON.stringify({ empresaId: reference || null, userId: userId || null, plano, periodo: periodoSlug, email, timestamp: Date.now() }),
+      description: `${planoInfo.nome} - ${periodoLabel}`,
       notification_url: "https://us-central1-meumanager-b02b0.cloudfunctions.net/webhookMercadoPago",
     };
 
@@ -1403,7 +1605,7 @@ async function gerarPixHandler(req, res) {
       empresaId: reference || null,
       email,
       plano,
-      periodo,
+      periodo: periodoSlug,
       valor: precoTotal,
       status: "pending",
       metodo: "pix",
@@ -1432,16 +1634,18 @@ async function gerarBoletoHandler(req, res) {
   try {
     const { plano, periodo, userId, email, nome, cpf, reference } = req.body;
 
-    if (!plano || !PLANOS[plano]) return res.status(400).json({ error: "Plano invÃ¡lido" });
-    if (!periodo || !["mensal", "anual"].includes(periodo)) {
-      return res.status(400).json({ error: "PerÃ­odo invÃ¡lido" });
+    if (!plano || !PLANOS[plano]) return res.status(400).json({ error: "Plano inválido" });
+    const periodoSlug = getPeriodoSlug(periodo);
+    if (!periodoSlug) {
+      return res.status(400).json({ error: "Período inválido" });
     }
-    // ? Checkout pÃºblico: NÃƒO exige login (userId pode ser null)
-    if (!email) return res.status(400).json({ error: "Email ? obrigatÃ³rio" });
+    // ? Checkout público: NÃO exige login (userId pode ser null)
+    if (!email) return res.status(400).json({ error: "Email ? obrigatório" });
 
     const planoInfo = PLANOS[plano];
-    const precoMensal = periodo === "anual" ? planoInfo.anual : planoInfo.mensal;
-    const precoTotal = periodo === "anual" ? precoMensal * 12 : precoMensal;
+    const precoTotal = getPrecoTotalForPeriodo(planoInfo, periodoSlug);
+    const periodoLabel = getPeriodoLabel(periodoSlug);
+    const periodoDesc = getPeriodoDescription(periodoSlug);
 
     const mpClient = createMpClientOrNull();
     const payment = new Payment(mpClient);
@@ -1477,8 +1681,8 @@ async function gerarBoletoHandler(req, res) {
           federal_unit: "SP",
         },
       },
-      external_reference: JSON.stringify({ empresaId: reference || null, userId: userId || null, plano, periodo, email, timestamp: Date.now() }),
-      description: `${planoInfo.nome} - ${periodo === "anual" ? "Anual" : "Mensal"}`,
+      external_reference: JSON.stringify({ empresaId: reference || null, userId: userId || null, plano, periodo: periodoSlug, email, timestamp: Date.now() }),
+      description: `${planoInfo.nome} - ${periodoLabel}`,
       notification_url: "https://us-central1-meumanager-b02b0.cloudfunctions.net/webhookMercadoPago",
     };
 
@@ -1507,7 +1711,7 @@ async function gerarBoletoHandler(req, res) {
       empresaId: reference || null,
       email,
       plano,
-      periodo,
+      periodo: periodoSlug,
       valor: precoTotal,
       status,
       statusDetail: statusDetail || null,
@@ -1568,12 +1772,15 @@ async function verificarPagamentoHandler(req, res) {
 async function debugBoletoHandler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "MÃ©todo NÃƒO permitido" });
   if (ensureMpOrReturn(res)) return;
+  if (!(await requireAdminRequest(req, res))) return;
 
   try {
     const { plano, periodo, email, nome, cpf } = req.body;
 
+    const periodoSlug = getPeriodoSlug(periodo) || "mensal";
     const planoInfo = PLANOS[plano || "pro"];
-    const precoTotal = periodo === "anual" ? planoInfo.anual * 12 : (planoInfo.mensal || 47);
+    const precoTotal = getPrecoTotalForPeriodo(planoInfo, periodoSlug);
+    const periodoLabel = getPeriodoLabel(periodoSlug);
 
     const mpClient = createMpClientOrNull();
     const payment = new Payment(mpClient);
@@ -1620,19 +1827,22 @@ async function debugBoletoHandler(req, res) {
     });
   } catch (error) {
     console.error("? Erro Debug Boleto:", error);
-    return res.status(500).json({ error: error.message, stack: error.stack, details: error.cause });
+    return res.status(500).json({ error: error.message || "Erro interno" });
   }
 }
 
 async function debugPixHandler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "MÃ©todo NÃƒO permitido" });
   if (ensureMpOrReturn(res)) return;
+  if (!(await requireAdminRequest(req, res))) return;
 
   try {
     const { plano, periodo, email, nome, cpf } = req.body;
 
+    const periodoSlug = getPeriodoSlug(periodo) || "mensal";
     const planoInfo = PLANOS[plano || "pro"];
-    const precoTotal = periodo === "anual" ? planoInfo.anual * 12 : (planoInfo.mensal || 47);
+    const precoTotal = getPrecoTotalForPeriodo(planoInfo, periodoSlug);
+    const periodoLabel = getPeriodoLabel(periodoSlug);
 
     const mpClient = createMpClientOrNull();
     const payment = new Payment(mpClient);
@@ -1660,7 +1870,7 @@ async function debugPixHandler(req, res) {
       additional_info: result.additional_info,
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message, stack: error.stack });
+    return res.status(500).json({ error: error.message || "Erro interno" });
   }
 }
 
@@ -1714,18 +1924,26 @@ exports.debugPix = secure.https.onRequest((req, res) => {
    WEBHOOK DO MERCADO PAGO (mantido como estava)
 ========================================================= */
 
-exports.webhookMercadoPago = secure.https.onRequest(async (req, res) => {
+exports.webhookMercadoPago = secureWebhook.https.onRequest(async (req, res) => {
   console.log("?? Webhook recebido:", req.body);
 
   const token = getMpToken();
   if (!token) return res.status(500).send("MP_ACCESS_TOKEN NÃƒO configurado");
 
+  const signature = validateMercadoPagoWebhookSignature(req);
+  if (!signature.ok) {
+    console.warn(`webhook: assinatura invalida (${signature.reason})`);
+    return res.status(401).send("Assinatura invalida");
+  }
+
   try {
-    const { type, data } = req.body;
+    const body = req.body || {};
+    const type = String(body.type || req.query?.type || "").trim();
+    const data = body.data || {};
 
     if (type !== "payment") return res.status(200).send("OK - Ignorado");
 
-    const paymentId = data?.id;
+    const paymentId = data?.id || body?.id || req.query?.["data.id"] || req.query?.id;
     if (!paymentId) return res.status(400).send("ID do pagamento NÃƒO fornecido");
 
     const mpClient = createMpClientOrNull();
@@ -1807,10 +2025,17 @@ exports.webhookMercadoPago = secure.https.onRequest(async (req, res) => {
     // - Se veio userId (usuÃ¡rio logado), atualiza "users/{userId}" e "assinaturas"
     if (paymentInfo.status === "approved") {
       const agora = new Date();
-      const expiracao = new Date(agora);
       const maxUsers = resolveMaxUsersForSubscription({ plano, status: "active" });
-      if (periodo === "anual") expiracao.setFullYear(expiracao.getFullYear() + 1);
-      else expiracao.setMonth(expiracao.getMonth() + 1);
+      let expiracaoTimestamp = null;
+      if (periodo === "anual") {
+        const expiracao = new Date(agora);
+        expiracao.setFullYear(expiracao.getFullYear() + 1);
+        expiracaoTimestamp = admin.firestore.Timestamp.fromDate(expiracao);
+      } else if (periodo === "mensal") {
+        const expiracao = new Date(agora);
+        expiracao.setMonth(expiracao.getMonth() + 1);
+        expiracaoTimestamp = admin.firestore.Timestamp.fromDate(expiracao);
+      }
 
       // 1) Ativa assinatura por empresaId (fluxo sem login)
       if (targetEmpresaId) {
@@ -1825,7 +2050,8 @@ exports.webhookMercadoPago = secure.https.onRequest(async (req, res) => {
             email: paymentInfo.payer?.email || email || null,
             activatedAt: FieldValue.serverTimestamp(),
             updatedAt: FieldValue.serverTimestamp(),
-            expiraEm: admin.firestore.Timestamp.fromDate(expiracao),
+            expiraEm: expiracaoTimestamp,
+            vitalicio: periodo === "vitalicio",
           },
           { merge: true }
         );
@@ -1836,7 +2062,7 @@ exports.webhookMercadoPago = secure.https.onRequest(async (req, res) => {
         await db.collection("users").doc(String(userId)).update({
           plano,
           planoStatus: "active",
-          planoExpiracao: admin.firestore.Timestamp.fromDate(expiracao),
+          planoExpiracao: expiracaoTimestamp,
           planoPeriodo: periodo,
           planoAtualizadoEm: FieldValue.serverTimestamp(),
           ultimoPagamentoId: paymentId,
@@ -1851,7 +2077,7 @@ exports.webhookMercadoPago = secure.https.onRequest(async (req, res) => {
           paymentId,
           status: "active",
           inicioEm: FieldValue.serverTimestamp(),
-          expiraEm: admin.firestore.Timestamp.fromDate(expiracao),
+          expiraEm: expiracaoTimestamp,
         });
       }
 
@@ -1866,7 +2092,7 @@ exports.webhookMercadoPago = secure.https.onRequest(async (req, res) => {
             periodo,
             status: "approved",
             createdAt: FieldValue.serverTimestamp(),
-            expiraEm: admin.firestore.Timestamp.fromDate(expiracao),
+            expiraEm: expiracaoTimestamp,
           },
           { merge: true }
         );
@@ -1952,13 +2178,15 @@ exports.sendTrialAlerts = secure.pubsub
   .schedule("every day 09:00")
   .timeZone("America/Sao_Paulo")
   .onRun(async () => {
+    const supportEmail = "contato@cabalosystems.com.br";
+    const supportWhatsApp = "11985022235";
     const admins = getAdminEmails();
     const alertDays = getAlertDays();
     const transport = buildTransport();
     const smtp = getSmtpConfig();
 
     if (!transport || admins.length === 0) {
-      console.log("?? sendTrialAlerts: SMTP/Admin NÃƒO configurado.");
+      console.log("sendTrialAlerts: SMTP/Admin nao configurado.");
       return null;
     }
 
@@ -1989,38 +2217,46 @@ exports.sendTrialAlerts = secure.pubsub
           "";
       } catch {}
 
+      const dayLabel = daysLeft === 1 ? "dia" : "dias";
       const subject =
         daysLeft === 0
-          ? `?? Trial expira HOJE ? ${empresaNome || doc.id}`
-          : `? Trial expira em ${daysLeft} dia(s) ? ${empresaNome || doc.id}`;
+          ? `Trial expira hoje - ${empresaNome || doc.id}`
+          : `Trial expira em ${daysLeft} ${dayLabel} - ${empresaNome || doc.id}`;
 
       const trialEndsStr = formatDateBr(end);
       const text = [
-        "Alerta de Trial - Meu Manager",
+        "Alerta de trial - Meu Manager",
         "",
         `Empresa: ${empresaNome || "(sem nome)"}`,
         `Empresa ID: ${doc.id}`,
         `Email: ${data.email || ""}`,
         `Status: ${data.status || ""}`,
         `Trial termina em: ${trialEndsStr}`,
-        `Dias restantes: ${daysLeft}`,
+        `Dias restantes: ${daysLeft} ${dayLabel}`,
+        "",
+        `Retorno: ${supportEmail}`,
+        `WhatsApp: ${supportWhatsApp}`,
       ].join("\n");
 
       const html = `
         <div style="font-family:Arial,sans-serif;color:#0f172a;line-height:1.5">
-          <h2 style="margin:0 0 12px 0;">Alerta de Trial</h2>
+          <h2 style="margin:0 0 12px 0;">Alerta de trial</h2>
           <p><strong>Empresa:</strong> ${empresaNome || "(sem nome)"}</p>
           <p><strong>Empresa ID:</strong> ${doc.id}</p>
           <p><strong>Email:</strong> ${data.email || ""}</p>
           <p><strong>Status:</strong> ${data.status || ""}</p>
           <p><strong>Trial termina em:</strong> ${trialEndsStr}</p>
-          <p><strong>Dias restantes:</strong> ${daysLeft}</p>
+          <p><strong>Dias restantes:</strong> ${daysLeft} ${dayLabel}</p>
+          <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;" />
+          <p style="margin:0;"><strong>Retorno:</strong> <a href="mailto:${supportEmail}">${supportEmail}</a></p>
+          <p style="margin:4px 0 0 0;"><strong>WhatsApp:</strong> ${supportWhatsApp}</p>
         </div>
       `;
 
       try {
         await transport.sendMail({
           from: smtp.from || smtp.user,
+          replyTo: supportEmail,
           to: admins.join(","),
           subject,
           text,
@@ -2039,7 +2275,7 @@ exports.sendTrialAlerts = secure.pubsub
       }
     }
 
-    console.log(`? sendTrialAlerts concluÃ­do. Enviados: ${sent}. Trials: ${snap.size}. AlertDays: ${alertDays.join(",")}`);
+    console.log(`sendTrialAlerts concluido. Enviados: ${sent}. Trials: ${snap.size}. AlertDays: ${alertDays.join(",")}`);
     return null;
   });
 

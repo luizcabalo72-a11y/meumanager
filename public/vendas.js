@@ -1114,7 +1114,8 @@
     }
   }
 
-  function reconciliarReservasFIFOVendas() {
+  function reconciliarReservasFIFOVendas(options = {}) {
+    const silentWarnings = !!options.silentWarnings;
     const vendas = getVendas();
     if (!Array.isArray(vendas) || !vendas.length) return;
 
@@ -1152,7 +1153,7 @@
       venda.updatedAt = new Date().toISOString();
       mudou = true;
 
-      if (resultado.qtdPendente > 0) {
+      if (!silentWarnings && resultado.qtdPendente > 0) {
         console.warn(`?? Reserva FIFO parcial para venda #${venda.id}: pendente ${resultado.qtdPendente} unidade(s) de ${venda.sku}.`);
       }
     }
@@ -1222,10 +1223,21 @@
 
     document.getElementById("btn-limpar-filtros")?.addEventListener("click", limparFiltros);
 
-    // Quando o sync terminar de baixar dados, tenta resolver SKU novamente.
+    let syncReconcileTimer = null;
+    const scheduleSyncReconcile = () => {
+      if (syncReconcileTimer) clearTimeout(syncReconcileTimer);
+      syncReconcileTimer = setTimeout(() => {
+        reconciliarReservasFIFOVendas({ silentWarnings: false });
+        reconciliarCustosConcluidosPorFIFO();
+        renderVendasTable();
+      }, 120);
+    };
+
+    // Quando o sync terminar de baixar dados, atualiza SKU e reconcilia com dados frescos.
     document.addEventListener("firebase-sync-downloaded", () => {
       const sku = document.getElementById("venda-sku")?.value || "";
       if (sku) buscarDadosSKU(sku);
+      scheduleSyncReconcile();
     });
 
     // Tabela
@@ -1254,12 +1266,12 @@
     // Firebase
     window.addEventListener("firebase-data-updated", (e) => {
       if (e.detail?.key === "vendas" || e.detail?.key === "fifo") {
-        renderVendasTable();
+        scheduleSyncReconcile();
       }
     });
 
     window.addEventListener("firebase-sync-complete", () => {
-      renderVendasTable();
+      scheduleSyncReconcile();
     });
   }
 
@@ -1269,7 +1281,7 @@
 
     console.log("? Vendas.js v5 carregado (corrigido)");
     migrarDadosAntigos();
-    reconciliarReservasFIFOVendas();
+    reconciliarReservasFIFOVendas({ silentWarnings: true });
     reconciliarCustosConcluidosPorFIFO();
     ensureVendaModal();
     normalizarRotulosSelectsVendas();

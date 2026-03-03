@@ -19,7 +19,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
-    /* MantÃ©m as 4 primeiras colunas "coladas" (ID / Data / SKU / Produto) */
+    /* Mantem as 4 primeiras colunas "coladas" (ID / Data / SKU / Produto) */
     .forn-table { min-width: 2200px; }
     .forn-table th:nth-child(1),
     .forn-table td:nth-child(1) { position: sticky; left: 0; background: #fff; z-index: 3; }
@@ -36,7 +36,7 @@
     /* inputs date com mesmo visual do select */
     .filter-select[type="date"] { padding: 9px 12px; }
   
-    /* botÃ£o de status na tabela (usa o mesmo visual de .pill) */
+    /* botao de status na tabela (usa o mesmo visual de .pill) */
     .pill.pill-click{
       border: none;
       cursor: pointer;
@@ -47,7 +47,7 @@
     }
 
     /* =============================
-       STATUS (PILLS) + AÃ§Ãµes (?cones) - padrÃ£o do print
+       STATUS (PILLS) + Acoes (icones) - padrao do print
        Escopo: apenas Compras
     ============================= */
     .compras-row-actions{
@@ -120,7 +120,7 @@
       <h1><i class="fa-solid fa-cart-shopping"></i> Compras</h1>
     </div>
 
-    <!-- ================= TOOLBAR COM FILTROS (mesmo padrÃ£o de Vendas) ================= -->
+    <!-- ================= TOOLBAR COM FILTROS (mesmo padrao de Vendas) ================= -->
     <div class="toolbar-produtos">
 
       <div class="toolbar-left">
@@ -156,19 +156,19 @@
             <option value="">Todos Status</option>
             <option value="AGUARD">Aguardando</option>
             <option value="TRANSP">Em Transporte</option>
-            <option value="CONCL">concluÃ­do</option>
+            <option value="CONCL">conclu&iacute;do</option>
             <option value="CANCEL">Cancelado</option>
           </select>
         </div>
 
         <div class="filter-group">
           <select id="filtro-periodo" class="filter-select">
-            <option value="">Todo PerÃ­odo</option>
+            <option value="">Todo Per&iacute;odo</option>
             <option value="hoje">Hoje</option>
-            <option value="7d">?ltimos 7 dias</option>
-            <option value="30d">?ltimos 30 dias</option>
-            <option value="90d">?ltimos 90 dias</option>
-            <option value="mes">Este mÃªs</option>
+            <option value="7d">&Uacute;ltimos 7 dias</option>
+            <option value="30d">&Uacute;ltimos 30 dias</option>
+            <option value="90d">&Uacute;ltimos 90 dias</option>
+            <option value="mes">Este m&ecirc;s</option>
             <option value="este-ano">Este ano</option>
             <option value="ano-passado">Ano passado</option>
           </select>
@@ -207,7 +207,7 @@
                 <th style="width:320px;">Produto</th>
                 <th style="width:90px;">Marca</th>
                 <th style="width:120px;">Fornecedor</th>
-                <th style="width:130px;">NÂº Pedido</th>
+                <th style="width:130px;">N&ordm; Pedido</th>
                 <th style="width:110px;">Lote (8)</th>
                 <th style="width:160px;">Rastreio</th>
                 <th class="center" style="width:60px;">Qtd</th>
@@ -220,7 +220,7 @@
                 <th class="center" style="width:110px;">Prev. Entrega</th>
                 <th class="center" style="width:110px;">Entrega Real</th>
                 <th class="center" style="width:90px;">Status</th>
-                <th class="center" style="width:80px;">AÃ§Ãµes</th>
+                <th class="center" style="width:80px;">A&ccedil;&otilde;es</th>
               </tr>
             </thead>
             <tbody id="tabela-compras-body"></tbody>

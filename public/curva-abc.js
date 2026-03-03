@@ -112,11 +112,17 @@
     if (!empresaId || !db) return null;
 
     try {
-      const ref = db.collection("empresas").doc(empresaId).collection("data").doc(docId);
-      const snap = await ref.get();
-      if (!snap.exists) return null;
+      async function readFrom(collectionName) {
+        const ref = db.collection("empresas").doc(empresaId).collection(collectionName).doc(docId);
+        const snap = await ref.get();
+        return snap?.exists ? (snap.data() || {}) : null;
+      }
 
-      const data = snap.data() || {};
+      // Padrão atual do sync: empresas/{empresaId}/dados/{dataset}
+      // Fallback legado: empresas/{empresaId}/data/{dataset}
+      let data = await readFrom("dados");
+      if (!data) data = await readFrom("data");
+      if (!data) return null;
 
       if (Array.isArray(data.items)) return data.items;
       if (Array.isArray(data.data)) return data.data;

@@ -1,10 +1,7 @@
 /* =========================================================
    RELATORIOS.JS - Meu Manager
    ?? Análise financeira completa com GRÁFICOs e exportação
-========================================================= */
-
-console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
-
+========================================================= */
 (function () {
   "use strict";
 
@@ -33,6 +30,11 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
   };
   const up = (s) => String(s || "").trim().toUpperCase();
 
+  const DEBUG_RELATORIOS = false;
+  const debug = (...args) => {
+    if (DEBUG_RELATORIOS) console.log(...args);
+  };
+
   const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
@@ -40,7 +42,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
   function lerDados(chave) {
     try {
       const dados = JSON.parse(localStorage.getItem(chave) || "[]");
-      console.log(`?? lerDados("${chave}") -> ${dados.length} itens`);
+      debug(`?? lerDados("${chave}") -> ${dados.length} itens`);
       return dados;
     } catch (e) {
       console.warn(`?? Erro ao ler "${chave}":`, e);
@@ -51,7 +53,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
   function lerObjeto(chave) {
     try {
       const obj = JSON.parse(localStorage.getItem(chave)) || {};
-      console.log(`?? lerObjeto("${chave}")`);
+      debug(`?? lerObjeto("${chave}")`);
       return obj;
     } catch (e) {
       console.warn(`?? Erro ao ler objeto "${chave}":`, e);
@@ -75,7 +77,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
       : (JSON.parse(localStorage.getItem("ft_sessao") || "{}").empresaId || "default");
 
     const fullKey = `acc_${empresaId}__${baseKey}`;
-    console.log(`?? Relatórios - getStorageKey("${baseKey}") -> "${fullKey}" (empresaId: ${empresaId})`);
+    debug(`?? Relatórios - getStorageKey("${baseKey}") -> "${fullKey}" (empresaId: ${empresaId})`);
     return fullKey;
   }
 
@@ -94,16 +96,16 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
 
     tabs.forEach(tab => {
       tab.addEventListener("click", () => {
-        console.log(`?? CLICOU NA ABA: "${tab.dataset.tab}"`);
+        debug(`?? CLICOU NA ABA: "${tab.dataset.tab}"`);
         const targetId = `tab-${tab.dataset.tab}`;
-        console.log(`?? Procurando elemento: "${targetId}"`);
+        debug(`?? Procurando elemento: "${targetId}"`);
         const element = document.getElementById(targetId);
-        console.log(`?? Elemento encontrado:`, element);
+        debug(`?? Elemento encontrado:`, element);
         tabs.forEach(t => t.classList.remove("active"));
         contents.forEach(c => c.classList.remove("active"));
         tab.classList.add("active");
         element?.classList.add("active");
-        console.log(`? Classe "active" adicionada a: "${targetId}", classe atual: ${element?.className}`);
+        debug(`? Classe "active" adicionada a: "${targetId}", classe atual: ${element?.className}`);
 
         switch (tab.dataset.tab) {
           case "resumo": renderResumo(); break;
@@ -117,32 +119,32 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
 
   /* ================= RESUMO GERAL ================= */
   function renderResumo() {
-    console.log("?? Iniciando renderResumo()");
+    debug("?? Iniciando renderResumo()");
 
     const mes = parseInt(document.getElementById("resumo-mes")?.value ?? new Date().getMonth());
     const ano = parseInt(document.getElementById("resumo-ano")?.value ?? new Date().getFullYear());
     const anoInteiro = mes === -1;
 
-    console.log(`?? Renderizando resumo para: ${anoInteiro ? 'Ano Inteiro' : MESES[mes]}/${ano}`);
+    debug(`?? Renderizando resumo para: ${anoInteiro ? 'Ano Inteiro' : MESES[mes]}/${ano}`);
 
     const vendas = lerDados(getStorageKey(CHAVES.vendas));
     const contasPagar = lerDados(getStorageKey(CHAVES.contasPagar));
     const contasReceber = lerDados(getStorageKey(CHAVES.contasReceber));
 
-    console.log("?? Analisando vendas:", vendas.slice(0, 3).map(v => ({ data: v.data, status: v.status, valor: v.valorTot })));
+    debug("?? Analisando vendas:", vendas.slice(0, 3).map(v => ({ data: v.data, status: v.status, valor: v.valorTot })));
 
     const vendasPeriodo = anoInteiro
       ? vendas.filter(v => {
           const d = parseBRDate(v.data);
           const match = d && d.getFullYear() === ano && up(v.status) === "CONCL";
-          if (d) console.log(`   Venda: ${v.data} -> Ano=${d.getFullYear()} Status=${v.status} Match=${match}`);
+          if (d) debug(`   Venda: ${v.data} -> Ano=${d.getFullYear()} Status=${v.status} Match=${match}`);
           return match;
         })
       : filtrarPorMesAno(vendas, "data", mes, ano).filter(v => up(v.status) === "CONCL");
 
-    console.log(`?? Vendas no Período: ${vendasPeriodo.length} vendas concluídas`);
+    debug(`?? Vendas no Período: ${vendasPeriodo.length} vendas concluídas`);
     if (vendasPeriodo.length > 0) {
-      console.log(`?? Estrutura da primeira venda:`, Object.keys(vendasPeriodo[0]), vendasPeriodo[0]);
+      debug(`?? Estrutura da primeira venda:`, Object.keys(vendasPeriodo[0]), vendasPeriodo[0]);
     }
 
     const receitaBruta = vendasPeriodo.reduce((a, v) => {
@@ -150,7 +152,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
       const valorTotal = v.valorTot || (Number(v.valorUnit || 0) * Number(v.qtd || 1));
       return a + valorTotal;
     }, 0);
-    console.log(`?? Receita bruta: ${money(receitaBruta)}`);
+    debug(`?? Receita bruta: ${money(receitaBruta)}`);
 
     const outrasReceitas = contasReceber.filter(r => {
       if (up(r.status) !== "RECEBIDO") return false;
@@ -187,7 +189,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
     }).reduce((a, p) => a + Number(p.valor || 0), 0);
 
     const totalDespesas = despesasVendas + despesasPeriodo;
-    console.log(`?? Despesas: Vendas R$ ${money(despesasVendas)} + Contas R$ ${money(despesasPeriodo)} = Total R$ ${money(totalDespesas)}`);
+    debug(`?? Despesas: Vendas ${money(despesasVendas)} + Contas ${money(despesasPeriodo)} = Total ${money(totalDespesas)}`);
 
     const lucro = totalReceita - totalDespesas;
     const margem = totalReceita > 0 ? (lucro / totalReceita * 100).toFixed(1) : 0;
@@ -220,8 +222,8 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
     document.getElementById("resumo-margem").textContent = `${margem}% margem`;
     document.getElementById("resumo-media").textContent = money(media);
 
-    console.log(`? Resumo renderizado: Receita ${money(totalReceita)} | Despesas ${money(totalDespesas)} | Lucro ${money(lucro)}`);
-    console.log(`?? Elementos DOM atualizados:`, {
+    debug(`? Resumo renderizado: Receita ${money(totalReceita)} | Despesas ${money(totalDespesas)} | Lucro ${money(lucro)}`);
+    debug(`?? Elementos DOM atualizados:`, {
       receita: document.getElementById("resumo-receita")?.textContent,
       despesas: document.getElementById("resumo-despesas")?.textContent,
       lucro: document.getElementById("resumo-lucro")?.textContent,
@@ -233,7 +235,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
   }
 
   function renderGraficoResumo(vendas, outras, despesas) {
-    console.log("?? Tentando renderizar GRÁFICO resumo...");
+    debug("?? Tentando renderizar GRÁFICO resumo...");
 
     const ctx = document.getElementById("canvas-resumo-comparativo")?.getContext("2d");
     if (!ctx) {
@@ -246,7 +248,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
       return;
     }
 
-    console.log("? Chart.js disponível, criando GRÁFICO...");
+    debug("? Chart.js disponível, criando GRÁFICO...");
 
     if (window.chartsGlobais?.resumo) window.chartsGlobais.resumo.destroy();
     if (!window.chartsGlobais) window.chartsGlobais = {};
@@ -324,13 +326,13 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
 
   /* ================= DRE DETALHADO ================= */
   function renderDREDetalhado() {
-    console.log("?????? INICIANDO renderDREDetalhado()");
+    debug("?????? INICIANDO renderDREDetalhado()");
     const mes = parseInt(document.getElementById("dre-mes")?.value ?? new Date().getMonth());
     const ano = parseInt(document.getElementById("dre-ano")?.value ?? new Date().getFullYear());
-    console.log(`?? DRE: mês=${mes}, Ano=${ano}`);
+    debug(`?? DRE: mês=${mes}, Ano=${ano}`);
 
     const container = document.getElementById("dre-container-rel");
-    console.log(`?? Container dre-container-rel encontrado:`, !!container, container?.style?.display);
+    debug(`?? Container dre-container-rel encontrado:`, !!container, container?.style?.display);
     if (!container) return;
 
     const vendas = lerDados(getStorageKey(CHAVES.vendas));
@@ -416,14 +418,14 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
         </div>
       </div>
     `;
-    console.log(`? DRE renderizado: ${MESES[mes]} ${ano} - Receita ${money(totalReceita)} | Despesas ${money(cmv + despesasFixas)} | Lucro ${money(lucroLiquido)}`);
+    debug(`? DRE renderizado: ${MESES[mes]} ${ano} - Receita ${money(totalReceita)} | Despesas ${money(cmv + despesasFixas)} | Lucro ${money(lucroLiquido)}`);
   }
 
   /* ================= FLUXO ANUAL ================= */
   function renderFluxoAnual() {
-    console.log("?????? INICIANDO renderFluxoAnual()");
+    debug("?????? INICIANDO renderFluxoAnual()");
     const ano = parseInt(document.getElementById("fluxo-ano")?.value ?? new Date().getFullYear());
-    console.log(`?? Fluxo: Ano=${ano}`);
+    debug(`?? Fluxo: Ano=${ano}`);
 
     const vendas = lerDados(getStorageKey(CHAVES.vendas));
     const compras = lerDados(getStorageKey(CHAVES.compras));
@@ -455,7 +457,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
 
     renderGraficoFluxoAnual(dataEntradas, dataSaidas, dataLucro);
     renderTabelaFluxoMensal(dataEntradas, dataSaidas, dataLucro);
-    console.log(`? Fluxo renderizado: ${ano} - ${dataEntradas.reduce((a, v) => a + v, 0)} entradas, ${dataSaidas.reduce((a, v) => a + v, 0)} Saídas`);
+    debug(`? Fluxo renderizado: ${ano} - ${dataEntradas.reduce((a, v) => a + v, 0)} entradas, ${dataSaidas.reduce((a, v) => a + v, 0)} Saídas`);
   }
 
   function renderGraficoFluxoAnual(entradas, saidas, lucro) {
@@ -547,7 +549,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
 
   /* ================= Análise Avançada ================= */
   function renderAnalise() {
-    console.log("?????? INICIANDO renderAnalise()");
+    debug("?????? INICIANDO renderAnalise()");
     const vendas = lerDados(getStorageKey(CHAVES.vendas));
     const contasPagar = lerDados(getStorageKey(CHAVES.contasPagar));
     const contasReceber = lerDados(getStorageKey(CHAVES.contasReceber));
@@ -618,7 +620,7 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
     document.getElementById("ind-solvencia").textContent = totalDespesas > 0 ? (totalReceita / totalDespesas * 100).toFixed(1) + "%" : "0%";
     document.getElementById("ind-recuperacao").textContent = contasReceber.filter(r => up(r.status) === "RECEBIDO").length > 0 ? "100%" : "0%";
     document.getElementById("ind-capital").textContent = money(lucro);
-    console.log(`? Análise renderizada: Ticket=${money(ticketMedio)} | Crescimento=${crescimento}% | Receita=${money(totalReceita)} | Despesas=${money(totalDespesas)} | Lucro=${money(lucro)}`);
+    debug(`? Análise renderizada: Ticket=${money(ticketMedio)} | Crescimento=${crescimento}% | Receita=${money(totalReceita)} | Despesas=${money(totalDespesas)} | Lucro=${money(lucro)}`);
   }
 
   function renderGraficoAnalise(vendas) {
@@ -738,19 +740,19 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
 
   /* ================= INICIALIZação ================= */
   function init() {
-    console.log("? RELATORIOS.JS carregado - INICIANDO");
+    debug("? RELATORIOS.JS carregado - INICIANDO");
 
     // Verifica se h? empresaId
     const sessao = JSON.parse(localStorage.getItem("ft_sessao") || "{}");
     const empresaId = sessao.empresaId || "default";
-    console.log("?? Relatórios carregando para empresa:", empresaId);
+    debug("?? Relatórios carregando para empresa:", empresaId);
 
     initAbas();
     attachEvents();
 
     // força renderização após um pequeno delay
     setTimeout(() => {
-      console.log("?? Chamando renderResumo() agora...");
+      debug("?? Chamando renderResumo() agora...");
       renderResumo();
     }, 500);
   }
@@ -758,13 +760,13 @@ console.log("?????? RELATORIOS.JS ARQUIVO CARREGANDO... ??????");
   // Aguarda o DOM e Chart.js estarem prontos
   function inicializar() {
     if (document.readyState === "loading") {
-      console.log("? Aguardando DOMContentLoaded...");
+      debug("? Aguardando DOMContentLoaded...");
       document.addEventListener("DOMContentLoaded", () => {
-        console.log("? DOMContentLoaded disparado");
+        debug("? DOMContentLoaded disparado");
         setTimeout(init, 100);
       });
     } else {
-      console.log("? DOM j? pronto, iniciando...");
+      debug("? DOM j? pronto, iniciando...");
       setTimeout(init, 100);
     }
   }

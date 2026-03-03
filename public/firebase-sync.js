@@ -1,4 +1,4 @@
-﻿/* =========================================================
+/* =========================================================
    FIREBASE-SYNC.JS v4.6.3 - COMPAT ONLY (firebase.firestore)
    ? Firebase-first + LocalStorage Cache
    ? Upload/Download por dataset: empresas/{empresaId}/dados/{dataset}
@@ -6,7 +6,7 @@
    ? Anti-loop + Anti-duplo init/interceptor
    ? HARDENED: tudo vira string (evita n.indexOf)
    ? Timeout de write (evita Promise pendente infinita)
-   ? NÃƒO mistura modular com compat
+   ? NAO mistura modular com compat
 ========================================================= */
 
 (function () {
@@ -67,13 +67,13 @@
   function withTimeout(promise, ms, label) {
     let t;
     const timeout = new Promise((_, reject) => {
-      t = setTimeout(() => reject(new Error(`Timeout: ${label || "operaÃ§Ã£o"} (${ms}ms)`)), ms);
+      t = setTimeout(() => reject(new Error(`Timeout: ${label || "operacao"} (${ms}ms)`)), ms);
     });
     return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
   }
 
   // -------------------------
-  // sessÃ£o/Empresa
+  // sessao/Empresa
   // -------------------------
   function getSessao() {
     return safeJSONParse(localStorage.getItem("ft_sessao"), null);
@@ -166,7 +166,7 @@
   }
 
   function requireFirebase() {
-    if (!firebaseReady()) throw new Error("Firebase compat NÃƒO inicializado (window.firebase/window.db)");
+    if (!firebaseReady()) throw new Error("Firebase compat NAO inicializado (window.firebase/window.db)");
   }
 
   // -------------------------
@@ -179,8 +179,8 @@
     const emp = asString(empresaId).trim();
     const ds = normalizeDatasetName(dataset);
 
-    if (!emp) throw new Error("empresaId invÃ¡lido/vazio");
-    if (!ds) throw new Error("dataset invÃ¡lido/vazio");
+    if (!emp) throw new Error("empresaId invalido/vazio");
+    if (!ds) throw new Error("dataset invalido/vazio");
 
     return window.db.collection("empresas").doc(emp).collection("dados").doc(ds);
   }
@@ -273,7 +273,7 @@
       ? { items: cached, updatedAt: window.firebase.firestore.FieldValue.serverTimestamp() }
       : { ...(cached || {}), updatedAt: window.firebase.firestore.FieldValue.serverTimestamp() };
 
-    // ? Timeout para NÃƒO ficar Promise pendente infinito
+    // ? Timeout para NAO ficar Promise pendente infinito
     await withTimeout(ref.set(payload, { merge: true }), FIRESTORE_WRITE_TIMEOUT_MS, `write ${ds}`);
   }
 
@@ -300,7 +300,7 @@
     if (!toSend.length) return;
 
     state.running = true;
-    console.log(`?? Upload iniciado: ${toSend.length} COLEÃ‡Ã•ES (empresaId: ${empresaId})`);
+    console.log(`?? Upload iniciado: ${toSend.length} COLECOES (empresaId: ${empresaId})`);
 
     try {
       for (const ds of toSend) {
@@ -310,7 +310,7 @@
       state.lastError = null;
       state.lastErrorAt = 0;
 
-      console.log("? Upload concluÃ­do:", toSend);
+      console.log("? Upload concluido:", toSend);
       window.dispatchEvent(new CustomEvent("firebase-sync-uploaded", {
         detail: { empresaId, datasets: toSend }
       }));
@@ -333,9 +333,9 @@
   // Interceptor localStorage
   // -------------------------
   function setupStorageInterceptor() {
-    // ? Anti-duplo por ciclo de vida (NÃƒO persistir no localStorage)
+    // ? Anti-duplo por ciclo de vida (NAO persistir no localStorage)
     if (window.__mm_storage_intercepted__) {
-      console.log("?? Storage interceptor j? estava configurado");
+      console.log("?? Storage interceptor ja estava configurado");
       return;
     }
     window.__mm_storage_intercepted__ = true;
@@ -346,7 +346,7 @@ const prevSetItem = localStorage.setItem.bind(localStorage);
       const k = asString(key);
       const v = (value === undefined) ? "null" : asString(value);
 
-      // chama a verSÃ£o anterior (que j? escreve de verdade)
+      // chama a verSao anterior (que ja escreve de verdade)
       prevSetItem(k, v);
 
       const internal = asString(localStorage.getItem(INTERNAL_FLAG) ?? "0") === "1";
@@ -367,7 +367,7 @@ const prevSetItem = localStorage.setItem.bind(localStorage);
   }
 
   // -------------------------
-  // API pÃºblica
+  // API publica
   // -------------------------
   let _downloading = false;
 
@@ -382,14 +382,14 @@ const prevSetItem = localStorage.setItem.bind(localStorage);
         return;
       }
       if (!firebaseReady()) {
-        console.warn("?? Firebase ainda NÃƒO pronto. Tentando download em instantes...");
+        console.warn("?? Firebase ainda NAO pronto. Tentando download em instantes...");
         setTimeout(forceDownload, 1200);
         return;
       }
 
       console.log("?? Download iniciado (empresaId:", empresaId, ")");
       const data = await downloadAllData(empresaId);
-      console.log("?? Download concluÃ­do:", { empresaId, datasets: Object.keys(data) });
+      console.log("?? Download concluido:", { empresaId, datasets: Object.keys(data) });
 
       window.dispatchEvent(new CustomEvent("firebase-sync-downloaded", {
         detail: { empresaId, data }
@@ -425,7 +425,7 @@ const prevSetItem = localStorage.setItem.bind(localStorage);
   }
 
   function initSync() {
-    // ? trava init por ciclo de vida (NÃƒO persistir no localStorage)
+    // ? trava init por ciclo de vida (NAO persistir no localStorage)
     if (state.initialized || window.__mm_sync_inited__) return;
     state.initialized = true;
     window.__mm_sync_inited__ = true;
@@ -439,7 +439,7 @@ setupStorageInterceptor();
   // Evento do seu firebase-global
   window.addEventListener("firebase-ready", () => initSync());
 
-  // fallback se evento NÃƒO disparar
+  // fallback se evento NAO disparar
   setTimeout(() => {
     if (firebaseReady()) initSync();
   }, 1500);

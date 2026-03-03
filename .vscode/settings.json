@@ -1,0 +1,15 @@
+﻿{
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/functions/node_modules/**": true,
+    "**/.firebase/**": true,
+    "**/coverage/**": true
+  },
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/functions/node_modules/**": true,
+    "**/.firebase/**": true,
+    "**/coverage/**": true
+  },
+  "typescript.disableAutomaticTypeAcquisition": true
+}

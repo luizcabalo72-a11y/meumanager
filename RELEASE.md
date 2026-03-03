@@ -8,6 +8,15 @@ Atualizado em: `2026-02-11`
 1. Estar logado no Firebase CLI (`firebase login`).
 2. Projeto ativo correto (`firebase use meumanager-b02b0`).
 3. Validar se as mudancas locais foram revisadas.
+4. Confirmar secrets das Functions (especialmente webhook):
+```bash
+firebase functions:secrets:get MP_ACCESS_TOKEN --project meumanager-b02b0
+firebase functions:secrets:get MP_WEBHOOK_SECRET --project meumanager-b02b0
+```
+5. Se `MP_WEBHOOK_SECRET` nao existir, criar antes do deploy:
+```bash
+firebase functions:secrets:set MP_WEBHOOK_SECRET
+```
 
 ## 2. Validacao Pre-Deploy
 
@@ -54,7 +63,7 @@ curl https://meumanager-b02b0.web.app/api/health
 3. Confirmar que nao ha erro de encoding/accentos.
 4. Confirmar logs sem erro critico:
 ```bash
-firebase functions:log --only api --limit 50
+firebase functions:log --only api
 ```
 
 ## 5. Versionamento (tag release)
