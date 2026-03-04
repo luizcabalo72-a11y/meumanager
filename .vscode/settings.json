@@ -1,15 +1,24 @@
-﻿{
+{
   "files.watcherExclude": {
     "**/node_modules/**": true,
     "**/functions/node_modules/**": true,
     "**/.firebase/**": true,
-    "**/coverage/**": true
+    "**/coverage/**": true,
+    "**/.git/objects/**": true
   },
+
   "search.exclude": {
     "**/node_modules/**": true,
     "**/functions/node_modules/**": true,
     "**/.firebase/**": true,
     "**/coverage/**": true
   },
-  "typescript.disableAutomaticTypeAcquisition": true
+
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "terminal.integrated.gpuAcceleration": "on",
+  "telemetry.telemetryLevel": "off",
+
+  "javascript.suggest.autoImports": false,
+  "typescript.suggest.autoImports": false,
+  "editor.inlineSuggest.enabled": false
 }
